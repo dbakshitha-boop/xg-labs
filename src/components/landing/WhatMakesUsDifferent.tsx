@@ -240,18 +240,17 @@ function SubheaderContainer({ title, id }: { title: string, id: string }) {
   return (
     <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#060606] text-[18px] lg:text-[24px] uppercase w-full" data-name="Subheader Container">
       <p className="basis-0 grow min-h-px min-w-px relative shrink-0">{title}</p>
-      <p className="relative shrink-0 text-nowrap">{id}</p>
     </div>
   );
 }
 
 function ContentContainer({ description, title, id }: { description: string[], title: string, id: string }) {
   return (
-    <div className="content-stretch flex flex-col gap-[16px] lg:gap-[24px] items-start relative shrink-0 w-full lg:w-[760px]" data-name="Content Container">
+    <div className="content-stretch flex flex-col gap-[12px]  items-start relative shrink-0 w-full" data-name="Content Container">
       <SubheaderContainer title={title} id={id} />
       <div className="flex flex-col w-full">
         {description.map((line, idx) => (
-             <div key={idx} className="relative font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic text-[#6e6e6e] text-[clamp(28px,6vw,40px)] lg:text-[52px] w-full whitespace-normal lg:whitespace-nowrap">
+             <div key={idx} className="relative font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic text-[#6e6e6e] text-[clamp(28px,6vw,40px)] lg:text-[52px] w-full whitespace-normal">
                 <RevealText delay={idx * 0.15} isActive={true}>
                   {line}
                 </RevealText>
@@ -277,7 +276,7 @@ function RealContent({ activeIndex }: { activeIndex: number }) {
         <ContentContainer 
             title={content.title}
             description={content.description}
-            id={content.id}
+            // id={content.id}
         />
       </motion.div>
     </div>
@@ -286,9 +285,9 @@ function RealContent({ activeIndex }: { activeIndex: number }) {
 
 function TextContainer({ activeIndex }: { activeIndex: number }) {
   return (
-    <div className="content-stretch flex flex-col justify-center lg:justify-between p-6 lg:p-[80px] xl:p-[100px] relative shrink-0 w-full h-full gap-8 lg:gap-0" data-name="Text Container">
+    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full gap-8 lg:gap-[48px]" style={{ padding: "clamp(24px, 5vw, 80px)", paddingTop: "clamp(40px, 4vw, 64px)", justifyContent: "flex-start" }} data-name="Text Container">
       <HeaderContainer />
-      <div className="mt-8 lg:mt-0">
+      <div>
         <RealContent activeIndex={activeIndex} />
       </div>
     </div>

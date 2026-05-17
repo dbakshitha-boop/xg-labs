@@ -167,8 +167,9 @@ export function SelectedWork() {
   };
 
   return (
-    <section 
-      ref={containerRef} 
+    <section
+      id="selected-work"
+      ref={containerRef}
       className="w-full bg-[#F7F8FA] relative"
       style={{ height: isDesktop ? `${projects.length * 100}vh` : 'auto' }}
     >

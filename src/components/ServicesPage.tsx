@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent, MotionValue } from "motion/react";
 import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
 
@@ -22,7 +22,7 @@ const SERVICES: ServiceData[] = [
   {
     title: "PERFORMANCE MARKETING",
     description:
-      "We build paid growth systems focused on conversions, efficiency, and measurable ROI \u2014 not vanity metrics. Every campaign is structured, optimized, and scaled using real data.",
+      "We build paid growth systems focused on conversions, efficiency, and measurable ROI — not vanity metrics. Every campaign is structured, optimized, and scaled using real data.",
     images: [img1, img3, img2, img5, img4],
     items: [
       "PAID STRATEGY & FUNNEL AUDIT",
@@ -35,7 +35,7 @@ const SERVICES: ServiceData[] = [
   {
     title: "SEO",
     description:
-      "We build sustainable search visibility through technical precision and content strategy \u2014 converting organic traffic into consistent, compounding business growth.",
+      "We build sustainable search visibility through technical precision and content strategy — converting organic traffic into consistent, compounding business growth.",
     images: [img4, img2, img1, img3, img5],
     items: [
       "SEO AUDIT & STRATEGY",
@@ -48,7 +48,7 @@ const SERVICES: ServiceData[] = [
   {
     title: "WEB DEVELOPMENT",
     description:
-      "We design and build performance-focused landing pages, funnels, and web experiences optimised for conversion \u2014 every pixel earns its place.",
+      "We design and build performance-focused landing pages, funnels, and web experiences optimised for conversion — every pixel earns its place.",
     images: [img2, img5, img4, img1, img3],
     items: [
       "UI/UX DESIGN",
@@ -61,7 +61,7 @@ const SERVICES: ServiceData[] = [
   {
     title: "SOCIAL MEDIA MANAGEMENT",
     description:
-      "We manage your brand presence across platforms with consistent, strategic content \u2014 building community and protecting reputation at scale.",
+      "We manage your brand presence across platforms with consistent, strategic content — building community and protecting reputation at scale.",
     images: [img3, img1, img5, img2, img4],
     items: [
       "CONTENT SCHEDULING & PUBLISHING",
@@ -74,7 +74,7 @@ const SERVICES: ServiceData[] = [
   {
     title: "CONTENT CREATION & VIDEO PRODUCTION",
     description:
-      "We produce content and videos built to capture attention and drive action \u2014 from short-form reels to long-form brand films.",
+      "We produce content and videos built to capture attention and drive action — from short-form reels to long-form brand films.",
     images: [img5, img4, img3, img1, img2],
     items: [
       "SHORT-FORM CONTENT & REELS",
@@ -87,7 +87,7 @@ const SERVICES: ServiceData[] = [
   {
     title: "INFLUENCER MARKETING",
     description:
-      "We run influencer campaigns with 1,000+ creators \u2014 micro to macro \u2014 built around strategy, relevance, and measurable reach.",
+      "We run influencer campaigns with 1,000+ creators — micro to macro — built around strategy, relevance, and measurable reach.",
     images: [img2, img3, img1, img4, img5],
     items: [
       "INFLUENCER STRATEGY & PLANNING",
@@ -100,7 +100,7 @@ const SERVICES: ServiceData[] = [
   {
     title: "BRANDING",
     description:
-      "We build brand identities that are distinct, strategic, and built to scale \u2014 from logos and systems to full brand guidelines.",
+      "We build brand identities that are distinct, strategic, and built to scale — from logos and systems to full brand guidelines.",
     images: [img4, img1, img2, img5, img3],
     items: [
       "LOGO DESIGN & IDENTITY",
@@ -125,9 +125,7 @@ function AccordionRow({
   isLast: boolean;
 }) {
   return (
-    <div
-      style={{ borderBottom: isLast ? "none" : "1px solid rgba(0,0,0,0.1)" }}
-    >
+    <div style={{ borderBottom: isLast ? "none" : "1px solid rgba(0,0,0,0.1)" }}>
       <button
         onClick={onToggle}
         style={{
@@ -168,9 +166,7 @@ function AccordionRow({
           }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            {/* Horizontal bar — always visible */}
             <path d="M1 6H11" stroke="#1a1a1a" strokeWidth="1.5" strokeLinecap="round" />
-            {/* Vertical bar — hidden when open */}
             <motion.path
               d="M6 1V11"
               stroke="#1a1a1a"
@@ -204,8 +200,7 @@ function AccordionRow({
                 margin: 0,
               }}
             >
-              Strategic approach to {label.toLowerCase()} — built to deliver
-              measurable results at every stage of growth.
+              Strategic approach to {label.toLowerCase()} — built to deliver measurable results at every stage of growth.
             </p>
           </motion.div>
         )}
@@ -214,89 +209,82 @@ function AccordionRow({
   );
 }
 
-// ─── Image mosaic (left column) ───────────────────────────────────────────────
-function ServiceMosaic({ images }: { images: string[] }) {
-  return (
-    <div
-      style={{
-        width: "100%",
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gridTemplateRows: "180px 160px",
-        gap: "6px",
-        borderRadius: "10px",
-        overflow: "hidden",
-      }}
-    >
-      {/* large first tile spans 2 rows */}
-      <div style={{ gridRow: "1 / 3", gridColumn: "1", overflow: "hidden" }}>
-        <img
-          src={images[0]}
-          alt=""
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-        />
-      </div>
-      <div style={{ overflow: "hidden" }}>
-        <img src={images[1]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-      </div>
-      <div style={{ overflow: "hidden" }}>
-        <img src={images[2]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-      </div>
-      <div style={{ overflow: "hidden" }}>
-        <img src={images[3]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-      </div>
-      <div style={{ overflow: "hidden" }}>
-        <img src={images[4] ?? images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-      </div>
-    </div>
-  );
-}
-
-// ─── Single service section ───────────────────────────────────────────────────
-function ServiceSection({
+// ─── Single card (absolutely positioned inside shared deck) ──────────────────
+function CardSlide({
   service,
   index,
+  total,
+  scrollYProgress,
 }: {
   service: ServiceData;
   index: number;
+  total: number;
+  scrollYProgress: MotionValue<number>;
 }) {
   const navigate = useNavigate();
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  const seg = 1 / total;
+  const isLast = index === total - 1;
+
+  // Slide in from below over its entry window
+  const y = useTransform(
+    scrollYProgress,
+    index === 0 ? [0, seg] : [(index - 1) * seg, index * seg],
+    index === 0 ? ["0%", "0%"] : ["100%", "0%"]
+  );
+
+  // Scale down (peel away) over its exit window; last card never shrinks
+  const scale = useTransform(
+    scrollYProgress,
+    [index * seg, (index + 1) * seg],
+    [1, isLast ? 1 : 0.88]
+  );
+
+  // Stay invisible until the card starts entering, then instantly visible
+  const opacity = useTransform(
+    scrollYProgress,
+    index === 0
+      ? [0, 1]
+      : [(index - 1) * seg, (index - 1) * seg + seg * 0.04],
+    index === 0 ? [1, 1] : [0, 1]
+  );
 
   function toggle(i: number) {
     setOpenIdx((prev) => (prev === i ? null : i));
   }
 
   const sectionId = service.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  const stickyTop = 214 + index * 8;
 
   return (
-    <div
+    <motion.div
       id={sectionId}
       style={{
-        position: "sticky",
-        top: `${stickyTop}px`,
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
         zIndex: index + 1,
-        scrollMarginTop: `${stickyTop}px`,
+        y,
+        scale,
+        opacity,
+        transformOrigin: "top center",
       }}
     >
       <div
         style={{
           background: "#ffffff",
           borderRadius: "16px",
-          maxWidth: "1184px",
-          width: "calc(100% - 80px)",
-          margin: "0 auto",
+          width: "100%",
           paddingTop: "60px",
           paddingRight: "60px",
           paddingBottom: "40px",
           paddingLeft: "60px",
-          boxShadow: "0 8px 48px rgba(0,0,0,0.22)",
-          overflow: "hidden",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.28)",
           boxSizing: "border-box",
         }}
       >
-        {/* ── Header row: title + description ── */}
+        {/* Header row: title + description + CTAs */}
         <div
           style={{
             display: "grid",
@@ -306,7 +294,6 @@ function ServiceSection({
             marginBottom: "40px",
           }}
         >
-          {/* Title */}
           <h2
             style={{
               fontFamily: "'Space Grotesk', sans-serif",
@@ -322,7 +309,6 @@ function ServiceSection({
             {service.title}
           </h2>
 
-          {/* Description + CTAs */}
           <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
             <p
               style={{
@@ -337,9 +323,8 @@ function ServiceSection({
               {service.description}
             </p>
 
-            {/* CTA buttons */}
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-              {/* VIEW CASES */}
+              {/* View Cases */}
               <button
                 onClick={() => navigate("/portfolio")}
                 style={{
@@ -394,7 +379,7 @@ function ServiceSection({
                 </div>
               </button>
 
-              {/* LET'S TALK */}
+              {/* Let's Talk */}
               <button
                 onClick={() => navigate("/")}
                 style={{
@@ -422,7 +407,7 @@ function ServiceSection({
                   ((e.currentTarget as HTMLButtonElement).style.background = "#1a1a1a")
                 }
               >
-                {"Let\u2019s Talk"}
+                {"Let’s Talk"}
                 <div
                   style={{
                     width: 32,
@@ -444,7 +429,7 @@ function ServiceSection({
           </div>
         </div>
 
-        {/* ── Content row: single image + accordion ── */}
+        {/* Content row: image + accordion */}
         <div
           style={{
             display: "grid",
@@ -453,14 +438,7 @@ function ServiceSection({
             alignItems: "flex-start",
           }}
         >
-          {/* Left: single image */}
-          <div
-            style={{
-              borderRadius: "12px",
-              overflow: "hidden",
-              height: "340px",
-            }}
-          >
+          <div style={{ borderRadius: "12px", overflow: "hidden", height: "280px" }}>
             <img
               src={service.images[0]}
               alt={service.title}
@@ -468,7 +446,6 @@ function ServiceSection({
             />
           </div>
 
-          {/* Right: accordion */}
           <div style={{ borderTop: "1px solid rgba(0,0,0,0.1)" }}>
             {service.items.map((item, i) => (
               <AccordionRow
@@ -482,77 +459,92 @@ function ServiceSection({
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ─── Hero banner ──────────────────────────────────────────────────────────────
-function ServicesHero() {
-  return (
-    <div
-      style={{
-        background: "#0a0a0a",
-        padding: "160px 72px 80px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        style={{
-          fontFamily: "'Space Grotesk', sans-serif",
-          fontWeight: 700,
-          fontSize: "11px",
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          color: "#02A884",
-          margin: "0 0 20px",
-        }}
-      >
-        What We Do
-      </motion.p>
-
-      <motion.h1
-        initial={{ opacity: 0, y: 32 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        style={{
-          fontFamily: "'Space Grotesk', sans-serif",
-          fontWeight: 900,
-          fontSize: "clamp(44px, 7vw, 100px)",
-          lineHeight: "1.0",
-          letterSpacing: "-0.03em",
-          textTransform: "uppercase",
-          color: "#ffffff",
-          margin: 0,
-          maxWidth: "900px",
-        }}
-      >
-        Built to grow. <br />
-        <span style={{ color: "rgba(255,255,255,0.35)" }}>Designed to last.</span>
-      </motion.h1>
-    </div>
+    </motion.div>
   );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export function ServicesPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: containerRef });
+  const total = SERVICES.length;
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setActiveIndex(Math.min(Math.floor(v * total), total - 1));
+  });
+
   return (
-    <div style={{ background: "#060606", minHeight: "100vh" }}>
-      {/* Nav - sticky at top, provides containing block for absolute TopBar */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, height: "114px", pointerEvents: "none" }}>
+    <div style={{ background: "#060606" }}>
+      {/* Sticky nav */}
+      <div style={{ position: "sticky", top: 0, zIndex: 200, height: "114px", pointerEvents: "none" }}>
         <div style={{ position: "relative", width: "100%", height: "100%", pointerEvents: "auto" }}>
           <TopBar />
         </div>
       </div>
 
-      {/* Stacking service cards */}
-      <div style={{ paddingBottom: "200px", paddingLeft: "40px", paddingRight: "40px" }}>
-        {SERVICES.map((svc, i) => (
-          <ServiceSection key={svc.title} service={svc} index={i} />
-        ))}
+      {/* Scroll driver — one viewport-height per card */}
+      <div ref={containerRef} style={{ height: `${total * 100}vh` }}>
+        {/* One shared sticky deck */}
+        <div
+          style={{
+            position: "sticky",
+            top: "114px",
+            height: "calc(100vh - 114px)",
+            display: "flex",
+            alignItems: "flex-start",
+            paddingTop: "36px",
+            boxSizing: "border-box",
+          }}
+        >
+          {/* Scroll indicator — right side */}
+          <div
+            style={{
+              position: "absolute",
+              right: "28px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "6px",
+              zIndex: 100,
+              width: "44px",
+            }}
+          >
+            {SERVICES.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  width: i === activeIndex ? "38px" : "32px",
+                  height: "2px",
+                  borderRadius: "2px",
+                  background: i === activeIndex ? "#ffffff" : i % 2 === 0 ? "#A3A3A3" : "#636363",
+                  transition: "width 0.3s ease, background 0.3s ease",
+                }}
+              />
+            ))}
+          </div>
+          <div
+            style={{
+              position: "relative",
+              maxWidth: "1184px",
+              width: "calc(100% - 80px)",
+              margin: "0 auto",
+              flex: 1,
+            }}
+          >
+            {SERVICES.map((svc, i) => (
+              <CardSlide
+                key={svc.title}
+                service={svc}
+                index={i}
+                total={total}
+                scrollYProgress={scrollYProgress}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       <Footer />

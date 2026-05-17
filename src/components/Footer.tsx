@@ -84,28 +84,29 @@ export function Footer() {
   const navigate = useNavigate();
 
   return (
-    <footer style={{ background: "#0a0a0a", overflow: "hidden" }}>
+    <footer id="footer" style={{ background: "#0a0a0a", overflow: "hidden" }}>
 
       {/* ── Giant headline ── */}
       <div
         style={{
-          padding: "72px 48px 64px",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          padding: "32px 48px 24px",
+          overflow: "hidden",
         }}
       >
         <h2
           style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 900,
-            fontSize: "clamp(52px, 10.5vw, 160px)",
-            lineHeight: "0.92",
-            letterSpacing: "-0.02em",
+            fontFamily: "'Humane', sans-serif",
+            fontWeight: 600,
+            fontSize: "64px",
+            lineHeight: "0.85",
+            letterSpacing: "0",
             textTransform: "uppercase",
-            color: "#f0f0f0",
+            color: "#D9D9D9",
             margin: 0,
+            whiteSpace: "nowrap",
           }}
         >
-          WE&rsquo;RE READY FOR OUR<br />NEXT CHALLENGE
+          WE&rsquo;RE READY FOR OUR NEXT CHALLENGE
         </h2>
       </div>
 
@@ -114,44 +115,44 @@ export function Footer() {
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
-          padding: "64px 72px 72px",
-          gap: "48px",
+          padding: "24px 48px 28px",
+          gap: "24px",
           borderBottom: "1px solid rgba(255,255,255,0.07)",
         }}
       >
         {/* Connect with */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <p style={colHeadStyle}>Connect With</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <a
               href="mailto:hello@xglabs.agency"
               style={{
                 ...linkStyle,
                 fontSize: "clamp(16px, 1.5vw, 22px)",
-                color: "rgba(255,255,255,0.72)",
+                color: "#9A9A9A",
               }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#ffffff")}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#9A9A9A")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.72)")}
             >
               hello@xglabs.agency
             </a>
             <a
-              href="tel:+919876543210"
+              href="tel:+916369974530"
               style={{
                 ...linkStyle,
                 fontSize: "clamp(16px, 1.5vw, 22px)",
-                color: "rgba(255,255,255,0.72)",
+                color: "#9A9A9A",
               }}
               onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#ffffff")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.72)")}
             >
-              +91 98765 43210
+              +91 6369 974 530
             </a>
             <p
               style={{
                 ...linkStyle,
                 fontSize: "clamp(16px, 1.5vw, 22px)",
-                color: "rgba(255,255,255,0.72)",
+                color: "#9A9A9A",
               }}
             >
               Chennai, India
@@ -160,15 +161,15 @@ export function Footer() {
         </div>
 
         {/* Menu */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <p style={colHeadStyle}>Menu</p>
-          <nav style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+          <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {MENU_LINKS.map((item) => (
               <span
                 key={item.label}
                 onClick={() => navigate(item.path)}
                 style={linkStyle}
-                onMouseEnter={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "#ffffff")}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "#ECEFF1")}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "rgba(255,255,255,0.55)")}
               >
                 {item.label}
@@ -178,9 +179,9 @@ export function Footer() {
         </div>
 
         {/* Services */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <p style={colHeadStyle}>Services</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {SERVICES.map((s) => (
               <span
                 key={s}
@@ -201,7 +202,7 @@ export function Footer() {
           display: "grid",
           gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
-          padding: "28px 72px",
+          padding: "20px 48px",
           gap: "24px",
         }}
       >
@@ -211,7 +212,7 @@ export function Footer() {
             fontFamily: "'Space Grotesk', sans-serif",
             fontWeight: 700,
             fontSize: "18px",
-            color: "#ffffff",
+            color: "#9A9A9A",
             letterSpacing: "-0.01em",
           }}
         >
@@ -221,10 +222,9 @@ export function Footer() {
         {/* Social icons */}
         <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
           {[
-            { icon: <IconInstagram />, href: "https://instagram.com", label: "Instagram" },
-            { icon: <IconLinkedIn />, href: "https://linkedin.com", label: "LinkedIn" },
-            { icon: <IconX />, href: "https://x.com", label: "X" },
-            { icon: <IconWhatsApp />, href: "https://wa.me/919876543210", label: "WhatsApp" },
+            { icon: <IconInstagram />, href: "https://www.instagram.com/xglabs/", label: "Instagram" },
+            { icon: <IconLinkedIn />, href: "https://www.linkedin.com/company/xg-labs", label: "LinkedIn" },
+            { icon: <IconWhatsApp />, href: "https://wa.me/916369974530", label: "WhatsApp" },
           ].map(({ icon, href, label }) => (
             <a
               key={label}
@@ -233,7 +233,7 @@ export function Footer() {
               rel="noopener noreferrer"
               aria-label={label}
               style={{
-                color: "rgba(255,255,255,0.5)",
+                color: "#9A9A9A",
                 display: "flex",
                 alignItems: "center",
                 transition: "color 0.18s",
@@ -260,7 +260,7 @@ export function Footer() {
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 400,
               fontSize: "12px",
-              color: "rgba(255,255,255,0.35)",
+              color: "#9A9A9A",
               margin: 0,
             }}
           >
@@ -271,7 +271,7 @@ export function Footer() {
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 400,
               fontSize: "12px",
-              color: "rgba(255,255,255,0.35)",
+              color: "#9A9A9A",
               margin: 0,
             }}
           >

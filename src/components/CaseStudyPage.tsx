@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { TopBar } from "./landing/FinalLayout";
+import { Footer } from "./Footer";
 import image1 from "../assets/portfolio/91b55f6c4cb04eb7c2e15c4348e7d9e02c87693d.png";
 import image2 from "../assets/portfolio/b38d05db3e088fb9946a699913465921149256a5.png";
 import image3 from "../assets/portfolio/1248070d103a19f145ae0f832592d24f14f6062d.jpg";
@@ -799,6 +800,7 @@ export function CaseStudyPage({ id }: { id?: number }) {
           ))}
         </div>
       </section>
+      <Footer />
  </div>
   );
 }

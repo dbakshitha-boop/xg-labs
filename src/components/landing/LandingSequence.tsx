@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { LogoGroup } from "./LandingLogos";
 import Rectangle from "../../imports/Rectangle21";
@@ -97,7 +97,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     useEffect(() => {
         if (!showContent) {
             document.body.style.overflow = "hidden";
-            return;
+            return () => { document.body.style.overflow = "auto"; };
         }
 
         if (scrollStep < 3) {
@@ -116,23 +116,14 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
         const handleWheel = (e: WheelEvent) => {
             const now = Date.now();
-            
-            // If scrolling vertically (Step 3+), check if we need to return to Step 2
-            if (scrollStep >= 3) {
-                if (window.scrollY === 0 && e.deltaY < -10) {
-                     setScrollStep(2);
-                     // e.preventDefault(); // Optional: prevent bounce
-                }
-                return; // Let native vertical scroll happen
-            }
 
-            // Otherwise, we are in Horizontal Mode (Step 0, 1, or 2)
-            // Prevent Default to stop bounce if supported (passive issue) but body overflow:hidden helps
-            
-            if (now - lastScrollTime.current < 1000) return; // Debounce 1s
+            // Once in vertical mode, never re-lock the page
+            if (scrollStep >= 3) return;
+
+            if (now - lastScrollTime.current < 400) return;
 
             if (e.deltaY > 50) {
-                setScrollStep(prev => Math.min(prev + 1, 3)); 
+                setScrollStep(prev => Math.min(prev + 1, 3));
                 lastScrollTime.current = now;
             } else if (e.deltaY < -50) {
                 setScrollStep(prev => Math.max(prev - 1, 0));
@@ -140,7 +131,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
             }
         };
 
-        window.addEventListener("wheel", handleWheel);
+        window.addEventListener("wheel", handleWheel, { passive: true });
         return () => window.removeEventListener("wheel", handleWheel);
     }, [showContent, scrollStep]);
 

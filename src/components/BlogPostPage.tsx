@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { TopBar } from "./landing/FinalLayout";
 import { ARTICLES } from "./BlogPage";
+import { Footer } from "./Footer";
 
 // Social share icons
 function TwitterIcon() {
@@ -697,6 +698,7 @@ export function BlogPostPage() {
           {author?.bio ?? ""}
         </p>
       </motion.section>
+      <Footer />
     </div>
   );
 }

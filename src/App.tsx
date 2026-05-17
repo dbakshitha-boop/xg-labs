@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ServicesList } from "./components/ServicesList";
 import { WhatMakesUsDifferent } from "./components/landing/WhatMakesUsDifferent";
@@ -17,12 +16,27 @@ import { BlogPage } from "./components/BlogPage";
 import { BlogPostPage } from "./components/BlogPostPage";
 import { CaseStudyPage } from "./components/CaseStudyPage";
 import { ServicesPage } from "./components/ServicesPage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 function HomePage() {
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(!location.state?.skipLoading);
+
+  useEffect(() => {
+    const targetId = location.state?.scrollToFooter ? "footer" : location.state?.scrollToSection;
+    if (!targetId) return;
+    const tryScroll = () => {
+      const el = document.getElementById(targetId);
+      if (el) {
+        document.body.style.overflow = "auto";
+        el.scrollIntoView({ behavior: "smooth" });
+      } else {
+        setTimeout(tryScroll, 100);
+      }
+    };
+    tryScroll();
+  }, []);
 
   return (
     <>
