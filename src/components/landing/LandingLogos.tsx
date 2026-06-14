@@ -87,15 +87,17 @@ const MaskedBg2 = () => (
 
 // --- Animation Variants ---
 const commonState = {
-    hidden: { top: "200%", opacity: 0, scale: 0.75 },
-    visible: { 
-        top: "calc(50% + 0.5px)", 
+    hidden: { top: "calc(50% + 0.5px)", y: 28, opacity: 0, scale: 0.75 },
+    visible: {
+        top: "calc(50% + 0.5px)",
+        y: 0,
         opacity: 1,
         scale: 0.75,
-        transition: { type: "spring", bounce: 0, duration: 0.8 } 
+        transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
     },
     slide: {
-        top: "calc(50% + 0.5px)", 
+        top: "calc(50% + 0.5px)",
+        y: 0,
         opacity: 1,
         scale: 0.75
     }
@@ -105,13 +107,15 @@ const commonState = {
 const heroLogoVariants = {
     ...commonState,
     focus: {
-        top: "calc(50% + 0.5px)", 
+        top: "calc(50% + 0.5px)",
+        y: 0,
         opacity: 1,
         scale: 0.75,
         transition: { duration: 0.5 }
     },
     exit: {
-        top: "calc(50% + 0.5px)", 
+        top: "calc(50% + 0.5px)",
+        y: 0,
         opacity: 0,
         scale: 0.375,
         transition: { duration: 0.5 }
@@ -122,13 +126,15 @@ const heroLogoVariants = {
 const fadingLogoVariants = {
     ...commonState,
     focus: {
-        top: "calc(50% + 0.5px)", 
+        top: "calc(50% + 0.5px)",
+        y: 0,
         opacity: 0,
         scale: 0.75,
         transition: { duration: 0.5 }
     },
     exit: {
-        top: "calc(50% + 0.5px)", 
+        top: "calc(50% + 0.5px)",
+        y: 0,
         opacity: 0,
         scale: 0.375,
         transition: { duration: 0.5 }

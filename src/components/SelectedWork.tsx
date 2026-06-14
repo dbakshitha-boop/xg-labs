@@ -1,14 +1,18 @@
 import React, { useRef, useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { motion, useScroll, useSpring, useMotionValue } from "motion/react";
+import { useNavigate } from "react-router-dom";
 import imgC4 from "figma:asset/85d6b6f33c8667ab02410e898c803bdf8b2f8acf.png";
 import imgC3 from "figma:asset/cf73ccd40dc24f9d1feec565d29fe7d28fd3690b.png";
 import imgC2 from "figma:asset/308a1ec46f49ee27f236c5b52a0022c154701558.png";
 import imgC1 from "figma:asset/c6f75c6d8668e22eaf393503de064b054afa1040.png";
+import imgC5 from "../assets/selectedwork_SLAM.jpeg";
+import imgC6 from "../assets/selectedwork_KH.jpeg";
+import imgC7 from "../assets/selectedwork_Gowheels.jpeg";
 import { useCursor } from "./ui/CustomCursor";
 
 // Magnetic Button Component
-const MagneticButton = ({ children, className }: { children: React.ReactNode, className?: string }) => {
+const MagneticButton = ({ children, className, onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) => {
   const ref = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -35,6 +39,7 @@ const MagneticButton = ({ children, className }: { children: React.ReactNode, cl
     <motion.button
       ref={ref}
       className={className}
+      onClick={onClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ x: smoothX, y: smoothY }}
@@ -59,12 +64,11 @@ const projects = [
     longDescription: (
       <>
         We built a consistent content and video production system to elevate SLAM’s social presence, improve engagement, and enhance brand quality across multiple locations.
-        <br /><br />
         Executed for SLAM Kattupakkam, Pudur, and Gerugambakkam.
       </>
     ),
     tags: ["Content Creation", "Video Production", "Social Media Management"],
-    image: imgC1,
+    image: imgC5,
   },
   {
     id: 2,
@@ -79,11 +83,11 @@ const projects = [
     ),
     longDescription: (
       <>
-        We helped Kalki Handicraft transition into e-commerce by building visibility and demand through influencer campaigns, creative content, and performance-driven Meta ads—focused on driving sales and online growth.
+        We helped Kalki transition into e-commerce through influencer campaigns, creative content, and performance-driven Meta ads — focused on driving sales and online growth.
       </>
     ),
     tags: ["Performance Marketing", "Influencer Marketing", "Creative Production"],
-    image: imgC2,
+    image: imgC6,
   },
   {
     id: 3,
@@ -102,7 +106,7 @@ const projects = [
       </>
     ),
     tags: ["Branding", "Visual Identity", "Mascot Design"],
-    image: imgC3,
+    image: imgC7,
   },
 ];
 
@@ -110,6 +114,7 @@ export function SelectedWork() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const { setVariant, setText } = useCursor();
+  const navigate = useNavigate();
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -118,7 +123,7 @@ export function SelectedWork() {
 
   // Smooth, elegant spring transition
   const transition = {
-    type: "spring",
+    type: "spring" as const,
     stiffness: 80,
     damping: 20,
     mass: 1
@@ -245,7 +250,7 @@ export function SelectedWork() {
             <h2 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-black font-space">
               Selected Work
             </h2>
-            <MagneticButton className="group flex items-center gap-2 px-6 py-2 rounded-full border border-black hover:bg-black hover:text-white transition-colors duration-300 !cursor-none">
+            <MagneticButton className="group flex items-center gap-2 px-6 py-2 rounded-full border border-black hover:bg-black hover:text-white transition-colors duration-300 !cursor-none" onClick={() => navigate('/portfolio')}>
               <span className="text-sm font-bold uppercase tracking-wide font-space">
                 View Work
               </span>
@@ -258,83 +263,68 @@ export function SelectedWork() {
           {/* Main Content Grid */}
           <div className="flex flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-[40px] 2xl:gap-[60px]">
             
-            {/* Left Column: Title, Short Desc, Index, Client */}
-            <div className="w-full lg:flex-1 lg:max-w-[360px] xl:max-w-[480px] 2xl:max-w-[560px] flex flex-col justify-between h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-1 py-6 xl:py-10">
-              <div className="flex flex-col gap-4 xl:gap-6">
-                {/* Title Area */}
-                <div className="relative h-[120px] lg:h-[130px] xl:h-[160px] w-full overflow-hidden">
-                    {projects.map((project, index) => (
-                    <motion.div
-                        key={project.id}
-                        className="absolute top-0 left-0 w-full h-full flex flex-col items-end text-right"
-                        initial={false}
-                        animate={getTextAnimation(index)}
-                        transition={transition}
-                    >
-                        <h3 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold text-[#414141] font-space leading-tight uppercase">
-                        {project.title[0]}
-                        <br />
-                        {project.title[1]}
-                        </h3>
-                    </motion.div>
-                    ))}
-                </div>
+            {/* Left Column: Title (top=image top), Short Desc + Index/Client (bottom=image bottom) */}
+            <div className="w-full lg:flex-1 lg:max-w-[360px] xl:max-w-[480px] 2xl:max-w-[560px] flex flex-col justify-between h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-1 pb-6 xl:pb-8">
 
-                {/* Short Description */}
-                <div className="relative h-[100px] xl:h-[120px] w-full overflow-hidden">
-                    {projects.map((project, index) => (
-                    <motion.div 
-                        key={project.id}
-                        className="absolute top-0 left-0 w-full flex flex-col items-end text-right h-full"
-                        initial={false}
-                        animate={getTextAnimation(index)}
-                        transition={transition}
-                    >
-                        <p className="text-sm lg:text-base xl:text-lg text-[#414141] leading-relaxed font-sora w-full lg:w-4/5 xl:w-3/4 font-[Sora]">
-                        {project.shortDescription}
-                        </p>
-                    </motion.div>
-                    ))}
-                </div>
+              {/* Title — aligns with top margin of image */}
+              <div className="relative h-[180px] lg:h-[210px] xl:h-[240px] w-full overflow-hidden">
+                {projects.map((project, index) => (
+                  <motion.div
+                    key={project.id}
+                    className="absolute top-0 left-0 w-full h-full flex flex-col items-end text-right"
+                    initial={false}
+                    animate={getTextAnimation(index)}
+                    transition={transition}
+                  >
+                    <h3 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold text-[#414141] font-space leading-tight uppercase">
+                      {project.title[0]}
+                      <br />
+                      {project.title[1]}
+                    </h3>
+                  </motion.div>
+                ))}
               </div>
 
-              {/* Bottom Row: Index (Left) & Client (Right) */}
-              <div className="flex flex-row justify-between items-end mt-auto">
-                {/* Index Number */}
-                <div className="relative w-[140px] xl:w-[180px] h-[50px] xl:h-[60px] overflow-hidden font-[Sora]">
-                   {projects.map((_, index) => (
-                    <motion.span 
-                      key={index}
-                      className="absolute bottom-0 left-0 text-4xl lg:text-5xl xl:text-6xl text-gray-300 font-sora font-light leading-none tracking-tight"
-                      initial={false}
-                      animate={getTextAnimation(index)}
-                      transition={transition}
-                    >
-                      {String(index + 1).padStart(2, '0')}/{String(projects.length).padStart(2, '0')}
-                    </motion.span>
-                   ))}
-                </div>
-                
-                {/* Client Info */}
-                <div className="relative w-[160px] xl:w-[200px] h-[50px] xl:h-[60px] overflow-hidden">
+              {/* Bottom group — client/type + index */}
+              <div className="flex flex-col gap-4 xl:gap-5">
+                {/* Client + Type */}
+                <div className="relative w-full" style={{ minHeight: "60px" }}>
                   {projects.map((project, index) => (
                     <motion.div
                       key={project.id}
-                      className="absolute bottom-0 right-0 flex flex-col justify-end pb-1 w-full items-end text-right"
+                      className="absolute top-0 right-0 w-full flex flex-col items-end text-right"
                       initial={false}
-                      animate={getTextAnimation(index)}
+                      animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 10 }}
                       transition={transition}
                     >
-                      <h4 className="text-lg font-bold text-[#414141] font-sora font-[Cal_Sans]">
+                      <h4 className="text-lg xl:text-xl font-semibold text-[#5F5F5F] font-['Sora',sans-serif] leading-tight">
                         {project.client}
                       </h4>
-                      <p className="text-xs text-gray-500 font-sora uppercase tracking-wide font-[Sora]">
-                        {project.type}
-                      </p>
+                      {project.type && (
+                        <p className="text-xs text-gray-400 font-['Sora',sans-serif] uppercase tracking-wide mt-1">
+                          {project.type}
+                        </p>
+                      )}
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Index */}
+                <div className="relative" style={{ minHeight: "64px" }}>
+                  {projects.map((_, index) => (
+                    <motion.span
+                      key={index}
+                      className="absolute bottom-0 left-0 text-5xl lg:text-6xl font-['Sora',sans-serif] font-light leading-none tracking-tight" style={{ color: "#5F5F5F" }}
+                      initial={false}
+                      animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 12 }}
+                      transition={transition}
+                    >
+                      {index + 1}/{projects.length}
+                    </motion.span>
+                  ))}
+                </div>
               </div>
+
             </div>
 
             {/* Center Column: Image Stack */}
@@ -413,60 +403,65 @@ export function SelectedWork() {
               </div>
             </div>
 
-            {/* Right Column: Date, Long Desc, Tags */}
-            <div className="w-full lg:flex-1 lg:max-w-[360px] xl:max-w-[480px] 2xl:max-w-[560px] flex flex-col justify-between h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-3 py-6 xl:py-10">
-              {/* Date */}
-              <div className="relative h-[40px] xl:h-[60px] w-full overflow-hidden">
+            {/* Right Column */}
+            <div className="relative w-full lg:flex-1 lg:max-w-[360px] xl:max-w-[480px] 2xl:max-w-[560px] flex flex-col h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-3">
+
+              {/* Date — at image top */}
+              <div className="relative w-full" style={{ minHeight: "48px" }}>
                 {projects.map((project, index) => (
-                  <motion.div 
+                  <motion.div
                     key={project.id}
                     className="absolute top-0 right-0 w-full flex justify-end"
                     initial={false}
-                    animate={getTextAnimation(index)}
+                    animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 12 }}
                     transition={transition}
                   >
-                    <span className="text-2xl lg:text-3xl xl:text-4xl text-gray-300 font-sora font-light font-[Sora]">
+                    <span className="text-[40px] font-bold font-['Sora',sans-serif]" style={{ color: "#9A9A9A" }}>
                       {project.date}
                     </span>
                   </motion.div>
                 ))}
               </div>
 
-              {/* Long Description (New Content) */}
-              <div className="relative h-[160px] xl:h-[200px] w-full overflow-hidden my-auto">
-                 {projects.map((project, index) => (
-                  <motion.div 
+              {/* Long Description — in the middle, with gap from date */}
+              <div className="relative w-full mt-auto pt-10 xl:pt-14" style={{ minHeight: "140px" }}>
+                {projects.map((project, index) => (
+                  <motion.div
                     key={project.id}
-                    className="absolute top-0 left-0 w-full flex flex-col justify-center items-start text-left h-full"
+                    style={{ position: "absolute", top: 0, left: 0, width: "100%" }}
                     initial={false}
-                    animate={getTextAnimation(index)}
+                    animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 20 }}
                     transition={transition}
                   >
-                     <p className="text-sm lg:text-base xl:text-lg text-gray-600 leading-relaxed font-sora w-full lg:w-4/5 xl:w-3/4 text-left font-[Sora]">
+                    <p className="text-lg lg:text-xl xl:text-[22px] text-gray-600 leading-relaxed font-['Sora',sans-serif]">
                       {project.longDescription}
                     </p>
                   </motion.div>
                 ))}
               </div>
 
-              {/* Tags */}
-              <div className="relative h-[30px] w-full overflow-hidden mt-auto">
-                {projects.map((project, index) => (
-                  <motion.div 
-                    key={project.id}
-                    className="absolute bottom-0 left-0 w-full flex flex-wrap gap-4 justify-start"
-                    initial={false}
-                    animate={getTextAnimation(index)}
-                    transition={transition}
-                  >
-                    {project.tags.map((tag, i) => (
-                      <span key={i} className="text-xs font-bold text-gray-500 uppercase tracking-wider font-space font-[Sora]">
-                        {tag}
-                      </span>
-                    ))}
-                  </motion.div>
-                ))}
+              {/* ROLE + Tags — slightly above image bottom margin */}
+              <div className="mt-auto flex flex-col gap-2" style={{ marginBottom: "80px" }}>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest font-space">Role</span>
+                <div className="relative" style={{ minHeight: "18px" }}>
+                  {projects.map((project, index) => (
+                    <motion.div
+                      key={project.id}
+                      className="absolute top-0 left-0 w-full flex flex-nowrap gap-5 justify-start"
+                      initial={false}
+                      animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 10 }}
+                      transition={transition}
+                    >
+                      {project.tags.map((tag, i) => (
+                        <span key={i} className="text-xs font-bold text-[#6E6E6E] uppercase tracking-wider font-['Cal_Sans',sans-serif] whitespace-nowrap">
+                          {tag}
+                        </span>
+                      ))}
+                    </motion.div>
+                  ))}
+                </div>
               </div>
+
             </div>
 
           </div>

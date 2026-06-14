@@ -18,7 +18,9 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
     // Scroll State
     const [scrollStep, setScrollStep] = useState(0);
-    const lastScrollTime = useRef(0);
+    const lastStepTime = useRef(0);       // when the last step fired (for throttle)
+    const lastEventTime = useRef(0);      // when the last wheel event arrived (for gesture reset)
+    const scrollDeltaAccumulator = useRef(0);
     const { scrollY } = useScroll();
     const transitionOpacity = useTransform(scrollY, [0, 800], [0, 1]);
     
@@ -28,23 +30,18 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     // 1. Trigger Sequence when Loading Screen (App Level) finishes
     useEffect(() => {
         if (startSequence) {
-            // Wait for black screen pause (800ms)
-            const timer = setTimeout(() => {
-                setContainerExpanded(true);
-            }, 800);
-            return () => clearTimeout(timer);
+            setContainerExpanded(true);
         }
     }, [startSequence]);
 
     // 2. After expansion, show logos and enable overflow for glow
     useEffect(() => {
         if (containerExpanded) {
-            // Show logos after expansion (1s)
-            const logoTimer = setTimeout(() => setShowLogos(true), 1000); 
-            
-            // Enable overflow ONLY after logos have fully entered (1s + ~0.8s animation)
-            // This prevents logos from being seen "outside" the container during entrance
-            const overflowTimer = setTimeout(() => setOverflowVisible(true), 2000);
+            // Wait for container to fully expand before showing logos (matches 0.6s duration)
+            const logoTimer = setTimeout(() => setShowLogos(true), 650);
+
+            // Enable overflow after logos have entered
+            const overflowTimer = setTimeout(() => setOverflowVisible(true), 1200);
 
             return () => {
                 clearTimeout(overflowTimer);
@@ -53,10 +50,10 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
         }
     }, [containerExpanded]);
 
-    // 3. After logos enter, slide them
+    // 3. Slide logos almost immediately so they spring in while already sliding
     useEffect(() => {
         if (showLogos) {
-            const timer = setTimeout(() => setSlideLogos(true), 2000); 
+            const timer = setTimeout(() => setSlideLogos(true), 50);
             return () => clearTimeout(timer);
         }
     }, [showLogos]);
@@ -115,19 +112,29 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
         if (!showContent) return;
 
         const handleWheel = (e: WheelEvent) => {
-            const now = Date.now();
-
-            // Once in vertical mode, never re-lock the page
             if (scrollStep >= 3) return;
 
-            if (now - lastScrollTime.current < 400) return;
+            const now = Date.now();
 
-            if (e.deltaY > 50) {
+            // Reset accumulator when the user starts a fresh scroll gesture (>200ms gap)
+            if (now - lastEventTime.current > 200) {
+                scrollDeltaAccumulator.current = 0;
+            }
+            lastEventTime.current = now;
+
+            scrollDeltaAccumulator.current += e.deltaY;
+
+            // Throttle: min 600ms between steps to prevent accidental double-steps
+            if (now - lastStepTime.current < 600) return;
+
+            if (scrollDeltaAccumulator.current > 50) {
                 setScrollStep(prev => Math.min(prev + 1, 3));
-                lastScrollTime.current = now;
-            } else if (e.deltaY < -50) {
+                scrollDeltaAccumulator.current = 0;
+                lastStepTime.current = now;
+            } else if (scrollDeltaAccumulator.current < -50) {
                 setScrollStep(prev => Math.max(prev - 1, 0));
-                lastScrollTime.current = now;
+                scrollDeltaAccumulator.current = 0;
+                lastStepTime.current = now;
             }
         };
 
@@ -137,6 +144,10 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
     const handleNextScroll = () => {
         setScrollStep(prev => Math.min(prev + 1, 3));
+    };
+
+    const handlePrevScroll = () => {
+        setScrollStep(prev => Math.max(prev - 1, 0));
     };
 
     const getLogoState = () => {
@@ -152,8 +163,8 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
         if (showContent) {
              return {
                 height: 1080,
-                width: 1304,
-                left: "652px",
+                width: "70vw",
+                left: "35vw",
                 top: "50%",
                 y: "-50%",
                 x: `calc(-50% - ${scrollStep * 1304}px)`,
@@ -163,10 +174,10 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
         if (layoutShift) {
             return {
                 height: 1080,
-                width: 1304,
-                left: "652px",
+                width: "70vw",
+                left: "35vw",
                 top: "50%",
-                x: "-50%", 
+                x: "-50%",
                 y: "-50%",
                 transition: { duration: 1.2, ease: [0.76, 0, 0.24, 1] }
             };
@@ -190,7 +201,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                 top: "50%",
                 x: "-50%",
                 y: "-50%",
-                transition: { duration: 1, ease: [0.76, 0, 0.24, 1] }
+                transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] }
             };
         }
         return {
@@ -280,11 +291,11 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                         </motion.div>
 
                         <motion.div
-                             animate={{ y: scrollStep >= 3 ? -200 : 0 }}
-                             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                             className="absolute inset-0 z-50 pointer-events-none"
+                             animate={{ width: scrollStep === 0 ? "70vw" : "100vw" }}
+                             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                             className="absolute top-0 left-0 h-full z-50 pointer-events-none"
                         >
-                            <div className="pointer-events-none absolute inset-0 w-full h-full">
+                            <div className="pointer-events-none absolute inset-0">
                                 <TopBar />
                             </div>
                         </motion.div>
@@ -295,7 +306,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                              className="absolute inset-0 z-50 pointer-events-none"
                         >
                             <div className="pointer-events-none w-full h-full p-[0px]">
-                                <ScrollContainer onNext={handleNextScroll} />
+                                <ScrollContainer onNext={handleNextScroll} onPrev={handlePrevScroll} hideText={scrollStep > 0} />
                             </div>
                         </motion.div>
                     </>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { Transition } from "motion/react";
+import { useNavigate as useRouterNavigate } from "react-router-dom";
 import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
 import image1 from "../assets/portfolio/91b55f6c4cb04eb7c2e15c4348e7d9e02c87693d.png";
@@ -24,9 +25,9 @@ const METRIC_CARDS = [
 ];
 
 const PROJECT_CARDS = [
-  { img: image1, category: "WEBSITE + VISUAL IDENTITY",    description: "A modern digital presence and clean identity system built for clarity.", tags: "BRANDING / WEB",       filters: ["BRANDING"] },
-  { img: image2, category: "PRODUCT EXPERIENCE + REBRAND", description: "A bold product refresh that improved conversion and user clarity.",       tags: "MARKETING / STRATEGY", filters: ["STRATEGY"] },
-  { img: image3, category: "BRANDING FOR DIGITAL",         description: "A high-performing content system that scaled across ads & social.",       tags: "CONTENT / PERFORMANCE", filters: ["PERFORMANCE"] },
+  { img: image1, category: "WEBSITE + VISUAL IDENTITY",    description: "A modern digital presence and clean identity system built for clarity.", tags: "BRANDING / WEB",        filters: ["BRANDING"],     caseStudyId: 0 },
+  { img: image2, category: "PRODUCT EXPERIENCE + REBRAND", description: "A bold product refresh that improved conversion and user clarity.",       tags: "MARKETING / STRATEGY",  filters: ["STRATEGY"],     caseStudyId: 1 },
+  { img: image3, category: "BRANDING FOR DIGITAL",         description: "A high-performing content system that scaled across ads & social.",       tags: "CONTENT / PERFORMANCE", filters: ["PERFORMANCE"],  caseStudyId: 2 },
 ];
 
 // ─── Animation constants ──────────────────────────────────────────────────────
@@ -62,6 +63,7 @@ const s2Variants = {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function PortfolioPage() {
+  const routerNavigate = useRouterNavigate();
   // Section state: 0 = intro/strip, 1 = metrics carousel, 2 = filter + cards
   const [nav, setNav] = useState({ section: 0, dir: 1 });
   const { section, dir } = nav;
@@ -75,6 +77,8 @@ export function PortfolioPage() {
   const section2Ref = useRef<HTMLDivElement>(null);
   const blockNav = useRef(false);
   const dragStartY = useRef<number | null>(null);
+  const sectionRef = useRef(section);
+  const navigateRef = useRef<(to: number) => void>(() => {});
 
   const maxCarouselStart = METRIC_CARDS.length - 2;
 
@@ -83,8 +87,13 @@ export function PortfolioPage() {
     if (blockNav.current || to === section || to < 0 || to > 2) return;
     blockNav.current = true;
     setNav({ section: to, dir: to > section ? 1 : -1 });
-    setTimeout(() => { blockNav.current = false; }, 800);
+    // Must be >= animation duration (1000ms) so the lock never releases mid-transition
+    setTimeout(() => { blockNav.current = false; }, 1100);
   }, [section]);
+
+  // Keep refs current so stable callbacks (wheel, auto-advance) always see latest values
+  useEffect(() => { sectionRef.current = section; }, [section]);
+  useEffect(() => { navigateRef.current = navigate; }, [navigate]);
 
   // ── Carousel ──────────────────────────────────────────────────────────────
   const nextCard = useCallback(() => {
@@ -99,11 +108,11 @@ export function PortfolioPage() {
   useEffect(() => {
     if (section !== 1) return;
     const t = setTimeout(() => {
-      if (carouselStart >= maxCarouselStart) navigate(2);
+      if (carouselStart >= maxCarouselStart) navigateRef.current(2);
       else nextCard();
     }, 2500);
     return () => clearTimeout(t);
-  }, [section, carouselStart, nextCard, navigate, maxCarouselStart]);
+  }, [section, carouselStart, nextCard, maxCarouselStart]);
 
   // Pixel-accurate card width — no gap so each card = exactly half the container
   const updateTrackX = useCallback(() => {
@@ -124,22 +133,23 @@ export function PortfolioPage() {
     return () => ro.disconnect();
   }, [updateTrackX]);
 
-  // ── Wheel navigation ──────────────────────────────────────────────────────
+  // ── Wheel navigation — registered once; reads live values through refs ───
   useEffect(() => {
     let last = 0;
     const onWheel = (e: WheelEvent) => {
       const now = Date.now();
       if (now - last < 400) return;
       if (Math.abs(e.deltaY) < 30) return;
-      if (section === 2 && e.deltaY < 0 && section2Ref.current && section2Ref.current.scrollTop > 4) return;
-      if (section === 2 && e.deltaY > 0) return;
+      const sec = sectionRef.current;
+      if (sec === 2 && e.deltaY < 0 && section2Ref.current && section2Ref.current.scrollTop > 4) return;
+      if (sec === 2 && e.deltaY > 0) return;
       last = now;
-      if (e.deltaY > 0) navigate(section + 1);
-      else navigate(section - 1);
+      if (e.deltaY > 0) navigateRef.current(sec + 1);
+      else navigateRef.current(sec - 1);
     };
     window.addEventListener("wheel", onWheel, { passive: true });
     return () => window.removeEventListener("wheel", onWheel);
-  }, [navigate, section]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Touch / pointer drag for section changes ──────────────────────────────
   const handlePointerDown = (e: React.PointerEvent) => { dragStartY.current = e.clientY; };
@@ -147,11 +157,12 @@ export function PortfolioPage() {
     if (dragStartY.current === null) return;
     const delta = dragStartY.current - e.clientY;
     if (Math.abs(delta) > 60) {
+      const sec = sectionRef.current;
       if (delta > 0) {
-        navigate(section + 1);
+        navigateRef.current(sec + 1);
       } else {
-        if (section === 2 && section2Ref.current && section2Ref.current.scrollTop > 4) { dragStartY.current = null; return; }
-        navigate(section - 1);
+        if (sec === 2 && section2Ref.current && section2Ref.current.scrollTop > 4) { dragStartY.current = null; return; }
+        navigateRef.current(sec - 1);
       }
     }
     dragStartY.current = null;
@@ -324,61 +335,67 @@ export function PortfolioPage() {
               transition={T}
               style={{ position: "absolute", inset: 0, zIndex: 1 }}
             >
-              <div ref={section2Ref} style={{ height: "100%", overflowY: "auto", padding: "40px 60px 80px" }}>
-                {/* Filter pills */}
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "36px" }}>
-                  {FILTERS.map(f => {
-                    const active = activeFilter === f;
-                    return (
-                      <button
-                        key={f}
-                        onClick={() => setActiveFilter(f)}
-                        style={{
-                          padding: "10px 22px", borderRadius: "100px",
-                          border: active ? "none" : "1.5px solid #414141",
-                          background: active ? "#060606" : "transparent",
-                          color: active ? "#ffffff" : "#414141",
-                          fontFamily: "'Space Grotesk', sans-serif",
-                          fontWeight: 600, fontSize: "13px",
-                          letterSpacing: "0.06em", textTransform: "uppercase" as const,
-                          cursor: "pointer", transition: "all 0.2s ease",
-                        }}
-                      >
-                        {f}
-                      </button>
-                    );
-                  })}
+              <div ref={section2Ref} style={{ height: "100%", overflowY: "auto" }}>
+                {/* Padded content area */}
+                <div style={{ padding: "40px 60px 80px" }}>
+                  {/* Filter pills */}
+                  <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "36px" }}>
+                    {FILTERS.map(f => {
+                      const active = activeFilter === f;
+                      return (
+                        <button
+                          key={f}
+                          onClick={() => setActiveFilter(f)}
+                          style={{
+                            padding: "10px 22px", borderRadius: "100px",
+                            border: active ? "none" : "1.5px solid #414141",
+                            background: active ? "#060606" : "transparent",
+                            color: active ? "#ffffff" : "#414141",
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontWeight: 600, fontSize: "13px",
+                            letterSpacing: "0.06em", textTransform: "uppercase" as const,
+                            cursor: "pointer", transition: "all 0.2s ease",
+                          }}
+                        >
+                          {f}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Cards grid */}
+                  <motion.div layout style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "40px 24px" }}>
+                    <AnimatePresence mode="popLayout">
+                      {visibleCards.map((card, i) => (
+                        <motion.div
+                          key={card.category + i}
+                          layout
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 12 }}
+                          transition={{ delay: (i % 3) * 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                          onClick={() => routerNavigate(`/blog/case-study/${card.caseStudyId}`)}
+                          style={{ display: "flex", flexDirection: "column", gap: "12px", cursor: "pointer" }}
+                        >
+                          <div style={{ width: "100%", aspectRatio: "400 / 237", borderRadius: "9.47px", overflow: "hidden", position: "relative", background: "#d5d5d5" }}>
+                            <img src={card.img} alt={card.category} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                          </div>
+                          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#888888", margin: 0 }}>
+                            {card.category}
+                          </p>
+                          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(16px, 1.4vw, 22px)", lineHeight: "130%", letterSpacing: "-0.01em", color: "#060606", margin: 0 }}>
+                            {card.description}
+                          </p>
+                          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#414141", margin: 0 }}>
+                            {card.tags}
+                          </p>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </motion.div>
                 </div>
 
-                {/* Cards grid */}
-                <motion.div layout style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "40px 24px" }}>
-                  <AnimatePresence mode="popLayout">
-                    {visibleCards.map((card, i) => (
-                      <motion.div
-                        key={card.category + i}
-                        layout
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 12 }}
-                        transition={{ delay: (i % 3) * 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                        style={{ display: "flex", flexDirection: "column", gap: "12px", cursor: "pointer" }}
-                      >
-                        <div style={{ width: "100%", aspectRatio: "400 / 237", borderRadius: "9.47px", overflow: "hidden", position: "relative", background: "#d5d5d5" }}>
-                          <img src={card.img} alt={card.category} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                        </div>
-                        <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#888888", margin: 0 }}>
-                          {card.category}
-                        </p>
-                        <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(16px, 1.4vw, 22px)", lineHeight: "130%", letterSpacing: "-0.01em", color: "#060606", margin: 0 }}>
-                          {card.description}
-                        </p>
-                        <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#414141", margin: 0 }}>
-                          {card.tags}
-                        </p>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </motion.div>
+                {/* Footer sits outside the padded wrapper so it spans full width */}
                 <Footer />
               </div>
             </motion.div>

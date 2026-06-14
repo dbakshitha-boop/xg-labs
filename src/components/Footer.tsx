@@ -10,14 +10,17 @@ const MENU_LINKS = [
   { label: "Contact", path: "/" },
 ];
 
-const SERVICES = [
-  "Performance Marketing",
-  "SEO",
-  "Content & Video",
-  "Influencer Marketing",
-  "Social Media Management",
-  "Web Development",
-  "Branding",
+// Each label maps to its index in ServicesPage's SERVICES array
+// (PERFORMANCE MARKETING=0, SEO=1, WEB DEVELOPMENT=2, SOCIAL MEDIA MANAGEMENT=3,
+//  CONTENT CREATION & VIDEO PRODUCTION=4, INFLUENCER MARKETING=5, BRANDING=6)
+const SERVICES: { label: string; index: number }[] = [
+  { label: "Performance Marketing",   index: 0 },
+  { label: "SEO",                     index: 1 },
+  { label: "Content & Video",         index: 4 },
+  { label: "Influencer Marketing",    index: 5 },
+  { label: "Social Media Management", index: 3 },
+  { label: "Web Development",         index: 2 },
+  { label: "Branding",               index: 6 },
 ];
 
 const linkStyle: React.CSSProperties = {
@@ -71,6 +74,14 @@ function IconX() {
   );
 }
 
+function IconFacebook() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+    </svg>
+  );
+}
+
 function IconWhatsApp() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -85,9 +96,21 @@ export function Footer() {
 
   return (
     <footer id="footer" style={{ background: "#0a0a0a", overflow: "hidden" }}>
+      <style>{`
+        @media (max-width: 767px) {
+          .footer-grid { grid-template-columns: 1fr !important; padding: 24px 20px !important; }
+          .footer-headline { padding: 24px 20px 16px !important; font-size: 36px !important; white-space: normal !important; }
+          .footer-bottom { flex-direction: column !important; gap: 12px !important; padding: 16px 20px !important; }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 24px 32px !important; }
+          .footer-headline { padding: 24px 32px 16px !important; font-size: 48px !important; white-space: normal !important; }
+        }
+      `}</style>
 
       {/* ── Giant headline ── */}
       <div
+        className="footer-headline"
         style={{
           padding: "32px 48px 24px",
           overflow: "hidden",
@@ -112,6 +135,7 @@ export function Footer() {
 
       {/* ── Three-column info section ── */}
       <div
+        className="footer-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
@@ -184,12 +208,13 @@ export function Footer() {
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {SERVICES.map((s) => (
               <span
-                key={s}
-                style={linkStyle}
+                key={s.label}
+                onClick={() => navigate("/services", { state: { serviceIndex: s.index } })}
+                style={{ ...linkStyle, cursor: "pointer" }}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "#ffffff")}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "rgba(255,255,255,0.55)")}
               >
-                {s}
+                {s.label}
               </span>
             ))}
           </div>
@@ -224,6 +249,7 @@ export function Footer() {
           {[
             { icon: <IconInstagram />, href: "https://www.instagram.com/xglabs/", label: "Instagram" },
             { icon: <IconLinkedIn />, href: "https://www.linkedin.com/company/xg-labs", label: "LinkedIn" },
+            { icon: <IconFacebook />, href: "https://www.facebook.com/people/XG-Labs/61578098947253/", label: "Facebook" },
             { icon: <IconWhatsApp />, href: "https://wa.me/916369974530", label: "WhatsApp" },
           ].map(({ icon, href, label }) => (
             <a

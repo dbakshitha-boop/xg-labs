@@ -25,9 +25,9 @@ export function NeedMoreProof() {
 
   // --- Animation Ranges ---
   // Initial zoom in (fontSize: 1600px -> target size)
-  const needScale = useTransform(scrollYProgress, [0, 0.2], ["1600px", isMobile ? "60px" : "100px"]);
-  const moreScale = useTransform(scrollYProgress, [0.25, 0.45], ["1600px", isMobile ? "60px" : "100px"]);
-  const proofScale = useTransform(scrollYProgress, [0.5, 0.7], ["1600px", isMobile ? "60px" : "100px"]);
+  const needScale = useTransform(scrollYProgress, [0, 0.2], ["1600px", isMobile ? "60px" : "64px"]);
+  const moreScale = useTransform(scrollYProgress, [0.25, 0.45], ["1600px", isMobile ? "60px" : "64px"]);
+  const proofScale = useTransform(scrollYProgress, [0.5, 0.7], ["1600px", isMobile ? "60px" : "64px"]);
 
   // Opacity handling
   const needOpacity = useTransform(scrollYProgress, [0, 0.05, 0.2, 0.25, 0.85, 0.9], [0, 1, 1, 0, 0, 1]);
@@ -35,13 +35,13 @@ export function NeedMoreProof() {
   const proofOpacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1]);
 
   // Final Position Spread (X for Desktop, Y for Mobile)
-  const needX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-328px"]);
+  const needX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-272px"]);
   const needY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "-70px" : "0px"]);
 
-  const moreX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-55px"]);
+  const moreX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-48px"]);
   const moreY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "0px"]);
 
-  const proofX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "281px"]);
+  const proofX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "218px"]);
   const proofY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "70px" : "0px"]);
 
   return (

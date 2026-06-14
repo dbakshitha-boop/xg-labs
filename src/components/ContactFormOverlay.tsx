@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { submitContactForm } from "../lib/api";
 
 function GridLines({ dark = false }: { dark?: boolean }) {
   return (
@@ -32,12 +33,28 @@ interface ContactFormOverlayProps {
   onClose: () => void;
 }
 
+function isValidEmail(val: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+}
+
 export function ContactFormContent({ onClose, embedded = false }: { onClose?: () => void; embedded?: boolean }) {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const emailError = emailTouched && email.length > 0 && !isValidEmail(email);
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Allow digits, +, -, spaces, ( ) only
+    const filtered = e.target.value.replace(/[^\d+\-\s()]/g, "");
+    setPhone(filtered);
+  };
 
   const inputStyle: React.CSSProperties = {
     background: "transparent",
@@ -55,7 +72,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
   const labelStyle: React.CSSProperties = {
     fontFamily: "’Space Grotesk’, sans-serif",
     fontWeight: 700,
-    fontSize: "10px",
+    fontSize: "13px",
     letterSpacing: "0.14em",
     textTransform: "uppercase",
     color: "rgba(255,255,255,0.35)",
@@ -71,26 +88,35 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
 
   return (
     <>
-      <style>{`.cf-input::placeholder { color: rgba(255,255,255,0.22); }`}</style>
+      <style>{`
+        .cf-input::placeholder { color: rgba(255,255,255,0.22); }
+        @media (max-width: 767px) {
+          .cf-header-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .cf-fields-grid { grid-template-columns: 1fr !important; }
+          .cf-body { padding: 32px 24px 40px !important; }
+          .cf-title { font-size: 40px !important; }
+        }
+      `}</style>
       <GridLines dark />
 
       {/* Light strip — only in overlay mode */}
       {!embedded && (
         <div
           style={{
-            background: "#ECEEF2",
+            background: "#0a0a0a",
             height: "72px",
             flexShrink: 0,
             position: "relative",
             overflow: "hidden",
           }}
         >
-          <GridLines />
+          <GridLines dark />
         </div>
       )}
 
       {/* Form body */}
       <div
+        className={embedded ? "" : "cf-body"}
         style={{
           position: "relative",
           zIndex: 1,
@@ -101,29 +127,33 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
           justifyContent: embedded ? "center" : "flex-start",
         }}
       >
-        {/* Header row */}
+        {/* Header row — 2-col grid matching the fields below */}
         <div
+          className="cf-header-grid"
           style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            columnGap: "56px",
             marginBottom: "52px",
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <h2
-              style={{
-                fontFamily: "’Space Grotesk’, sans-serif",
-                fontWeight: 300,
-                fontSize: "clamp(40px, 5.5vw, 80px)",
-                color: "#ffffff",
-                margin: 0,
-                letterSpacing: "-0.025em",
-                lineHeight: 1,
-              }}
-            >
-              {"Let’s Talk"}
-            </h2>
+          {/* Left: title */}
+          <h2
+            style={{
+              fontFamily: "’Space Grotesk’, sans-serif",
+              fontWeight: 300,
+              fontSize: "clamp(40px, 5.5vw, 80px)",
+              color: "#ffffff",
+              margin: 0,
+              letterSpacing: "-0.025em",
+              lineHeight: 1,
+            }}
+          >
+            {"Let’s Talk"}
+          </h2>
+
+          {/* Right: description + close — aligns with right column fields */}
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px" }}>
             <p
               style={{
                 fontFamily: "’Space Grotesk’, sans-serif",
@@ -136,32 +166,34 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
             >
               {"We’d love to understand what you’re building."}
             </p>
-          </div>
 
-          {onClose && (
-            <button
-              onClick={onClose}
-              style={{
-                background: "none",
-                border: "1.5px solid rgba(255,255,255,0.15)",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontFamily: "’Space Grotesk’, sans-serif",
-                fontWeight: 400,
-                fontSize: "14px",
-                color: "rgba(255,255,255,0.55)",
-                letterSpacing: "0.06em",
-                padding: "6px 12px",
-                lineHeight: 1,
-              }}
-            >
-              [X]
-            </button>
-          )}
+            {onClose && (
+              <button
+                onClick={onClose}
+                style={{
+                  background: "none",
+                  border: "1.5px solid rgba(255,255,255,0.15)",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontFamily: "’Space Grotesk’, sans-serif",
+                  fontWeight: 400,
+                  fontSize: "14px",
+                  color: "rgba(255,255,255,0.55)",
+                  letterSpacing: "0.06em",
+                  padding: "6px 12px",
+                  lineHeight: 1,
+                  flexShrink: 0,
+                }}
+              >
+                [X]
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Fields grid */}
         <div
+          className="cf-fields-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
@@ -197,18 +229,25 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
               type="email"
               value={email}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+              onBlur={() => setEmailTouched(true)}
               placeholder="[ Your Email ]"
-              style={inputStyle}
+              style={{ ...inputStyle, borderBottom: emailError ? "1px solid #ff4d4d" : undefined }}
             />
+            {emailError && (
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "6px 0 0", letterSpacing: "0.04em" }}>
+                Please enter a valid email address.
+              </p>
+            )}
           </div>
 
           <div style={fieldStyle}>
-            <label style={{ ...labelStyle, opacity: 0 }}>—</label>
+            <label style={labelStyle}>Faster Replies</label>
             <input
               className="cf-input"
               type="tel"
+              inputMode="numeric"
               value={phone}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
+              onChange={handlePhoneChange}
               placeholder="[ Your Phone Number ]"
               style={inputStyle}
             />
@@ -235,28 +274,44 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
               />
             </div>
             <button
+              disabled={submitting || submitted}
+              onClick={async () => {
+                if (!email || !isValidEmail(email)) { setEmailTouched(true); return; }
+                setSubmitting(true);
+                setSubmitError(null);
+                try {
+                  await submitContactForm({ name, company, email, phone, message });
+                  setSubmitted(true);
+                  setTimeout(() => onClose?.(), 1800);
+                } catch (err: any) {
+                  setSubmitError(err.message ?? "Something went wrong.");
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
               style={{
                 background: "none",
                 border: "none",
-                cursor: "pointer",
+                cursor: submitting || submitted ? "default" : "pointer",
                 fontFamily: "’Space Grotesk’, sans-serif",
                 fontWeight: 500,
                 fontSize: "15px",
-                color: "rgba(255,255,255,0.55)",
+                color: submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.55)",
                 letterSpacing: "0.12em",
                 paddingBottom: "10px",
                 flexShrink: 0,
                 transition: "color 0.15s",
               }}
-              onMouseEnter={(e) =>
-                ((e.currentTarget as HTMLButtonElement).style.color = "#ffffff")
-              }
-              onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.55)")
-              }
+              onMouseEnter={(e) => { if (!submitting && !submitted) (e.currentTarget as HTMLButtonElement).style.color = "#ffffff"; }}
+              onMouseLeave={(e) => { if (!submitting && !submitted) (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.55)"; }}
             >
-              [ENTER]
+              {submitted ? "[SENT ✓]" : submitting ? "[SENDING...]" : "[ENTER]"}
             </button>
+            {submitError && (
+              <p style={{ fontFamily: "’Space Grotesk’, sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "0 0 10px", letterSpacing: "0.04em" }}>
+                {submitError}
+              </p>
+            )}
           </div>
         </div>
       </div>

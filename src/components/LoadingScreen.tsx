@@ -112,7 +112,7 @@ export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
   const startIndex = originalWords.length;
   const endIndex = originalWords.length * 4;
   const totalDistance = endIndex - startIndex;
-  const fadeStart = startIndex + (totalDistance * 0.98); // Start fading at 98%
+  const fadeStart = startIndex + (totalDistance * 0.92); // Start fading at 92%
 
   const progress = useMotionValue(startIndex);
   
@@ -122,13 +122,13 @@ export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
 
   useEffect(() => {
     const controls = animate(progress, endIndex, {
-      duration: 4,
-      ease: [0.33, 1, 0.68, 1], // Slightly smoother easeOutCubic-ish for natural stop
+      duration: 1.6,
+      ease: [0.22, 1, 0.36, 1],
       onComplete: () => {
         setIsComplete(true);
         setTimeout(() => {
           onComplete?.();
-        }, 300); // Shorter timeout since we already faded out
+        }, 150);
       }
     });
 
@@ -143,7 +143,7 @@ export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
         // but this handles the final removal from DOM if needed.
         opacity: isComplete ? 0 : 1 
       }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.3 }}
       style={{ pointerEvents: isComplete ? "none" : "auto" }}
     >
       <motion.div 

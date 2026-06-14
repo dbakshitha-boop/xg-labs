@@ -1,13 +1,41 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { subscribeEmail } from "../lib/api";
 
 interface SubscribePopupProps {
   open: boolean;
   onClose: () => void;
 }
 
+function isValidEmail(val: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+}
+
 export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
   const [email, setEmail] = useState("");
+  const [touched, setTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const emailError = touched && email.length > 0 && !isValidEmail(email);
+  const alreadySubscribed = error === "Already subscribed";
+
+  const handleSubscribe = async () => {
+    setTouched(true);
+    if (!email || !isValidEmail(email)) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await subscribeEmail(email);
+      setSubmitted(true);
+      setTimeout(() => onClose(), 2000);
+    } catch (err: any) {
+      setError(err.message ?? "Something went wrong.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -121,11 +149,14 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); setError(null); }}
+                onBlur={() => setTouched(true)}
+                onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
                 placeholder="you@company.com"
+                disabled={submitting || submitted}
                 style={{
                   flex: 1,
-                  border: "1.5px solid #C8CDD8",
+                  border: `1.5px solid ${emailError ? "#ff4d4d" : "#C8CDD8"}`,
                   borderRadius: "10px",
                   background: "#ffffff",
                   padding: "14px 18px",
@@ -139,17 +170,19 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
 
               {/* Subscribe button */}
               <button
+                onClick={handleSubscribe}
+                disabled={submitting || submitted}
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "10px",
-                  background: "#1a1a1a",
+                  background: submitted ? "#02A884" : "#1a1a1a",
                   border: "none",
                   borderRadius: "100px",
                   height: "52px",
                   boxSizing: "border-box",
                   padding: "0 5px 0 22px",
-                  cursor: "pointer",
+                  cursor: submitting || submitted ? "default" : "pointer",
                   fontFamily: "'Space Grotesk', sans-serif",
                   fontWeight: 700,
                   fontSize: "12px",
@@ -159,25 +192,28 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
                   color: "#ffffff",
                   whiteSpace: "nowrap",
                   flexShrink: 0,
+                  opacity: submitting ? 0.7 : 1,
+                  transition: "background 0.3s",
                 }}
               >
-                Subscribe
+                {submitted ? "Subscribed ✓" : submitting ? "..." : "Subscribe"}
                 <div
                   style={{
                     width: "42px",
                     height: "42px",
                     borderRadius: "50%",
-                    background: "#02A884",
+                    background: submitted ? "#ffffff" : "#02A884",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     flexShrink: 0,
+                    transition: "background 0.3s",
                   }}
                 >
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path
                       d="M2 7H12M12 7L7 2M12 7L7 12"
-                      stroke="#ffffff"
+                      stroke={submitted ? "#02A884" : "#ffffff"}
                       strokeWidth="1.8"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -186,6 +222,18 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
                 </div>
               </button>
             </div>
+
+            {/* Validation / error feedback */}
+            {emailError && (
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "-8px 0 8px", alignSelf: "flex-start" }}>
+                Please enter a valid email address.
+              </p>
+            )}
+            {error && !emailError && (
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "12px", color: alreadySubscribed ? "#02A884" : "#ff4d4d", margin: "-8px 0 8px", alignSelf: "flex-start" }}>
+                {alreadySubscribed ? "You're already subscribed!" : error}
+              </p>
+            )}
 
             {/* Footer note */}
             <p

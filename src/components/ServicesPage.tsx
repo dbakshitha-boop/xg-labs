@@ -1,5 +1,5 @@
-import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent, MotionValue } from "motion/react";
 import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
@@ -326,7 +326,7 @@ function CardSlide({
             <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
               {/* View Cases */}
               <button
-                onClick={() => navigate("/portfolio")}
+                onClick={() => navigate("/blog/case-study/0")}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -469,10 +469,23 @@ export function ServicesPage() {
   const { scrollYProgress } = useScroll({ target: containerRef });
   const total = SERVICES.length;
   const [activeIndex, setActiveIndex] = useState(0);
+  const location = useLocation();
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     setActiveIndex(Math.min(Math.floor(v * total), total - 1));
   });
+
+  // Scroll to the target service card whenever location.state carries a serviceIndex.
+  // Runs on mount AND on every same-page navigate (e.g. clicking from the footer
+  // while already on /services). scrollYProgress goes 0→1 as scrollTop goes
+  // 114 → 114+(total-1)*vh, so card i is at: 114 + i*(total-1)*vh/total.
+  useEffect(() => {
+    const idx = (location.state as { serviceIndex?: number } | null)?.serviceIndex;
+    if (idx == null) return;
+    const vh = window.innerHeight;
+    const top = 114 + (idx / total) * (total - 1) * vh;
+    requestAnimationFrame(() => window.scrollTo({ top, behavior: "smooth" }));
+  }, [location, total]);
 
   return (
     <div style={{ background: "#060606" }}>

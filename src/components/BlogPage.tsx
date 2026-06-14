@@ -5,300 +5,33 @@ import { TopBar } from "./landing/FinalLayout";
 import { ContactFormOverlay } from "./ContactFormOverlay";
 import { SubscribePopup } from "./SubscribePopup";
 import { Footer } from "./Footer";
-import image1 from "../assets/portfolio/91b55f6c4cb04eb7c2e15c4348e7d9e02c87693d.png";
-import image2 from "../assets/portfolio/b38d05db3e088fb9946a699913465921149256a5.png";
-import image3 from "../assets/portfolio/1248070d103a19f145ae0f832592d24f14f6062d.jpg";
-import image4 from "../assets/portfolio/b02af7d4fc1674218c1fad477c943436f1779a18.jpg";
-import image5 from "../assets/portfolio/143ce4dc78b3934cc2b5dfa00d6839d1276386b9.jpg";
-import image6 from "../assets/blog_page.png";
-import image7 from "../assets/blog-1.jpg";
-import image8 from "../assets/blog-2.png";
-import image9 from "../assets/blog-3.png";
+import { fetchArticles, getArticleId, type Article } from "../lib/api";
 
-export const ARTICLES = [
-  {
-    label: "CREATIVE + PERFORMANCE",
-    readTime: "4 min read",
-    title: "This isn't about running ads faster. It's about building a system.",
-    description:
-      "How we built a creative system and performance funnel that doubled conversion rates in three months.",
-    img: image6,
-    featured: true,
-    tags: ["CREATIVE", "PERFORMANCE", "STRATEGY"],
-    date: "2026-03-10",
-    author: { name: "Alex Morgan", bio: "Digital designer and writer exploring the intersection of technology, culture, and human experience.", initial: "A" },
-    content: [
-      {
-        heading: "Introduction",
-        paragraphs: [
-          "Most brands think the problem is their ad spend. They increase budget, test a few new creatives, and wait for the numbers to move. They rarely do. The real issue isn't the ads — it's the system behind them.",
-          "When we started working with our client, their ROAS had plateaued at 1.8×. After three months of rebuilding the creative and performance infrastructure from the ground up, they were at 4.2×. Here's how we did it.",
-        ],
-      },
-      {
-        heading: "Building the Creative Engine",
-        paragraphs: [
-          "The first thing we did was audit every asset they had ever run. 80% of their creatives were variations of the same concept — a product shot with a value prop. There was no narrative, no hook architecture, no emotional ladder.",
-          "We rebuilt the creative system around three formats: problem-agitation hooks (15s), transformation stories (30s), and proof-driven testimonials (45s). Each format served a different stage of awareness.",
-        ],
-        blockquote: '"Creativity without data is art. Creativity with data is performance."',
-      },
-      {
-        heading: "The Performance Funnel",
-        paragraphs: [
-          "Once the creative system was in place, we restructured the media buying to match it. Top-of-funnel campaigns ran the hook-heavy content to cold audiences. Retargeting showed transformation content to warm audiences. Converters saw proof content.",
-          "This three-tiered approach meant every dollar was doing a specific job — not just 'running ads' into a single undifferentiated bucket.",
-        ],
-      },
-      {
-        heading: "Conclusion",
-        paragraphs: [
-          "The brands that win in performance marketing aren't the ones with the biggest budgets. They're the ones who treat creative as infrastructure, not decoration. Build the system first. The results follow.",
-        ],
-      },
-    ],
-  },
-  {
-    label: "STRATEGY",
-    readTime: "6 min read",
-    title: "Why most brand strategies fail before they even launch.",
-    description:
-      "A breakdown of the common strategic gaps we see — and how to fix them before going to market.",
-    img: image7,
-    featured: false,
-    filter: "STRATEGY",
-    tags: ["STRATEGY", "BRANDING"],
-    date: "2026-02-28",
-    author: { name: "Sam Rivera", bio: "Brand strategist and growth consultant with 10+ years building challenger brands.", initial: "S" },
-    content: [
-      {
-        heading: "Introduction",
-        paragraphs: [
-          "Brand strategy documents gather dust. We've seen it dozens of times — a beautifully crafted 60-page deck that lives in a shared folder, never touched after launch day. The strategy fails not because the thinking is wrong, but because it was never designed to be operational.",
-          "Here are the three gaps we see most often, and how to close them before you go to market.",
-        ],
-      },
-      {
-        heading: "Gap 1: Strategy Without a Decision Filter",
-        paragraphs: [
-          "A brand strategy that can't answer the question 'should we do this?' in real time is not a strategy — it's a mood board. Every brand decision, from copy tone to channel selection, should trace back to a clear strategic filter.",
-        ],
-        blockquote: `"If your brand strategy can\u2019t make decisions, it\u2019s just decoration."`,
-      },
-      {
-        heading: "Gap 2: Positioning That Nobody Owns",
-        paragraphs: [
-          "Positioning works when someone in the organization is accountable for it. Without a brand owner — usually a CMO or Head of Brand — positioning drift happens naturally. Teams optimize for short-term results over long-term coherence.",
-          "Fix this by assigning brand custodianship before launch, not after.",
-        ],
-      },
-      {
-        heading: "Conclusion",
-        paragraphs: [
-          "Great strategy is only as good as its implementation. Build your brand strategy to be used daily, not referenced annually — and you'll avoid the graveyard of beautifully written documents that changed nothing.",
-        ],
-      },
-    ],
-  },
-  {
-    label: "BRANDING",
-    readTime: "5 min read",
-    title: "Visual identity is not just a logo. Here's what it actually means.",
-    description:
-      "A deep dive into how cohesive visual systems drive brand trust and recall across every touchpoint.",
-    img: image8,
-    featured: false,
-    filter: "BRANDING",
-    tags: ["BRANDING", "DESIGN"],
-    date: "2026-02-14",
-    author: { name: "Jordan Lee", bio: "Creative director and brand identity designer working with tech and consumer companies globally.", initial: "J" },
-    content: [
-      {
-        heading: "Introduction",
-        paragraphs: [
-          "When most founders say they need a 'brand', they mean they need a logo. It's an understandable conflation — logos are visible, tangible, and easy to brief. But a logo without a system behind it is just a mark. It can't do the work a brand needs to do.",
-          "Visual identity, done properly, is a system of decisions — color, typography, spacing, motion, and photography — that work together to create a consistent experience across every surface.",
-        ],
-      },
-      {
-        heading: "The Components of Visual Identity",
-        paragraphs: [
-          "A robust visual identity typically includes: a primary logotype and its variations, a color palette with defined usage rules, a typographic scale with hierarchy, an iconography style, a photography art direction guide, and a motion/animation language.",
-          "Each of these components multiplies the impact of the others. A great color palette with weak typography leaves brand trust on the table.",
-        ],
-        blockquote: '"Consistency is the only brand strategy that compounds."',
-      },
-      {
-        heading: "Why Systems Beat One-offs",
-        paragraphs: [
-          "The brands with the highest recognition — Apple, Stripe, Patagonia — don't just have great logos. They have complete visual systems that make every asset feel undeniably theirs, regardless of who produced it or on what surface.",
-          "This is what we mean when we say visual identity. Not a logo. A system.",
-        ],
-      },
-      {
-        heading: "Conclusion",
-        paragraphs: [
-          "Invest in the system before you scale the production. A great visual identity doesn't just make things look good — it makes every marketing dollar more effective by building recognition over time.",
-        ],
-      },
-    ],
-  },
-  {
-    label: "PERFORMANCE",
-    readTime: "3 min read",
-    title: "4.2× ROAS isn't luck. It's architecture.",
-    description:
-      "The exact structure we use to build paid campaigns that consistently outperform benchmarks.",
-    img: image9,
-    featured: false,
-    filter: "PERFORMANCE",
-    tags: ["PERFORMANCE", "PAID MEDIA"],
-    date: "2026-01-30",
-    author: { name: "Alex Morgan", bio: "Digital designer and writer exploring the intersection of technology, culture, and human experience.", initial: "A" },
-    content: [
-      {
-        heading: "Introduction",
-        paragraphs: [
-          "Every time we share a 4× ROAS case study, someone asks: 'Was that a seasonal spike?' No. It wasn't. High ROAS is reproducible when it's built on architecture, not luck.",
-          "Here's the exact campaign structure we use across accounts that consistently hits above-benchmark returns.",
-        ],
-      },
-      {
-        heading: "The Three-Layer Structure",
-        paragraphs: [
-          "Layer 1 is Prospecting — cold audiences, hook-first creative, optimizing for add-to-cart signals. Layer 2 is Consideration — warm audiences who've engaged but haven't converted, shown transformation content. Layer 3 is Conversion — hot audiences, product-specific proof content, aggressive retargeting.",
-          "Most brands run all three layers with the same creative. That's the mistake.",
-        ],
-        blockquote: '"Match creative intent to audience temperature. Every time."',
-      },
-      {
-        heading: "Conclusion",
-        paragraphs: [
-          "Architecture beats budget every time. Structure your campaigns around audience temperature, match your creative to each layer, and measure the funnel — not just the last click.",
-        ],
-      },
-    ],
-  },
-  {
-    label: "CREATIVE",
-    readTime: "4 min read",
-    title: "How we doubled ad performance with creative-first testing",
-    description:
-      "Actionable insights from strategy, creative, and performance — written to make you think and execute better.",
-    img: image1,
-    featured: false,
-    filter: "PERFORMANCE",
-    tags: ["CREATIVE", "TESTING"],
-    date: "2026-01-18",
-    author: { name: "Sam Rivera", bio: "Brand strategist and growth consultant with 10+ years building challenger brands.", initial: "S" },
-    content: [
-      {
-        heading: "Introduction",
-        paragraphs: [
-          "The conventional wisdom in performance marketing is to test everything — headlines, CTAs, audience segments, bid strategies. But when we restructured our testing framework to prioritize creative above all else, results improved faster than any other change we'd made.",
-          "Here's what we learned.",
-        ],
-      },
-      {
-        heading: "Why Creative Wins",
-        paragraphs: [
-          "Creative is the highest-leverage variable in any paid campaign. A 2× improvement in targeting might move your CTR by 10%. A 2× improvement in creative can move it by 80%. And unlike audience signals, great creative scales without ceiling.",
-        ],
-        blockquote: '"The algorithm finds the audience. Your creative earns the click."',
-      },
-      {
-        heading: "Conclusion",
-        paragraphs: [
-          "Stop treating creative as the last thing you test. Make it the first. Run more creative iterations, fewer audience splits, and measure creative contribution explicitly. The results will follow.",
-        ],
-      },
-    ],
-  },
-  {
-    label: "PERFORMANCE",
-    readTime: "4 min read",
-    title: "How we doubled ad performance with creative-first testing",
-    description:
-      "Actionable insights from strategy, creative, and performance — written to make you think and execute better.",
-    img: image2,
-    featured: false,
-    filter: "PERFORMANCE",
-    tags: ["PERFORMANCE", "CREATIVE"],
-    date: "2026-01-05",
-    author: { name: "Jordan Lee", bio: "Creative director and brand identity designer working with tech and consumer companies globally.", initial: "J" },
-    content: [
-      { heading: "Introduction", paragraphs: ["Performance marketing is evolving. The playbooks that worked in 2021 are breaking down. Here's what's working now."] },
-      { heading: "What Changed", paragraphs: ["Signal loss from iOS privacy changes fundamentally altered how we measure and attribute performance. Brands that built identity-based first-party data infrastructure are outperforming those that didn't."], blockquote: '"First-party data is the new moat."' },
-      { heading: "Conclusion", paragraphs: ["Adapt your measurement model, build your first-party data assets, and stop optimizing for last-click attribution. The brands doing this are pulling ahead fast."] },
-    ],
-  },
-  {
-    label: "CREATIVE",
-    readTime: "4 min read",
-    title: "How we doubled ad performance with creative-first testing",
-    description:
-      "Actionable insights from strategy, creative, and performance — written to make you think and execute better.",
-    img: image3,
-    featured: false,
-    filter: "CREATIVE",
-    tags: ["CREATIVE", "DESIGN"],
-    date: "2025-12-20",
-    author: { name: "Alex Morgan", bio: "Digital designer and writer exploring the intersection of technology, culture, and human experience.", initial: "A" },
-    content: [
-      { heading: "Introduction", paragraphs: ["Creative strategy is often treated as subjective. It doesn't have to be. There are repeatable frameworks for developing creative that converts consistently."] },
-      { heading: "The Hook Framework", paragraphs: ["Every piece of content you create must earn attention in the first 2 seconds. We call this the hook. Without a strong hook, the rest of the creative is irrelevant."], blockquote: '"You have 2 seconds. Make them count."' },
-      { heading: "Conclusion", paragraphs: ["Build a systematic approach to creative development. Define your hooks, structure your narrative, test continuously. Creativity and data are not opposites — they're partners."] },
-    ],
-  },
-  {
-    label: "BRANDING",
-    readTime: "4 min read",
-    title: "How we doubled ad performance with creative-first testing",
-    description:
-      "Actionable insights from strategy, creative, and performance — written to make you think and execute better.",
-    img: image4,
-    featured: false,
-    filter: "BRANDING",
-    tags: ["BRANDING", "IDENTITY"],
-    date: "2025-12-08",
-    author: { name: "Sam Rivera", bio: "Brand strategist and growth consultant with 10+ years building challenger brands.", initial: "S" },
-    content: [
-      { heading: "Introduction", paragraphs: ["Brand consistency is one of the most undervalued growth levers in marketing. Consistent brands are 3.5× more visible than inconsistent ones, according to research from Lucidpress."] },
-      { heading: "Why Brands Go Inconsistent", paragraphs: ["Growth without governance creates inconsistency. As teams scale and more people produce content, drift happens naturally. The fix isn't more rules — it's better systems."], blockquote: '"A brand is only as strong as its weakest touchpoint."' },
-      { heading: "Conclusion", paragraphs: ["Invest in brand governance before you scale production. Systems over rules, principles over prescriptions — and get everyone on the same page before the next campaign ships."] },
-    ],
-  },
-  {
-    label: "STRATEGY",
-    readTime: "4 min read",
-    title: "How we doubled ad performance with creative-first testing",
-    description:
-      "Actionable insights from strategy, creative, and performance — written to make you think and execute better.",
-    img: image5,
-    featured: false,
-    filter: "STRATEGY",
-    tags: ["STRATEGY", "GROWTH"],
-    date: "2025-11-25",
-    author: { name: "Jordan Lee", bio: "Creative director and brand identity designer working with tech and consumer companies globally.", initial: "J" },
-    content: [
-      { heading: "Introduction", paragraphs: ["Growth strategy and brand strategy are often treated as separate disciplines. In reality, they're the same conversation — just told at different time horizons."] },
-      { heading: "The Long and Short of It", paragraphs: ["Short-term performance without brand investment produces diminishing returns. Long-term brand building without performance accountability produces beautiful irrelevance. The brands that win operate both simultaneously."], blockquote: '"Brand is the compound interest of marketing."' },
-      { heading: "Conclusion", paragraphs: ["Don't choose between brand and performance. Build both — and measure them on their own terms. The compounding effect is the most powerful force in marketing."] },
-    ],
-  },
-];
+// Articles are fetched from MongoDB — see src/lib/api.ts
+export type { Article };
+
 
 const BLOG_FILTERS = ["ALL", "STRATEGY", "CREATIVE", "PERFORMANCE", "BRANDING", "PRODUCT"];
 const CARDS_PER_PAGE = 6;
 
 export function BlogPage() {
   const navigate = useNavigate();
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("ALL");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [ctaHover, setCtaHover] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [subscribeOpen, setSubscribeOpen] = useState(false);
+
+  useEffect(() => {
+    fetchArticles()
+      .then(data => setArticles(data))
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     if (sessionStorage.getItem("xg_subscribe_shown")) return;
@@ -309,7 +42,7 @@ export function BlogPage() {
     return () => clearTimeout(t);
   }, []);
 
-  const gridArticles = ARTICLES.filter((a) => !a.featured);
+  const gridArticles = articles.filter((a) => !a.featured);
   const filtered = gridArticles.filter((a) => {
     const matchFilter = activeFilter === "ALL" || (a as any).filter === activeFilter;
     const matchSearch =
@@ -321,17 +54,29 @@ export function BlogPage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / CARDS_PER_PAGE));
   const pageCards = filtered.slice((currentPage - 1) * CARDS_PER_PAGE, currentPage * CARDS_PER_PAGE);
 
+  if (loading) return (
+    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888" }}>Loading articles...</p>
+    </div>
+  );
+
+  if (error) return (
+    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#e44" }}>Failed to load: {error}</p>
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: "#F7F8FA" }}>
 
       {/* Sticky TopBar */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%", overflow: "hidden", height: "114px" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%", height: "114px" }}>
         <div style={{ position: "relative", width: "100%", height: "114px" }}>
           <TopBar />
         </div>
       </div>
 
-      <div style={{ maxWidth: "1304px", margin: "0 auto", padding: "0" }}>
+      <div style={{ maxWidth: "1224px", width: "calc(100% - 80px)", margin: "0 auto" }}>
         {/* Hero */}
         <section
           style={{
@@ -456,8 +201,8 @@ export function BlogPage() {
               Latest
             </div>
             <img
-              src={ARTICLES[0].img}
-              alt={ARTICLES[0].title}
+              src={articles[0].img}
+              alt={articles[0].title}
               style={{ width: "100%", height: "500px", objectFit: "cover", display: "block" }}
             />
           </div>
@@ -485,7 +230,7 @@ export function BlogPage() {
                   margin: 0,
                 }}
               >
-                {ARTICLES[0].label}
+                {articles[0].label}
               </p>
               <h2
                 style={{
@@ -500,7 +245,7 @@ export function BlogPage() {
 
                 }}
               >
-                {ARTICLES[0].title}
+                {articles[0].title}
               </h2>
             </div>
 
@@ -518,7 +263,7 @@ export function BlogPage() {
                   textAlign: "right",
                 }}
               >
-                {ARTICLES[0].readTime}
+                {articles[0].readTime}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "380px", alignItems: "flex-start" }}>
                 <p
@@ -532,7 +277,7 @@ export function BlogPage() {
                     textAlign: "left",
                   }}
                 >
-                  {ARTICLES[0].description}
+                  {articles[0].description}
                 </p>
                 <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", justifyContent: "flex-start" }}>
                   <button
@@ -561,7 +306,7 @@ export function BlogPage() {
                     </div>
                   </button>
                   <button
-                    onClick={() => navigate("/blog/post/0")}
+                    onClick={() => articles[0] && navigate(`/blog/post/${getArticleId(articles[0])}`)}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -670,7 +415,7 @@ export function BlogPage() {
           >
             <AnimatePresence mode="popLayout">
               {pageCards.map((article, i) => {
-                const globalIndex = ARTICLES.findIndex((a) => a === article);
+                
                 return (
                   <motion.div
                     key={article.title + i}
@@ -679,7 +424,7 @@ export function BlogPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.97 }}
                     transition={{ delay: (i % 3) * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    onClick={() => navigate(`/blog/post/${globalIndex}`)}
+                    onClick={() => navigate(`/blog/post/${getArticleId(article)}`)}
                     style={{ display: "flex", flexDirection: "column", gap: "12px", cursor: "pointer" }}
                   >
                     {/* Image — square aspect */}
@@ -792,7 +537,7 @@ export function BlogPage() {
         ))}
         <div
           style={{
-            maxWidth: "1304px",
+            maxWidth: "1224px",
             margin: "0 auto",
             display: "flex",
             flexDirection: "column",
@@ -893,7 +638,7 @@ export function BlogPage() {
         </div>
       </section>
 
-      <div style={{ maxWidth: "1304px", margin: "0 auto", padding: "0" }}>
+      <div style={{ maxWidth: "1224px", width: "calc(100% - 80px)", margin: "0 auto" }}>
         {/* Monthly Insights — search + popular tags */}
         <section
           style={{
@@ -1048,7 +793,7 @@ export function BlogPage() {
 
           {/* Horizontal article cards */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
-            {ARTICLES.slice(1, 3).map((article, i) => (
+            {articles.slice(1, 3).map((article, i) => (
               <motion.div
                 key={article.title + i}
                 initial={{ opacity: 0, y: 24 }}

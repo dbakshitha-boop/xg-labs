@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ContactFormContent } from "../ContactFormOverlay";
+import { useContactForm } from "../ContactFormContext";
 import { useNavigate } from "react-router-dom";
 import svgPaths from "../../imports/svg-u8a253v5v5";
 import svgPaths2 from "../../imports/svg-qt598ft3du";
-import { motion } from "motion/react";
+import { motion, useMotionValue, useSpring, useAnimationFrame } from "motion/react";
 import CardImages from "../../imports/CardImages";
 
 // Raster Images
@@ -21,7 +22,11 @@ import imgImage9 from "figma:asset/83d4a69b3e9c8f0a9728fcee74adb0198bf260f8.png"
 import imgImage10 from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
 import imgImage11 from "figma:asset/fad7be819dbbdd4aa88e7779ed4b7c2a87bf23e6.png";
 import imgImage48 from "figma:asset/f302e7d71b5ba9d33f529d7d6f3a6b94232703c5.png";
-
+import imgImage12 from "../../assets/logo.jpeg";
+import pm from "../../assets/servicelist_topbar/Performance marketing_servicelist.jpeg";
+import cc from "../../assets/servicelist_topbar/Contentcreation_servicelist.jpeg";
+import influencer from "../../assets/servicelist_topbar/Influencer_servicelist.jpeg";
+import SEO from "../../assets/servicelist_topbar/SEO_servicelist.jpeg";
 // --- Existing Components ---
 
 function WeAre() {
@@ -64,10 +69,13 @@ function TextContainer() {
   );
 }
 
-function ArrowContainer() {
+function ArrowContainer({ onPrev, onNext }: { onPrev?: () => void; onNext?: () => void }) {
   return (
     <div className="content-stretch flex gap-[24px] items-center relative shrink-0">
-      <div className="content-stretch flex items-center relative shrink-0">
+      <div
+        className="content-stretch flex items-center relative shrink-0 cursor-pointer"
+        onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
+      >
         <div className="flex items-center justify-center relative shrink-0 size-[40px]">
           <div className="flex-none rotate-[270deg]">
             <div className="relative size-[40px]">
@@ -79,7 +87,10 @@ function ArrowContainer() {
           </div>
         </div>
       </div>
-      <div className="content-stretch flex items-center relative shrink-0">
+      <div
+        className="content-stretch flex items-center relative shrink-0 cursor-pointer"
+        onClick={(e) => { e.stopPropagation(); onNext?.(); }}
+      >
         <div className="flex items-center justify-center relative shrink-0 size-[40px]">
           <div className="flex-none rotate-[90deg]">
             <div className="relative size-[40px]">
@@ -262,19 +273,41 @@ export function FinalOverlay() {
 }
 
 export function WorkSection({ scrollStep = 0 }: { scrollStep?: number }) {
-  const transition = { duration: 1.2, ease: [0.16, 1, 0.3, 1] };
+  const timeRef = useRef(0);
 
-  const yUp = scrollStep * -200;
-  const yDown = scrollStep * 200;
-  const yDownToTop = 400 - (scrollStep * 400);
+  // Spring-based scroll offset per column
+  const spring1 = useSpring(scrollStep * -200, { stiffness: 60, damping: 20 });
+  const spring2 = useSpring(scrollStep * 200,  { stiffness: 60, damping: 20 });
+  const spring3 = useSpring(400 - scrollStep * 400, { stiffness: 60, damping: 20 });
+
+  // Motion values for combined (spring + slow drift)
+  const y1 = useMotionValue(0);
+  const y2 = useMotionValue(0);
+  const y3 = useMotionValue(0);
+
+  // Update spring targets when scrollStep changes
+  useEffect(() => {
+    spring1.set(scrollStep * -200);
+    spring2.set(scrollStep * 200);
+    spring3.set(400 - scrollStep * 400);
+  }, [scrollStep, spring1, spring2, spring3]);
+
+  // Slow sinusoidal drift layered on top of spring offset
+  useAnimationFrame((_, delta) => {
+    timeRef.current += delta * 0.001;
+    const t = timeRef.current;
+    y1.set(spring1.get() + Math.sin(t * 0.28) * 55);
+    y2.set(spring2.get() + Math.sin(t * 0.22 + 1.5) * 45);
+    y3.set(spring3.get() + Math.sin(t * 0.32 + 3.0) * 50);
+  });
 
   return (
     <div
-      className="absolute h-[1080px] left-[1304px] top-1/2 translate-y-[-50%] w-[1304px] overflow-hidden bg-white/5"
+      className="absolute h-[1080px] top-1/2 translate-y-[-50%] w-[1304px] overflow-hidden bg-white/5"
+      style={{ left: "70vw" }}
     >
       <motion.div
-        animate={{ y: yUp }}
-        transition={transition}
+        style={{ y: y1 }}
         className="absolute content-stretch flex flex-col gap-[20px] h-auto items-start left-[20px] top-[-370px] w-[408px]"
       >
         <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage} /></div>
@@ -284,8 +317,7 @@ export function WorkSection({ scrollStep = 0 }: { scrollStep?: number }) {
       </motion.div>
 
       <motion.div
-        animate={{ y: yDown }}
-        transition={transition}
+        style={{ y: y2 }}
         className="absolute content-stretch flex flex-col gap-[20px] h-auto items-start left-[448px] top-[-600px] w-[408px]"
       >
         <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage4} /></div>
@@ -299,8 +331,7 @@ export function WorkSection({ scrollStep = 0 }: { scrollStep?: number }) {
       </motion.div>
 
       <motion.div
-        animate={{ y: yDownToTop }}
-        transition={transition}
+        style={{ y: y3 }}
         className="absolute content-stretch flex flex-col gap-[20px] h-auto items-start left-[876px] top-[-370px] w-[408px]"
       >
         <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage8} /></div>
@@ -312,17 +343,24 @@ export function WorkSection({ scrollStep = 0 }: { scrollStep?: number }) {
   );
 }
 
-export function ScrollContainer({ onNext }: { onNext?: () => void }) {
+export function ScrollContainer({ onNext, onPrev, hideText }: { onNext?: () => void; onPrev?: () => void; hideText?: boolean }) {
   return (
     <motion.div
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute bottom-[40px] content-stretch flex items-center justify-between left-0 px-[80px] w-[1304px] z-20 cursor-pointer pointer-events-auto"
-      onClick={onNext}
+      className="absolute bottom-[40px] content-stretch flex items-center justify-between left-0 px-[80px] z-20 pointer-events-auto"
+      style={{ width: "70vw" }}
     >
-      <ArrowContainer />
-      <p className="font-sans font-normal leading-[normal] relative shrink-0 text-[24px] text-black text-nowrap">Scroll</p>
+      <ArrowContainer onPrev={onPrev} onNext={onNext} />
+      <motion.p
+        animate={{ opacity: hideText ? 0 : 1 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="font-sans font-normal leading-[normal] relative shrink-0 text-[24px] text-black text-nowrap cursor-pointer"
+        onClick={onNext}
+      >
+        Scroll to explore
+      </motion.p>
     </motion.div>
   );
 }
@@ -334,12 +372,12 @@ const NAV_ROUTES: Record<string, string> = {
 };
 
 const SERVICE_ITEMS: { label: string; slug: string; img: string }[] = [
-  { label: "PERFORMANCE MARKETING", slug: "performance-marketing", img: "img1" },
-  { label: "SEO", slug: "seo", img: "img2" },
-  { label: "WEB DEVELOPMENT", slug: "web-development", img: "img3" },
+  { label: "PERFORMANCE MARKETING", slug: "performance-marketing", img: "pm" },
+  { label: "SEO", slug: "seo", img: "SEO" },
+  { label: "WEB DEVELOPMENT", slug: "web-development", img: "img5" },
   { label: "SOCIAL MEDIA MANAGEMENT", slug: "social-media-management", img: "img4" },
-  { label: "CONTENT CREATION & VIDEO PRODUCTION", slug: "content-creation-video-production", img: "img5" },
-  { label: "INFLUENCER MARKETING", slug: "influencer-marketing", img: "img6" },
+  { label: "CONTENT CREATION & VIDEO PRODUCTION", slug: "content-creation-video-production", img: "cc" },
+  { label: "INFLUENCER MARKETING", slug: "influencer-marketing", img: "influencer" },
   { label: "BRANDING", slug: "branding", img: "img7" },
 ];
 
@@ -352,13 +390,18 @@ const SERVICE_IMG_MAP: Record<string, string> = {
   img5: imgImage4,
   img6: imgImage5,
   img7: imgImage6,
+  pm,
+  SEO,
+  cc,
+  influencer,
 };
 
-export function TopBar() {
+export function TopBar({ dark = false }: { dark?: boolean }) {
   const navigate = useNavigate();
   const [serviceOpen, setServiceOpen] = useState(false);
   const [hoveredSlug, setHoveredSlug] = useState<string>("performance-marketing");
   const [hidden, setHidden] = useState(false);
+  const { open: openContactForm } = useContactForm();
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -383,12 +426,13 @@ export function TopBar() {
       animate={{ y: hidden ? -120 : 0, opacity: hidden ? 0 : 1 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       onMouseLeave={() => setServiceOpen(false)}
-      className="absolute bg-white flex flex-col left-1/2 -translate-x-1/2 w-[1304px] top-[40px] z-50 pointer-events-auto shadow-[0px_0px_15px_0px_rgba(0,0,0,0.05)] rounded-[8px]"
+      className={`absolute flex flex-col left-1/2 -translate-x-1/2 top-[40px] z-50 pointer-events-auto rounded-[8px] ${dark ? "ring-1 ring-white/[0.15]" : "bg-white shadow-[0px_0px_15px_0px_rgba(0,0,0,0.05)]"}`}
+      style={{ width: "min(1224px, calc(100% - 80px))", ...(dark ? { background: "#2A2A2A" } : {}) }}
     >
       {/* Main bar row */}
-      <div className="flex items-center justify-between px-[24px] py-[12px] h-[74px]">
-        <div className="h-[50px] w-[186px] relative shrink-0 cursor-pointer" onClick={() => navigate("/", { state: { skipLoading: true } })}>
-          <img alt="" className="absolute inset-0 object-contain w-full h-full" src={imgImage48} />
+      <div className="flex items-center justify-between px-[24px] py-[8px] h-[74px]">
+        <div className="shrink-0 cursor-pointer" onClick={() => navigate("/", { state: { skipLoading: true } })}>
+          <img alt="" style={{ height: "68px", width: "auto", display: "block" }} src={imgImage12} />
         </div>
 
         <div className="flex gap-1 xl:gap-4 items-center">
@@ -400,9 +444,10 @@ export function TopBar() {
               return (
                 <div
                   key={item}
-                  className={`relative cursor-pointer rounded px-3 py-2 flex items-center gap-[6px] font-space text-sm font-medium uppercase transition-colors duration-200 ${isActive ? "bg-black text-white" : "bg-transparent text-black"
-                    }`}
-                  onClick={() => setServiceOpen(prev => !prev)}
+                  className={`relative cursor-pointer rounded px-3 py-2 flex items-center gap-[6px] font-space text-sm font-medium uppercase transition-colors duration-200 ${isActive ? "bg-black text-white" : "bg-transparent"}`}
+                  style={{ color: dark ? "#9A9A9A" : undefined }}
+                  onClick={() => navigate("/services")}
+                  onMouseEnter={() => setServiceOpen(true)}
                 >
                   {item}
                   <svg
@@ -414,7 +459,7 @@ export function TopBar() {
                       flexShrink: 0,
                     }}
                   >
-                    <path d="M2 4L6 8L10 4" stroke={isActive ? "#ffffff" : "#000000"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M2 4L6 8L10 4" stroke={isActive ? "#ffffff" : dark ? "#9A9A9A" : "#000000"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               );
@@ -454,16 +499,16 @@ export function TopBar() {
                   aria-hidden="true"
                   variants={{ rest: { scaleY: 0 }, hover: { scaleY: 1 } }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "#000000", transformOrigin: "bottom right", transform: "skewX(-16deg)" }}
+                  style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "#000000", transformOrigin: "bottom center", borderRadius: "6px" }}
                 />
                 <motion.span
                   aria-hidden="true"
                   variants={{ rest: { scaleY: 0, opacity: 1 }, hover: { scaleY: 1, opacity: 0 } }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "#02A884", transformOrigin: "bottom right", transform: "skewX(-16deg)", zIndex: 1 }}
+                  style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "#02A884", transformOrigin: "bottom center", borderRadius: "6px 6px 0 0", zIndex: 1 }}
                 />
                 <motion.span
-                  variants={{ rest: { color: "#000000" }, hover: { color: "#ffffff" } }}
+                  variants={{ rest: { color: dark ? "#9A9A9A" : "#000000" }, hover: { color: "#ffffff" } }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                   className="relative z-10 font-space text-sm font-medium uppercase"
                 >
@@ -475,9 +520,32 @@ export function TopBar() {
         </div>
 
         <div className="flex items-center">
-          <div style={{ position: 'relative', width: 134, height: 50 }}>
+          <motion.div
+            initial="rest"
+            whileHover="hover"
+            animate="rest"
+            style={{ position: 'relative', width: 134, height: 50 }}
+          >
+            {/* Black fill that pans out from left on hover */}
+            <motion.span
+              aria-hidden
+              variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                position: 'absolute',
+                top: 0, left: 0, bottom: 0,
+                width: 134,
+                background: '#000000',
+                borderRadius: 42,
+                transformOrigin: 'left center',
+                zIndex: 1,
+                pointerEvents: 'none',
+              }}
+            />
+
             <button
               aria-label="Let's talk"
+              onClick={() => openContactForm()}
               style={{
                 width: 134,
                 height: 50,
@@ -488,9 +556,9 @@ export function TopBar() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
-                background: '#ffffff',
+                background: dark ? '#3a3a3a' : '#ffffff',
                 borderRadius: 42,
-                border: '1px solid #9A9A9A',
+                border: dark ? '1px solid rgba(255,255,255,0.25)' : '1px solid #9A9A9A',
                 cursor: 'pointer',
                 textTransform: 'uppercase',
                 fontFamily: 'Space Grotesk, Sora, sans-serif',
@@ -498,31 +566,46 @@ export function TopBar() {
                 fontSize: 14,
                 lineHeight: '14px',
                 boxSizing: 'border-box',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
-              <span style={{ display: 'block', lineHeight: '14px' }}>LET'S TALK</span>
+              <motion.span
+                variants={{ rest: { color: dark ? '#9A9A9A' : '#000000' }, hover: { color: '#ffffff' } }}
+                transition={{ duration: 0.3 }}
+                style={{ display: 'block', lineHeight: '14px', position: 'relative', zIndex: 2 }}
+              >
+                LET'S TALK
+              </motion.span>
             </button>
 
-            {/* Overlapping black circle */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              right: -6,
-              width: 50,
-              height: 50,
-              borderRadius: 50,
-              background: '#000000',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              {/* Arrow centered inside circle (24x24) pointing right and nudged slightly */}
-              <svg width={24} height={24} viewBox="0 0 24 24" style={{ transform: 'translateX(4px)', position: 'relative' }} fill="none" stroke="white" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14" />
-                <path d="M13 5l7 7-7 7" />
-              </svg>
-            </div>
-          </div>
+            {/* Overlapping arrow circle */}
+            <motion.div
+              variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }}
+              transition={{ duration: 0.3 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: -6,
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 2,
+              }}
+            >
+              <motion.svg
+                width={24} height={24} viewBox="0 0 24 24"
+                style={{ transform: 'translateX(4px)', position: 'relative' }}
+                fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+              >
+                <motion.path d="M5 12h14" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.3 }} />
+                <motion.path d="M13 5l7 7-7 7" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.3 }} />
+              </motion.svg>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
@@ -531,90 +614,92 @@ export function TopBar() {
         initial={false}
         animate={{ height: serviceOpen ? "auto" : 0, opacity: serviceOpen ? 1 : 0 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        style={{ overflow: "hidden" }}
+        style={{ overflow: "hidden", background: dark ? "#2A2A2A" : "transparent" }}
       >
-        <div style={{ display: "flex", alignItems: "stretch", padding: "8px 40px 28px 40px", gap: "0px" }}>
+        <div style={{ display: "flex", alignItems: "stretch", justifyContent: "space-between", padding: "8px 24px 24px 24px" }}>
 
           {/* Far Left: tagline column */}
-          <div style={{ width: "200px", flexShrink: 0, display: "flex", alignItems: "flex-end", paddingRight: "8px" }}>
+          <div style={{ flexShrink: 0, display: "flex", alignItems: "flex-end" }}>
             <p style={{
               fontFamily: "'Space Grotesk', 'Cal Sans' sans-serif",
               fontWeight: 600,
-              fontSize: "50px",
-              letterSpacing: "-2%",
+              fontSize: "26px",
+              letterSpacing: "-0.02em",
               lineHeight: "1.2",
-              color: "#6E6E6E",
-              minWidth: "300px",
+              color: dark ? "rgba(255,255,255,0.4)" : "#6E6E6E",
               margin: 0,
-
             }}>
-              We build Brands that perform
+              <span style={{ display: "block" }}>We build</span>
+              <span style={{ display: "block" }}>Brands</span>
+              <span style={{ display: "block" }}>That perform</span>
             </p>
           </div>
 
-          {/* Service list */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", paddingRight: "20px" }}>
-            {SERVICE_ITEMS.map((svc, i) => (
-              <div
-                key={svc.slug}
-                style={{ display: "flex", justifyContent: "flex-end", cursor: "pointer" }}
-                onMouseEnter={() => setHoveredSlug(svc.slug)}
-                onClick={() => {
-                  setServiceOpen(false);
-                  navigate("/services");
-                  setTimeout(() => {
-                    const el = document.getElementById(svc.slug);
-                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }, 80);
-                }}
-              >
-                <span style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 500,
-                  fontSize: "13px",
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  color: hoveredSlug === svc.slug ? "#1a1a1a" : "#888888",
-                  transition: "color 0.15s",
-                  display: "inline-block",
-                  padding: "11px 0",
-                  borderBottom: i < SERVICE_ITEMS.length - 1 ? "1px solid #e8e8e8" : "none",
-                }}>
-                  {svc.label}
-                </span>
-              </div>
-            ))}
-          </div>
+          {/* Center: service list + image grouped */}
+          <div style={{ display: "flex", gap: "20px", alignItems: "stretch" }}>
 
-          {/* Crossfading image */}
-          <div style={{ width: "260px", flexShrink: 0, borderRadius: "10px", overflow: "hidden", alignSelf: "stretch", position: "relative", minHeight: "280px" }}>
-            {SERVICE_ITEMS.map((svc) => (
-              <img
-                key={svc.slug}
-                src={SERVICE_IMG_MAP[svc.img]}
-                alt={svc.label}
-                style={{
-                  position: "absolute",
-                  top: 0, left: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  opacity: hoveredSlug === svc.slug ? 1 : 0,
-                  transition: "opacity 0.3s ease",
-                }}
-              />
-            ))}
+            {/* Service list */}
+            <div style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}>
+              {SERVICE_ITEMS.map((svc, i) => (
+                <div
+                  key={svc.slug}
+                  style={{ display: "flex", justifyContent: "flex-end", cursor: "pointer" }}
+                  onMouseEnter={() => setHoveredSlug(svc.slug)}
+                  onClick={() => {
+                    setServiceOpen(false);
+                    navigate("/services", { state: { serviceIndex: i } });
+                  }}
+                >
+                  <span style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontWeight: 500,
+                    fontSize: "13px",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    color: hoveredSlug === svc.slug ? (dark ? "#ffffff" : "#1a1a1a") : (dark ? "rgba(255,255,255,0.45)" : "#888888"),
+                    transition: "color 0.15s",
+                    display: "inline-block",
+                    padding: "6px 0",
+                    borderBottom: i < SERVICE_ITEMS.length - 1 ? `1px solid ${dark ? "rgba(255,255,255,0.08)" : "#e8e8e8"}` : "none",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {svc.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Crossfading image */}
+            <div style={{ width: "140px", flexShrink: 0, borderRadius: "10px", overflow: "hidden", alignSelf: "stretch", position: "relative", minHeight: "160px" }}>
+              {SERVICE_ITEMS.map((svc) => (
+                <img
+                  key={svc.slug}
+                  src={SERVICE_IMG_MAP[svc.img]}
+                  alt={svc.label}
+                  style={{
+                    position: "absolute",
+                    top: 0, left: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    opacity: hoveredSlug === svc.slug ? 1 : 0,
+                    transition: "opacity 0.3s ease",
+                  }}
+                />
+              ))}
+            </div>
+
           </div>
 
           {/* Right: Connect With */}
-          <div style={{ width: "200px", flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "12px", paddingLeft: "24px" }}>
+          <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "12px" }}>
             <p style={{
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 700,
               fontSize: "11px",
               letterSpacing: "0.14em",
               textTransform: "uppercase",
-              color: "#888888",
+              color: dark ? "rgba(255,255,255,0.4)" : "#888888",
               margin: 0,
             }}>
               Connect With
@@ -628,7 +713,7 @@ export function TopBar() {
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontWeight: 400,
                 fontSize: "13px",
-                color: "#1a1a1a",
+                color: dark ? "rgba(255,255,255,0.7)" : "#1a1a1a",
                 margin: 0,
                 lineHeight: "1.5",
               }}>
@@ -639,6 +724,7 @@ export function TopBar() {
 
         </div>
       </motion.div>
+
     </motion.div>
   );
 }

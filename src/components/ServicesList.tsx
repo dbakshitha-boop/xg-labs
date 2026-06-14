@@ -6,13 +6,13 @@ import imgPerformance from "figma:asset/829c7dea73546d44cdf81f9fa2d6cd9ab132117d
 import imgSEO from "figma:asset/b5047b31ab40cf51abf5e89f3b5017013a810db8.png";
 import imgBranding from "figma:asset/97255d534336f1ae220810ce0585cdde411c6098.png";
 import hoverImage from "figma:asset/c47096a00cbb223b6c6e2a485653499e5b4c9291.png";
-import imgPerformanceNew from "figma:asset/57bf63664ff4a00e7230f1c653aed577197b8ae2.png";
-import imgWebDevNew from "figma:asset/6cc826b0a9f3357220b8aff10822aac6ec35a7d8.png";
-import imgSEONew from "figma:asset/c818511f7392e8cf8c7cd3cdd3ef75926f63caf6.png";
-import imgSocialMediaNew from "figma:asset/0e849813966cd0608f92e04849e82171d6047ae2.png";
-import imgContentCreationNew from "figma:asset/73d2dcb6954919f88a36445f2fc994c6285c0fa5.png";
-import imgInfluencerNew from "figma:asset/07fe965f55c39a26cb62b5654feabde299d48845.png";
-import imgBrandingNew from "figma:asset/c19b9395e9dffb49becd7a2b16e22a841f10ac53.png";
+import imgPerformanceNew from "../assets/servicelist_topbar/Performance marketing_servicelist.jpeg";
+import imgWebDevNew from "figma:asset/3928f5a725db8937d4474329e22213a3e4710bec.png";
+import imgSEONew from "../assets/servicelist_topbar/SEO_servicelist.jpeg";
+import imgSocialMediaNew from "figma:asset/06355012afb0087b8c9bfc9843e66981c1b4fc10.png";
+import imgContentCreationNew from "../assets/servicelist_topbar/Contentcreation_servicelist.jpeg";
+import imgInfluencerNew from "../assets/servicelist_topbar/Influencer_servicelist.jpeg";
+import imgBrandingNew from "figma:asset/b178cfc933d6e839b8ae373df90d9a43d32a3ba3.png";
 import imgFreeIPhone17Pro from "figma:asset/5b825e76949bb7e4a44591c49d22c2454be4fcbb.png";
 import imgKraftPaperPostalBagAndSticker from "figma:asset/e99bbe75d12e6f0fde7bad8f2fe82a3e1af79637.png";
 import imgLoadingScreen1 from "figma:asset/8cfd0d9e1f1eb6a0794e4dd6eaf7fd03d5fc8ac9.png";
@@ -129,7 +129,6 @@ export function ServicesList() {
           />
         </motion.div>
       ))}
-      <div className="h-px w-full bg-gray-200" />
     </div>
   );
 }
@@ -215,75 +214,62 @@ function ServiceCard({
         }
       }}
     >
-      {/* Divider */}
-      <div className="h-px w-full bg-gray-200 transition-colors duration-300 group-hover:bg-gray-300" />
-
-      <div className="flex flex-col lg:flex-row bg-[#F7F8FA] transition-colors duration-500 py-10 px-6 lg:py-[60px] lg:px-[100px] gap-6 lg:gap-[80px] relative">
-
-        {/* State 2: Highlight Image */}
-        <AnimatePresence>
-          {active && (
-            <motion.div
-              className={cn(
-                "absolute pointer-events-none z-0 flex items-center justify-center bg-white rounded-[8px] overflow-hidden",
-                index === 0
-                  ? "left-1/2 top-[calc(50%+0.5px)] lg:left-auto lg:right-[100px] lg:top-1/2 lg:-translate-y-1/2 -translate-x-1/2 lg:translate-x-0 w-[345px] h-[462px] opacity-100"
-                  : "right-[-40px] lg:right-[100px] bottom-[10px] lg:top-1/2 lg:-translate-y-1/2 w-[160px] h-[200px] lg:w-[345px] lg:h-[462px] opacity-40 lg:opacity-100"
-              )}
-              initial={{ opacity: 0, x: 40, rotate: 0, scale: 0.9 }}
-              animate={{ opacity: isMobile ? (index === 0 ? 1 : 0.2) : 1, x: 0, rotate: 8, scale: 1 }}
-              exit={{ opacity: 0, x: 40, rotate: 0, scale: 0.9 }}
-              transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
-            >
+      {/* Highlight Image */}
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            className="absolute pointer-events-none z-0 overflow-hidden"
+            style={{
+              width: 267,
+              height: 311,
+              right: 60,
+              top: "50%",
+              borderRadius: 16,
+            }}
+            initial={{ opacity: 0, y: "-50%", rotate: 0, scale: 0.9 }}
+            animate={{ opacity: 1, y: "-50%", rotate: 5, scale: 1 }}
+            exit={{ opacity: 0, y: "-50%", rotate: 0, scale: 0.9 }}
+            transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
+          >
               {/* Performance Marketing */}
               {index === 0 && (
-                <div className="absolute h-[380px] left-[calc(50%+0.07px)] top-[calc(50%+0.41px)] translate-x-[-50%] translate-y-[-50%] w-[280px]">
-
-                  <div className="absolute inset-0 overflow-visible pointer-events-none">
-                    <img alt="" className="absolute h-full left-0 max-w-none top-0 w-full object-cover" src={image} />
-
-                  </div>
+                <div className="absolute inset-0">
+                  <img alt="" className="w-full h-full object-cover pointer-events-none" src={image} />
                 </div>
               )}
 
               {/* SEO */}
               {index === 1 && (
-                <div className="absolute contents left-[-20.66px] top-0">
-                  <div className="absolute h-[462px] left-[-20.66px] top-0 w-[386.322px]">
-                    <img alt="" className="block max-w-none size-full object-contain" src={image} />
-                  </div>
+                <div className="absolute inset-0">
+                  <img alt="" className="w-full h-full object-cover" src={image} />
                 </div>
               )}
 
               {/* Web Development */}
               {index === 2 && (
-                <div className="absolute bottom-0 h-[493px] left-0 w-[345px]">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={image} />
+                <div className="absolute inset-0">
+                  <img alt="" className="w-full h-full object-cover pointer-events-none" src={image} />
                 </div>
               )}
 
               {/* Social Media Management */}
               {index === 3 && (
-                <div className="absolute bottom-0 h-[462px] left-[calc(50%+0.5px)] translate-x-[-50%] w-[824px]">
-                  <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={image} />
+                <div className="absolute inset-0">
+                  <img alt="" className="w-full h-full object-cover pointer-events-none" src={image} />
                 </div>
               )}
 
               {/* Content Creation */}
               {index === 4 && (
-                <div className="absolute h-[463.5px] left-1/2 top-0 translate-x-[-50%] w-[345px]">
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <img alt="" className="absolute h-[99.92%] left-[-0.25%] max-w-none top-[0.04%] w-[100.52%]" src={image} />
-                  </div>
+                <div className="absolute inset-0">
+                  <img alt="" className="w-full h-full object-cover pointer-events-none" src={image} />
                 </div>
               )}
 
               {/* Influencer Marketing */}
               {index === 5 && (
-                <div className="absolute h-[462px] left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] w-[515px]">
-                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <img alt="" className="absolute h-[99.95%] left-0 max-w-none top-[0.01%] w-full" src={image} />
-                  </div>
+                <div className="absolute inset-0">
+                  <img alt="" className="w-full h-full object-cover pointer-events-none" src={image} />
                 </div>
               )}
 
@@ -357,8 +343,10 @@ function ServiceCard({
           )}
         </AnimatePresence>
 
+      <div className="flex flex-col lg:flex-row bg-[#F7F8FA] transition-colors duration-500 px-6 lg:pl-[100px] lg:pr-[70px] gap-6 lg:gap-[80px]">
+
         {/* Left Column */}
-        <div className="w-full lg:w-[350px] shrink-0 flex flex-col justify-between z-10">
+        <div className="w-full lg:w-[350px] shrink-0 flex flex-col justify-between z-10 py-10 lg:py-[60px]">
           <div className="flex flex-col justify-start">
             <h3 className="text-xl md:text-2xl font-bold tracking-tight text-[#414141] mb-2 uppercase font-['Sora',sans-serif]">
               {title}
@@ -375,19 +363,19 @@ function ServiceCard({
             transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
             className="mt-6 lg:mt-0 hidden md:block"
           >
-            <span className="text-xs font-bold text-[#00A88D] uppercase tracking-[0.2em] font-['Sora',sans-serif]">
+            <span className="font-bold text-[#00A88D] uppercase tracking-[0.2em] font-['Sora',sans-serif]" style={{ fontSize: "16px" }}>
               What We Deliver
             </span>
           </motion.div>
         </div>
 
         {/* Right Column: Content Lines & Deliverables */}
-        <div className="w-full lg:flex-1 min-w-0">
+        <div className="w-full lg:flex-1 min-w-0 relative z-10 py-10 lg:py-[60px]" style={{ borderTop: "1px solid #6E6E6E", borderBottom: "1px solid #6E6E6E" }}>
           <div className="flex flex-col h-full">
             {/* Content Lines */}
             <div className="flex flex-col gap-0 mb-6 lg:mb-[60px] w-full z-30">
               {contentLines.map((line, idx) => (
-                <div key={idx} className="relative text-[clamp(24px,5vw,52px)] leading-[1.1] tracking-[-0.02em] font-normal text-[#6E6E6E] font-['Cal_Sans',sans-serif] py-0 lg:py-[2px]">
+                <div key={idx} className="relative leading-[1.2] tracking-[-0.02em] font-normal text-[#6E6E6E] font-['Sora',sans-serif] py-0 lg:py-[2px]" style={{ fontSize: "32px" }}>
                   <RevealText
                     isActive={active}
                     hasBeenRevealed={hasBeenRevealed}
@@ -411,7 +399,7 @@ function ServiceCard({
 
             {/* State 2: Deliverables Grid */}
             <div className={cn(
-              "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3 border-t border-gray-100 pt-6 transition-all duration-500",
+              "flex flex-wrap gap-x-16 gap-y-4 pt-6 transition-all duration-500",
               active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 lg:opacity-0"
             )}>
               {deliverables.map((item, i) => (
@@ -419,8 +407,9 @@ function ServiceCard({
                   key={`deliverable-${i}`}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: active ? 1 : 0, x: active ? 0 : -10 }}
-                  transition={{ duration: 0.4, delay: active ? 0.4 + (i * 0.05) : 0, ease: [0.76, 0, 0.24, 1] }}
-                  className="text-sm md:text-base text-[#414141] font-medium font-['Sora',sans-serif] flex items-center gap-3"
+                  transition={{ duration: 0.25, delay: active ? 0.2 + (i * 0.03) : 0, ease: [0.76, 0, 0.24, 1] }}
+                  className="text-[#414141] font-medium font-['Sora',sans-serif] flex items-center gap-3"
+                  style={{ fontSize: "20px", marginRight: "32px" }}
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-[#00A88D] shrink-0" />
                   {item}
@@ -430,6 +419,7 @@ function ServiceCard({
           </div>
         </div>
       </div>
+
     </motion.div>
   );
 }

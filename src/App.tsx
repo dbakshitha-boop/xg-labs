@@ -18,6 +18,7 @@ import { CaseStudyPage } from "./components/CaseStudyPage";
 import { ServicesPage } from "./components/ServicesPage";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { ContactFormProvider } from "./components/ContactFormContext";
 
 function HomePage() {
   const location = useLocation();
@@ -67,14 +68,16 @@ export default function App() {
   return (
     <CursorProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/portfolio" element={<PortfolioPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/post/:id" element={<BlogPostPage />} />
-          <Route path="/blog/case-study/:id" element={<CaseStudyPageWrapper />} />
-          <Route path="/services" element={<ServicesPage />} />
-        </Routes>
+        <ContactFormProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/portfolio" element={<PortfolioPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/post/:id" element={<BlogPostPage />} />
+            <Route path="/blog/case-study/:id" element={<CaseStudyPageWrapper />} />
+            <Route path="/services" element={<ServicesPage />} />
+          </Routes>
+        </ContactFormProvider>
       </BrowserRouter>
     </CursorProvider>
   );

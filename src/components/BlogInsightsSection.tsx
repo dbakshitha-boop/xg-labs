@@ -1,13 +1,10 @@
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
+import React, { useRef, useState, useEffect } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { useNavigate } from "react-router-dom";
-import { ARTICLES } from "./BlogPage";
+import { fetchArticles, getArticleId, type Article } from "../lib/api";
 
 // Vertical offset for each card — creates the staggered waterfall layout
 const OFFSETS = [0, 64, 16, 108, 48, 92, 24, 72];
-
-// Which articles to show (use first 6 non-featured + featured at front)
-const CARDS = ARTICLES.slice(0, 7);
 
 function pad(n: number) {
   return String(n).padStart(3, "0");
@@ -16,13 +13,18 @@ function pad(n: number) {
 export function BlogInsightsSection() {
   const navigate = useNavigate();
   const trackRef = useRef<HTMLDivElement>(null);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [cards, setCards] = useState<Article[]>([]);
+
+  useEffect(() => {
+    fetchArticles().then(data => setCards(data.slice(0, 7))).catch(() => {});
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: trackRef,
     offset: ["start end", "end start"],
   });
 
-  // Subtle vertical parallax on the whole card strip
   const stripY = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
   return (
@@ -55,7 +57,7 @@ export function BlogInsightsSection() {
             style={{
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 700,
-              fontSize: "11px",
+              fontSize: "15px",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
               color: "#1a1a1a",
@@ -73,12 +75,12 @@ export function BlogInsightsSection() {
             style={{
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 700,
-              fontSize: "clamp(28px, 3.5vw, 52px)",
-              lineHeight: "1.1",
-              letterSpacing: "-0.025em",
+              fontSize: "clamp(36px, 4.5vw, 64px)",
+              lineHeight: "1.15",
+              letterSpacing: "-0.03em",
               color: "#1a1a1a",
               margin: 0,
-              maxWidth: "560px",
+              maxWidth: "780px",
             }}
           >
             Insights that help brands grow smarter and scale faster.
@@ -180,33 +182,31 @@ export function BlogInsightsSection() {
         </motion.div>
       </div>
 
-      {/* ── Scrollable card strip ── */}
+      {/* ── Card strip ── */}
       <div
         style={{
           overflowX: "auto",
           overflowY: "visible",
           paddingLeft: "72px",
           paddingRight: "72px",
-          paddingBottom: "24px",
+          paddingBottom: "140px",
+          paddingTop: "16px",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
-          // extra height so staggered cards don't clip
-          paddingTop: "16px",
         }}
         className="hide-scrollbar"
       >
         <motion.div
           style={{
             display: "flex",
-            gap: "20px",
+            gap: "24px",
             alignItems: "flex-start",
             width: "max-content",
             y: stripY,
           }}
         >
-          {CARDS.map((article, i) => {
+          {cards.map((article, i) => {
             const offset = OFFSETS[i % OFFSETS.length];
-            const globalIdx = ARTICLES.indexOf(article);
 
             return (
               <motion.div
@@ -236,88 +236,116 @@ export function BlogInsightsSection() {
                   {pad(i + 1)}
                 </p>
 
-                {/* Card */}
+                {/* Card — image on top, white text panel below */}
                 <motion.div
-                  onClick={() => navigate(`/blog/post/${globalIdx}`)}
+                  onClick={() => navigate(`/blog/post/${getArticleId(article)}`)}
                   whileHover="hover"
+                  onHoverStart={() => setHoveredCard(i)}
+                  onHoverEnd={() => setHoveredCard(null)}
                   style={{
-                    position: "relative",
-                    width: "clamp(240px, 22vw, 300px)",
-                    height: "clamp(320px, 30vw, 400px)",
-                    borderRadius: "10px",
-                    overflow: "hidden",
+                    width: "calc((100vw - 144px - 2 * 24px) / 3)",
                     cursor: "pointer",
                     flexShrink: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    background: "#ffffff",
+                    position: "relative",
                   }}
                 >
                   {/* Image */}
-                  <motion.img
-                    src={article.img}
-                    alt={article.title}
-                    variants={{
-                      hover: { scale: 1.06 },
-                    }}
-                    transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-
-                  {/* Dark gradient overlay — always visible at bottom */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      background:
-                        "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 45%, transparent 70%)",
-                      pointerEvents: "none",
-                    }}
-                  />
-
-                  {/* Title caption */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: "20px 18px",
-                    }}
-                  >
-                    {/* Category label */}
+                  <div style={{ position: "relative", overflow: "hidden", height: "clamp(300px, 26vw, 420px)", flexShrink: 0 }}>
+                    <motion.img
+                      src={article.img}
+                      alt={article.title}
+                      variants={{ hover: { scale: 1.06 } }}
+                      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    />
                     <p
                       style={{
+                        position: "absolute",
+                        bottom: "14px",
+                        left: "18px",
                         fontFamily: "'Space Grotesk', sans-serif",
                         fontWeight: 600,
                         fontSize: "9px",
                         letterSpacing: "0.14em",
                         textTransform: "uppercase",
-                        color: "rgba(255,255,255,0.5)",
-                        margin: "0 0 8px",
+                        color: "#ffffff",
+                        margin: 0,
+                        textShadow: "0 1px 6px rgba(0,0,0,0.55)",
                       }}
                     >
                       {article.label}
                     </p>
+                  </div>
+
+                  {/* Title panel */}
+                  <motion.div
+                    animate={{
+                      backgroundColor: hoveredCard === i ? "#F2F2F2" : "#ffffff",
+                    }}
+                    transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ padding: "20px 18px 24px", border: "1px solid #9A9A9A", borderBottom: hoveredCard === i ? "none" : "1px solid #9A9A9A" }}
+                  >
                     <p
                       style={{
                         fontFamily: "'Space Grotesk', sans-serif",
                         fontWeight: 700,
                         fontSize: "clamp(12px, 1vw, 14px)",
-                        lineHeight: "1.35",
+                        lineHeight: "1.4",
                         letterSpacing: "0.04em",
                         textTransform: "uppercase",
-                        color: "#ffffff",
+                        color: "#1a1a1a",
                         margin: 0,
                       }}
                     >
                       {article.title}
                     </p>
-                  </div>
+                  </motion.div>
+
+                  {/* Description — expands below on hover */}
+                  <AnimatePresence initial={false}>
+                    {hoveredCard === i && (
+                      <motion.div
+                        key="desc"
+                        initial={{ height: 0 }}
+                        animate={{ height: "auto" }}
+                        exit={{ height: 0 }}
+                        transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+                        style={{
+                          position: "absolute",
+                          top: "100%",
+                          left: 0,
+                          right: 0,
+                          overflow: "hidden",
+                          background: "#F2F2F2",
+                          borderLeft: "1px solid #9A9A9A",
+                          borderRight: "1px solid #9A9A9A",
+                          borderBottom: "1px solid #9A9A9A",
+                          zIndex: 10,
+                        }}
+                      >
+                        <motion.p
+                          initial={{ y: 16, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: 16, opacity: 0 }}
+                          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                          style={{
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontWeight: 400,
+                            fontSize: "13px",
+                            lineHeight: "1.6",
+                            color: "#666666",
+                            margin: 0,
+                            padding: "3px 18px 20px",
+                          }}
+                        >
+                          {article.description}
+                        </motion.p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               </motion.div>
             );

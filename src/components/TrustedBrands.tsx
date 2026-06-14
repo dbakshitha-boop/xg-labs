@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform, useScroll } from "motion/react";
-import { useCursor } from "./ui/CustomCursor";
 import imgSML from "figma:asset/03355682553ef5be67447967b63be12b656b183b.png";
 import imgAsh from "figma:asset/03f08e77f2789523074211d0a0c7a7d862b8e2bd.png";
 import imgGo from "figma:asset/94bad9e61cac45ea000e3b8bcd636a4dd545d87e.png";
@@ -30,8 +29,6 @@ const TechDecorations = ({ index }: { index: number }) => {
 };
 
 export function TrustedBrands() {
-  const { setVariant } = useCursor();
-  
   const brands = [
     { name: "", image: null }, // Left Empty
     { name: "ANDHRA SPICY HOUSE", image: imgAsh },
@@ -88,9 +85,7 @@ export function TrustedBrands() {
   };
 
   return (
-    <section 
-        onMouseEnter={() => setVariant('technical')}
-        onMouseLeave={() => setVariant('default')}
+    <section
         ref={sectionRef}
         className="w-full bg-[#050505] pt-32 pb-48 flex flex-col items-center select-none overflow-hidden relative cursor-none"
     >
@@ -186,7 +181,7 @@ export function TrustedBrands() {
                                     <TechDecorations index={index} />
 
                                     {/* Logo */}
-                                    <div className="w-[88px] h-[88px] md:w-[140px] md:h-[140px] absolute transition-all duration-500 ease-out group-hover/item:opacity-0 group-hover/item:scale-75 group-hover/item:blur-sm">
+                                    <div className="w-[103px] h-[103px] md:w-[162px] md:h-[162px] absolute transition-all duration-500 ease-out group-hover/item:opacity-0 group-hover/item:scale-75 group-hover/item:blur-sm">
                                         <img src={brand.image} alt={`${brand.name} Logo`} className="w-full h-full object-contain opacity-90 drop-shadow-lg" />
                                     </div>
                                     

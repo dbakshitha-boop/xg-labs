@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { TopBar } from "./landing/FinalLayout";
-import { ARTICLES } from "./BlogPage";
+import { fetchArticle, type Article } from "../lib/api";
 import { Footer } from "./Footer";
 
 // Social share icons
@@ -50,25 +50,31 @@ function ArrowLeftIcon() {
 export function BlogPostPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const articleIndex = id !== undefined ? parseInt(id, 10) : 0;
-  const article = ARTICLES[articleIndex] ?? ARTICLES[0];
-
+  const [article, setArticle] = useState<Article | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState(0);
   const [copied, setCopied] = useState(false);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
 
-  const sections = (article as any).content as Array<{
-    heading: string;
-    paragraphs: string[];
-    blockquote?: string;
-  }>;
-
-  const author = (article as any).author as { name: string; bio: string; initial: string };
-  const tags = (article as any).tags as string[];
-  const date = (article as any).date as string;
-
-  // Track active section via IntersectionObserver
   useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    setFetchError(null);
+    fetchArticle(id)
+      .then(data => setArticle(data))
+      .catch(err => setFetchError(err.message))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const sections = article?.content ?? [];
+  const author = article?.author;
+  const tags = article?.tags ?? [];
+  const date = article?.date ?? "";
+
+  // Track active section via IntersectionObserver — must be before any early returns
+  useEffect(() => {
+    if (!sections.length) return;
     const observers: IntersectionObserver[] = [];
     sectionRefs.current.forEach((el, i) => {
       if (!el) return;
@@ -81,6 +87,20 @@ export function BlogPostPage() {
     });
     return () => observers.forEach((o) => o.disconnect());
   }, [sections]);
+
+  if (loading) return (
+    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888" }}>Loading...</p>
+    </div>
+  );
+  if (fetchError) return (
+    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#e44", fontWeight: 600 }}>Failed to load article</p>
+      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888", fontSize: 13 }}>{fetchError}</p>
+      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#aaa", fontSize: 12 }}>ID: {id}</p>
+    </div>
+  );
+  if (!article) return null;
 
   function scrollToSection(i: number) {
     sectionRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "start" });
