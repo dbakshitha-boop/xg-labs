@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL ?? "";
+// In production, requests go to /api/* which Vercel proxies to the backend (no CORS).
+// In local dev, Vite's proxy forwards /api/* to localhost:3001.
+const API_URL = "";
 
 // MongoDB _id can come as a plain string, an ObjectId toString, or { $oid: "..." }
 export function getArticleId(article: any): string {
