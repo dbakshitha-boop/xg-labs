@@ -116,14 +116,13 @@ function transformArticle(raw: RawArticle): Article {
 }
 
 export async function fetchArticles(): Promise<Article[]> {
-  const url = `${API_URL}/api/articles`;
+  const url = `${API_URL}/api/blogs`;
   console.log("[api] fetchArticles →", url);
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} from ${url}`);
   const json = await res.json();
   console.log("[api] raw response:", json);
-  // Backend may wrap the array: { articles: [...] } or return [] directly
-  const raw: RawArticle[] = Array.isArray(json) ? json : (json.articles ?? json.data ?? []);
+  const raw: RawArticle[] = Array.isArray(json) ? json : (json.blogs ?? json.articles ?? json.data ?? []);
   return raw.map(transformArticle);
 }
 
@@ -160,7 +159,7 @@ export async function submitContactForm(data: ContactSubmission): Promise<void> 
 }
 
 export async function fetchArticle(id: string): Promise<Article> {
-  const res = await fetch(`${API_URL}/api/articles/${id}`);
+  const res = await fetch(`${API_URL}/api/blogs/${id}`);
   if (!res.ok) throw new Error(`Error ${res.status}`);
   const raw: RawArticle = await res.json();
   return transformArticle(raw);
