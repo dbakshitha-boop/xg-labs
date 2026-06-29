@@ -99,12 +99,10 @@ export function Footer() {
       <style>{`
         @media (max-width: 767px) {
           .footer-grid { grid-template-columns: 1fr !important; padding: 24px 20px !important; }
-          .footer-headline { padding: 24px 20px 16px !important; font-size: 36px !important; white-space: normal !important; }
           .footer-bottom { flex-direction: column !important; gap: 12px !important; padding: 16px 20px !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
           .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 24px 32px !important; }
-          .footer-headline { padding: 24px 32px 16px !important; font-size: 48px !important; white-space: normal !important; }
         }
       `}</style>
 
@@ -112,21 +110,22 @@ export function Footer() {
       <div
         className="footer-headline"
         style={{
-          padding: "32px 48px 24px",
+          padding: "32px 0 24px",
           overflow: "hidden",
         }}
       >
         <h2
           style={{
-            fontFamily: "'Humane', sans-serif",
-            fontWeight: 600,
-            fontSize: "64px",
-            lineHeight: "0.85",
+            fontFamily: "'Bebas Neue', sans-serif",
+            fontSize: "clamp(48px, 8vw, 130px)",
+            lineHeight: "0.71",
             letterSpacing: "0",
             textTransform: "uppercase",
             color: "#D9D9D9",
             margin: 0,
             whiteSpace: "nowrap",
+            textAlign: "center",
+            width: "100%",
           }}
         >
           WE&rsquo;RE READY FOR OUR NEXT CHALLENGE
@@ -149,7 +148,7 @@ export function Footer() {
           <p style={colHeadStyle}>Connect With</p>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <a
-              href="mailto:hello@xglabs.agency"
+              href="mailto:xglabs@thebrandopedia.in"
               style={{
                 ...linkStyle,
                 fontSize: "clamp(16px, 1.5vw, 22px)",
@@ -158,7 +157,7 @@ export function Footer() {
               onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#9A9A9A")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.72)")}
             >
-              hello@xglabs.agency
+              xglabs@thebrandopedia.in
             </a>
             <a
               href="tel:+916369974530"
@@ -170,7 +169,7 @@ export function Footer() {
               onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#ffffff")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.72)")}
             >
-              +91 6369 974 530
+              +91 63699 74530
             </a>
             <p
               style={{
@@ -179,7 +178,7 @@ export function Footer() {
                 color: "#9A9A9A",
               }}
             >
-              Chennai, India
+              Chennai, Tamilnadu, India.
             </p>
           </div>
         </div>

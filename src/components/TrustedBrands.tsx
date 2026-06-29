@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform, useScroll } from "motion/react";
-import imgSML from "figma:asset/03355682553ef5be67447967b63be12b656b183b.png";
-import imgAsh from "figma:asset/03f08e77f2789523074211d0a0c7a7d862b8e2bd.png";
-import imgGo from "figma:asset/94bad9e61cac45ea000e3b8bcd636a4dd545d87e.png";
-import imgPartner1 from "figma:asset/b19cf7f0df2f1c916a5443a7a1f2d72fb4f0a742.png";
+import imgKalki from "../assets/trustedbrands/White Logo.png";
+import imgSlam from "../assets/trustedbrands/slam_new.png";
+import imgArtk from "../assets/trustedbrands/artk.jpg";
+import imgGoWheels from "../assets/trustedbrands/Creen Primary Logo.png";
 
 const TechDecorations = ({ index }: { index: number }) => {
   const suffixes = ['SYS', 'IO', 'AI', 'LAB', 'INC', 'NET'];
@@ -30,12 +30,12 @@ const TechDecorations = ({ index }: { index: number }) => {
 
 export function TrustedBrands() {
   const brands = [
-    { name: "", image: null }, // Left Empty
-    { name: "ANDHRA SPICY HOUSE", image: imgAsh },
-    { name: "GOWHEELS", image: imgGo },
-    { name: "KALKI HANDCRAFT", image: imgPartner1 }, 
-    { name: "SLAM", image: imgSML },
-    { name: "", image: null } // Right Empty
+    { name: "", image: null, logoW: 0, logoH: 0 },
+    { name: "KALKI HANDICRAFT", image: imgKalki, logoW: 220, logoH: 100 },
+    { name: "SLAM FITNESS", image: imgSlam, logoW: 280, logoH: 90 },
+    { name: "AR THANGA KOTTAI", image: imgArtk, logoW: 220, logoH: 100 },
+    { name: "GOWHEELS", image: imgGoWheels, logoW: 260, logoH: 260 },
+    { name: "", image: null, logoW: 0, logoH: 0 },
   ];
 
   // Parallax Scroll Logic
@@ -181,8 +181,8 @@ export function TrustedBrands() {
                                     <TechDecorations index={index} />
 
                                     {/* Logo */}
-                                    <div className="w-[103px] h-[103px] md:w-[162px] md:h-[162px] absolute transition-all duration-500 ease-out group-hover/item:opacity-0 group-hover/item:scale-75 group-hover/item:blur-sm">
-                                        <img src={brand.image} alt={`${brand.name} Logo`} className="w-full h-full object-contain opacity-90 drop-shadow-lg" />
+                                    <div className="absolute transition-all duration-500 ease-out group-hover/item:opacity-0 group-hover/item:scale-75 group-hover/item:blur-sm" style={{ width: brand.logoW, height: brand.logoH, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 1 }}>
+                                        <img src={brand.image} alt={`${brand.name} Logo`} className="w-full h-full object-contain drop-shadow-lg" />
                                     </div>
                                     
                                     {/* Brand Name */}

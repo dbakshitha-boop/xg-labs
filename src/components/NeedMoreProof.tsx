@@ -35,13 +35,13 @@ export function NeedMoreProof() {
   const proofOpacity = useTransform(scrollYProgress, [0.5, 0.55], [0, 1]);
 
   // Final Position Spread (X for Desktop, Y for Mobile)
-  const needX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-272px"]);
+  const needX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-230px"]);
   const needY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "-70px" : "0px"]);
 
-  const moreX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-48px"]);
+  const moreX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-35px"]);
   const moreY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "0px"]);
 
-  const proofX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "218px"]);
+  const proofX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "200px"]);
   const proofY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "70px" : "0px"]);
 
   return (

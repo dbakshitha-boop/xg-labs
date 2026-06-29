@@ -2,6 +2,11 @@ import React, { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "motion/react";
 import imgLogo from "figma:asset/e41dee190168d7591c7b7b8c43b6c0799cb1032a.png";
 import imgRectangle from "figma:asset/192d853c9f27ed907c5b4d6ebe963ebe82df6c24.png";
+import imgLogo1 from "../assets/trustedbrands/White Logo.png";
+import imgLogo2 from "../assets/03355682553ef5be67447967b63be12b656b183b.png";
+import imgLogo3 from "../assets/trustedbrands/Creen Primary Logo.png";
+import imgLogoSlam from "../assets/trustedbrands/slam_logo.png";
+import imgLogo5 from "../assets/03f08e77f2789523074211d0a0c7a7d862b8e2bd.png";
 import { useCursor } from "./ui/CustomCursor";
 
 export function RealResults() {
@@ -86,7 +91,11 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             spread: { left: 127, top: 75, rotate: -5.89 },
             stack: { left: stackLeft, top: stackTop, rotate: -10.89 },
             zIndex: 1,
-            delay: 0.1
+            delay: 0.1,
+            quote: "Kalki Handicraft had a strong offline presence, but XG Labs helped us build a digital ecosystem that finally matched our ambition.",
+            name: "Chetan Singh",
+            role: "Founder, Kalki Handicraft",
+            logo: imgLogo1,
         },
         {
             id: "purple",
@@ -94,7 +103,11 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             spread: { left: 776, top: 75, rotate: -11.78 },
             stack: { left: stackLeft, top: stackTop, rotate: -8.78 },
             zIndex: 2,
-            delay: 0.2
+            delay: 0.2,
+            quote: "XG Labs translated our vision into a brand identity that feels relatable, memorable, and ready for the Malaysian market.",
+            name: "Shashidaraan Nair",
+            role: "CEO, Go Wheels",
+            logo: imgLogo3,
         },
         {
             id: "white",
@@ -102,7 +115,11 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             spread: { left: 1098, top: 75, rotate: -3.93 },
             stack: { left: stackLeft, top: stackTop, rotate: -5.93 },
             zIndex: 3,
-            delay: 0.3
+            delay: 0.3,
+            quote: "The consistency and quality of content from XG Labs gave our social media presence a completely new level of professionalism.",
+            name: "Udhay",
+            role: "Manager, SLAM Fitness & Lifestyle Studio",
+            logo: imgLogoSlam,
         },
         {
             id: "blue-2",
@@ -110,7 +127,11 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             spread: { left: 1366, top: 65, rotate: -9.82 },
             stack: { left: stackLeft, top: stackTop, rotate: -5.82 },
             zIndex: 4,
-            delay: 0.4
+            delay: 0.4,
+            quote: "They don't just create videos, they understand our brand voice and turn ideas into content our audience genuinely connects with.",
+            name: "Amarnadh",
+            role: "Owner, Andhra Spicy House",
+            logo: imgLogo5,
         },
         {
             id: "green",
@@ -118,8 +139,12 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             spread: { left: 452, top: 115, rotate: 7.85 },
             stack: { left: stackLeft, top: stackTop, rotate: -0.15 },
             zIndex: 5,
-            delay: 0.5
-        }
+            delay: 0.5,
+            quote: "XG Labs brought structure to our lead generation efforts and helped us build stronger trust with potential customers online.",
+            name: "Ranjith Manimaran",
+            role: "CEO, SML CARS",
+            logo: imgLogo2,
+        },
     ];
 
     if (isMobile) {
@@ -132,7 +157,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
                         key={card.id}
                         className="snap-start shrink-0 w-[85vw] md:w-[42vw] first:ml-0 last:mr-4"
                     >
-                         <card.component isMobile={true} />
+                         <card.component isMobile={true} quote={card.quote} name={card.name} role={card.role} logo={card.logo} />
                     </div>
                 ))}
             </div>
@@ -187,7 +212,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
                             delay: index * 0.5
                         }}
                     >
-                        <card.component isMobile={false} />
+                        <card.component isMobile={false} quote={card.quote} name={card.name} role={card.role} logo={card.logo} />
                     </motion.div>
                 </motion.div>
             ))}
@@ -198,40 +223,39 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
 // --- Card Components ---
 
 const CardBase = ({ bg, children, shadow = "shadow-[0px_0px_12px_0px_rgba(0,0,0,0.15)]" }: { bg: string, children: React.ReactNode, shadow?: string }) => (
-    <div className={`relative w-full h-full rounded-[12px] overflow-hidden ${bg} ${shadow} p-[28px] flex flex-col justify-between`}>
+    <div className={`relative w-full h-full rounded-[12px] overflow-hidden ${bg} ${shadow} p-[28px] flex flex-col`}>
         {children}
     </div>
 );
 
-const CardHeader = () => (
+const CardHeader = ({ name, role, logo }: { name: string; role: string; logo: string }) => (
     <div className="w-full flex justify-between items-start">
-         <div className="relative w-[48px] h-[48px]">
-            <img src={imgRectangle} alt="" className="w-full h-full object-contain" />
+         <div style={{ width: 80, height: 80, flexShrink: 0, position: 'relative' }}>
+            <img src={logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'left top' }} />
          </div>
-         
          <div className="flex flex-col items-end text-right">
-             <p className="text-[#6e6e6e] text-[16px] font-sora leading-[1.2]">-Arun Kumar</p>
-             <p className="text-[#9a9a9a] text-[16px] font-sora">CMO, BrightCart</p>
+             <p className="text-[#6e6e6e] text-[16px] font-sora leading-[1.2]">—{name}</p>
+             <p className="text-[#9a9a9a] text-[16px] font-sora">{role}</p>
          </div>
     </div>
 );
 
-const CardBody = () => (
-    <div className="w-full mt-auto">
-        <p className="font-space font-medium text-[#414141] text-[20px] md:text-[28px] leading-normal tracking-[-0.5px] md:tracking-[-1.12px] uppercase">
-            XG Labs brought clarity to our marketing we didn’t know we were missing.
+const CardBody = ({ quote }: { quote: string }) => (
+    <div style={{ width: '100%', marginTop: 'auto' }}>
+        <p className="font-space font-medium text-[#414141] uppercase" style={{ fontSize: 28, lineHeight: 1.25, letterSpacing: '-0.5px', margin: 0 }}>
+            {quote}
         </p>
     </div>
 );
 
-const CardContent = () => (
+const CardContent = ({ name, role, quote, logo }: { name: string; role: string; quote: string; logo: string }) => (
     <>
-        <CardHeader />
-        <CardBody />
+        <CardHeader name={name} role={role} logo={logo} />
+        <CardBody quote={quote} />
     </>
 );
 
-const WithHoverLogo = ({ children, isMobile }: { children: React.ReactNode, isMobile: boolean }) => {
+const WithHoverLogo = ({ children, isMobile, logo }: { children: React.ReactNode; isMobile: boolean; logo: string }) => {
     if (isMobile) {
         return (
             <div className="relative w-full h-[400px] md:h-[450px]">
@@ -241,48 +265,44 @@ const WithHoverLogo = ({ children, isMobile }: { children: React.ReactNode, isMo
     }
 
     return (
-        <motion.div 
+        <motion.div
             className="relative w-full max-w-[407px] h-[450px]"
             initial="initial"
             whileHover="hover"
         >
-            {/* Logo Card - APPEARS ABOVE */}
+            {/* Logo Card - APPEARS ON HOVER */}
             <motion.div
-                className="absolute bg-[#f9f9f9] rounded-[12px] shadow-2xl flex items-center justify-center border border-gray-100"
-                style={{ 
-                    width: 250, 
-                    height: 250,
-                    zIndex: 20, 
+                className="absolute bg-[#f9f9f9] rounded-[12px] shadow-2xl overflow-hidden"
+                style={{
+                    width: 200,
+                    height: 200,
+                    zIndex: 20,
                     top: 0,
                     left: 0,
-                    pointerEvents: "none", 
+                    pointerEvents: "none",
                     transformOrigin: "center center"
                 }}
                 variants={{
-                    initial: { 
+                    initial: {
                         opacity: 0,
-                        x: 80, 
+                        x: 80,
                         y: 80,
-                        rotate: 0,
                         scale: 0.8
                     },
-                    hover: { 
+                    hover: {
                         opacity: 1,
-                        x: -60, 
+                        x: -60,
                         y: -60,
-                        rotate: 0, 
                         scale: 1,
-                        transition: { 
-                            type: "spring", 
-                            stiffness: 300, 
-                            damping: 20 
+                        transition: {
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 20
                         }
                     }
                 }}
             >
-                <div className="w-[160px] h-[80px]">
-                    <img src={imgRectangle} alt="Logo" className="w-full h-full object-contain mix-blend-multiply opacity-90" />
-                </div>
+                <img src={logo} alt="Logo" className="w-full h-full object-cover" />
             </motion.div>
 
             {/* Main Card Content */}
@@ -295,55 +315,59 @@ const WithHoverLogo = ({ children, isMobile }: { children: React.ReactNode, isMo
 
 interface CardProps {
     isMobile?: boolean;
+    name: string;
+    role: string;
+    quote: string;
+    logo: string;
 }
 
-const CardBlue = ({ isMobile = false }: CardProps) => (
-    <WithHoverLogo isMobile={isMobile}>
+const CardBlue = ({ isMobile = false, name, role, quote, logo }: CardProps) => (
+    <WithHoverLogo isMobile={isMobile} logo={logo}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
             </div>
             <CardBase bg="bg-[#b3e5fc]">
-                <CardContent />
+                <CardContent name={name} role={role} quote={quote} logo={logo} />
             </CardBase>
         </div>
     </WithHoverLogo>
 );
 
-const CardPurple = ({ isMobile = false }: CardProps) => (
-    <WithHoverLogo isMobile={isMobile}>
+const CardPurple = ({ isMobile = false, name, role, quote, logo }: CardProps) => (
+    <WithHoverLogo isMobile={isMobile} logo={logo}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
             </div>
             <CardBase bg="bg-[#d8c0ff]">
-                <CardContent />
+                <CardContent name={name} role={role} quote={quote} logo={logo} />
             </CardBase>
         </div>
     </WithHoverLogo>
 );
 
-const CardWhite = ({ isMobile = false }: CardProps) => (
-    <WithHoverLogo isMobile={isMobile}>
+const CardWhite = ({ isMobile = false, name, role, quote, logo }: CardProps) => (
+    <WithHoverLogo isMobile={isMobile} logo={logo}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
             </div>
             <CardBase bg="bg-white">
-                <CardContent />
+                <CardContent name={name} role={role} quote={quote} logo={logo} />
             </CardBase>
         </div>
     </WithHoverLogo>
 );
 
-const CardGreen = ({ isMobile = false }: CardProps) => (
-    <WithHoverLogo isMobile={isMobile}>
+const CardGreen = ({ isMobile = false, name, role, quote, logo }: CardProps) => (
+    <WithHoverLogo isMobile={isMobile} logo={logo}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
             </div>
             <CardBase bg="bg-[#d9fb60]">
-                <CardContent />
+                <CardContent name={name} role={role} quote={quote} logo={logo} />
             </CardBase>
         </div>
     </WithHoverLogo>

@@ -32,8 +32,8 @@ export function BlogInsightsSection() {
       ref={trackRef}
       style={{
         background: "#ffffff",
-        paddingTop: "80px",
-        paddingBottom: "120px",
+        paddingTop: "48px",
+        paddingBottom: "60px",
         overflow: "hidden",
       }}
     >
@@ -43,7 +43,7 @@ export function BlogInsightsSection() {
           display: "grid",
           gridTemplateColumns: "1fr auto",
           alignItems: "flex-start",
-          padding: "0 72px 56px",
+          padding: "0 72px 32px",
           gap: "48px",
         }}
       >
@@ -55,10 +55,11 @@ export function BlogInsightsSection() {
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 700,
-              fontSize: "15px",
-              letterSpacing: "0.2em",
+              fontFamily: "'Sora', sans-serif",
+              fontWeight: 600,
+              fontSize: "28px",
+              lineHeight: "1.2",
+              letterSpacing: "-0.02em",
               textTransform: "uppercase",
               color: "#1a1a1a",
               margin: 0,
@@ -73,14 +74,14 @@ export function BlogInsightsSection() {
             viewport={{ once: true, margin: "-60px" }}
             transition={{ delay: 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Cal Sans', 'Sora' sans-serif",
               fontWeight: 700,
-              fontSize: "clamp(36px, 4.5vw, 64px)",
-              lineHeight: "1.15",
-              letterSpacing: "-0.03em",
-              color: "#1a1a1a",
+              fontSize: "46px",
+              lineHeight: "1.2",
+              letterSpacing: "-0.02em",
+              color: "#5F5F5F",
               margin: 0,
-              maxWidth: "780px",
+              maxWidth: "1000px",
             }}
           >
             Insights that help brands grow smarter and scale faster.
@@ -96,7 +97,7 @@ export function BlogInsightsSection() {
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-end",
+            alignItems: "flex-start",
             gap: "20px",
             paddingTop: "8px",
           }}
@@ -109,7 +110,7 @@ export function BlogInsightsSection() {
               lineHeight: "1.6",
               color: "#777777",
               margin: 0,
-              textAlign: "right",
+              textAlign: "left",
               maxWidth: "220px",
             }}
           >
@@ -189,8 +190,8 @@ export function BlogInsightsSection() {
           overflowY: "visible",
           paddingLeft: "72px",
           paddingRight: "72px",
-          paddingBottom: "140px",
-          paddingTop: "16px",
+          paddingBottom: "60px",
+          paddingTop: "4px",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
@@ -314,16 +315,11 @@ export function BlogInsightsSection() {
                         exit={{ height: 0 }}
                         transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
                         style={{
-                          position: "absolute",
-                          top: "100%",
-                          left: 0,
-                          right: 0,
                           overflow: "hidden",
                           background: "#F2F2F2",
                           borderLeft: "1px solid #9A9A9A",
                           borderRight: "1px solid #9A9A9A",
                           borderBottom: "1px solid #9A9A9A",
-                          zIndex: 10,
                         }}
                       >
                         <motion.p

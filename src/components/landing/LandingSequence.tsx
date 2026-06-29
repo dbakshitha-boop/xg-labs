@@ -27,6 +27,14 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     // Overflow state for glow effect
     const [overflowVisible, setOverflowVisible] = useState(false);
 
+    // Viewport width — drives all horizontal scroll math
+    const [viewWidth, setViewWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1440);
+    useEffect(() => {
+        const onResize = () => setViewWidth(window.innerWidth);
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
+
     // 1. Trigger Sequence when Loading Screen (App Level) finishes
     useEffect(() => {
         if (startSequence) {
@@ -167,7 +175,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                 left: "35vw",
                 top: "50%",
                 y: "-50%",
-                x: `calc(-50% - ${scrollStep * 1304}px)`,
+                x: `calc(-50% - ${scrollStep * viewWidth * 0.7}px)`,
                 transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] }
             };
         }
@@ -242,7 +250,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                 {layoutShift && (
                     <motion.div
                         initial={{ x: "30%", opacity: 0 }}
-                        animate={showContent ? { x: -scrollStep * 1304, opacity: 1 } : { x: 0, opacity: 1 }}
+                        animate={showContent ? { x: -scrollStep * viewWidth * 0.7, opacity: 1 } : { x: 0, opacity: 1 }}
                         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: showContent ? 0 : 0.1 }}
                         className="absolute inset-0 pointer-events-none"
                     >
@@ -256,7 +264,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                 {showContent && (
                     <motion.div
                         initial={{ x: 0 }}
-                        animate={{ x: -scrollStep * 1304 }}
+                        animate={{ x: -scrollStep * viewWidth * 0.7 }}
                         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute inset-0 pointer-events-none"
                     >
@@ -270,12 +278,19 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                 {showContent && (
                     <motion.div
                         initial={{ x: 0 }}
-                        animate={{ x: -scrollStep * 1304 }}
+                        animate={{ x: -scrollStep * viewWidth * 0.7 }}
                         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute inset-0 pointer-events-none"
                     >
                         <div className="pointer-events-auto">
-                            <ContactSection />
+                            <ContactSection
+                                onClose={() => {
+                                    document.body.style.overflow = "auto";
+                                    const next = document.getElementById("what-makes-us-different");
+                                    if (next) next.scrollIntoView({ behavior: "smooth" });
+                                    else window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+                                }}
+                            />
                         </div>
                     </motion.div>
                 )}
@@ -291,7 +306,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                         </motion.div>
 
                         <motion.div
-                             animate={{ width: scrollStep === 0 ? "70vw" : "100vw" }}
+                             animate={{ width: scrollStep === 3 ? "100vw" : "70vw", opacity: scrollStep === 1 ? 0 : 1 }}
                              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                              className="absolute top-0 left-0 h-full z-50 pointer-events-none"
                         >
@@ -309,6 +324,25 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                                 <ScrollContainer onNext={handleNextScroll} onPrev={handlePrevScroll} hideText={scrollStep > 0} />
                             </div>
                         </motion.div>
+
+                        {/* Previous button — only visible on contact section */}
+                        {scrollStep === 3 && (
+                            <motion.button
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={handlePrevScroll}
+                                className="absolute bottom-[40px] z-[200] pointer-events-auto cursor-pointer"
+                                style={{ left: "max(40px, calc((100vw - 1224px) / 2))" }}
+                            >
+                                <div className="relative size-[40px]">
+                                    <svg className="block size-full" fill="none" viewBox="0 0 40 40">
+                                        <rect height="39" rx="19.5" stroke="rgba(255,255,255,0.6)" width="39" x="0.5" y="0.5" />
+                                        <path d="M22 13L15 20L22 27" stroke="rgba(255,255,255,0.6)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                                    </svg>
+                                </div>
+                            </motion.button>
+                        )}
                     </>
                 )}
             </div>

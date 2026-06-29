@@ -7,7 +7,7 @@ import imgC3 from "figma:asset/cf73ccd40dc24f9d1feec565d29fe7d28fd3690b.png";
 import imgC2 from "figma:asset/308a1ec46f49ee27f236c5b52a0022c154701558.png";
 import imgC1 from "figma:asset/c6f75c6d8668e22eaf393503de064b054afa1040.png";
 import imgC5 from "../assets/selectedwork_SLAM.jpeg";
-import imgC6 from "../assets/selectedwork_KH.jpeg";
+import imgC6 from "../assets/selectedwork_KH2.png";
 import imgC7 from "../assets/selectedwork_Gowheels.jpeg";
 import { useCursor } from "./ui/CustomCursor";
 
@@ -55,7 +55,7 @@ const projects = [
     title: ["High-Impact", "Social Contents"],
     client: "SLAM",
     type: "Lifestyle & Fitness Studio",
-    date: "JUL 2024",
+    date: "SEP 2025",
     shortDescription: (
       <>
         A premium lifestyle and fitness studio focused on modern training experiences and community-driven workouts.
@@ -74,7 +74,7 @@ const projects = [
     id: 2,
     title: ["E-commerce Growth", "& Sales Acceleration"],
     client: "Kalki Handicraft",
-    type: "",
+    type: "E-commerce Lifestyle Brand",
     date: "DEC 2024",
     shortDescription: (
       <>
@@ -93,8 +93,8 @@ const projects = [
     id: 3,
     title: ["Brand Identity", "& Visual System Design"],
     client: "Go Wheels",
-    type: "",
-    date: "JUN 2024",
+    type: "Mobility & Transportation Platform",
+    date: "JUN 2025",
     shortDescription: (
       <>
         A Malaysia-based bus ride-hailing platform designed to make occasional mass commuting simple and accessible.
@@ -102,7 +102,7 @@ const projects = [
     ),
     longDescription: (
       <>
-        We built a complete brand identity system for Go Wheels, including a visual brand kit and mascot, to create a relatable, modern, and consistent brand presence for a new market launch.
+          We built a complete visual identity for Go Wheels, a Malaysia-based bus mobility platform, creating a brand kit and mascot designed to connect with local audiences and support market entry.
       </>
     ),
     tags: ["Branding", "Visual Identity", "Mascot Design"],
@@ -121,12 +121,10 @@ export function SelectedWork() {
     offset: ["start start", "end end"],
   });
 
-  // Smooth, elegant spring transition
+  // Smooth eased tween transition
   const transition = {
-    type: "spring" as const,
-    stiffness: 80,
-    damping: 20,
-    mass: 1
+    duration: 0.7,
+    ease: [0.16, 1, 0.3, 1] as [number, number, number, number]
   };
 
   const [isDesktop, setIsDesktop] = useState(false);
@@ -378,9 +376,8 @@ export function SelectedWork() {
                         scale: relativeIndex === 0 ? 1 : 0.95 + (relativeIndex * 0.01), // Subtle scale difference
                       }}
                       transition={{
-                        type: "spring",
-                        stiffness: 120, // Snappier
-                        damping: 15
+                        duration: 0.7,
+                        ease: [0.16, 1, 0.3, 1] as [number, number, number, number]
                       }}
                       style={{
                         display: isVisible ? "block" : "none"
@@ -440,22 +437,27 @@ export function SelectedWork() {
                 ))}
               </div>
 
-              {/* ROLE + Tags — slightly above image bottom margin */}
-              <div className="mt-auto flex flex-col gap-2" style={{ marginBottom: "80px" }}>
+              {/* ROLE + Tags — aligned with bottom of card image */}
+              <div className="mt-auto flex flex-col gap-2" style={{ marginBottom: "36px" }}>
                 <span className="text-xs font-bold text-gray-400 uppercase tracking-widest font-space">Role</span>
                 <div className="relative" style={{ minHeight: "18px" }}>
                   {projects.map((project, index) => (
                     <motion.div
                       key={project.id}
-                      className="absolute top-0 left-0 w-full flex flex-nowrap gap-5 justify-start"
+                      className="absolute top-0 left-0 w-full flex flex-wrap items-center gap-y-2 justify-start" style={{ columnGap: "6px" }}
                       initial={false}
                       animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 10 }}
                       transition={transition}
                     >
                       {project.tags.map((tag, i) => (
-                        <span key={i} className="text-xs font-bold text-[#6E6E6E] uppercase tracking-wider font-['Cal_Sans',sans-serif] whitespace-nowrap">
-                          {tag}
-                        </span>
+                        <React.Fragment key={i}>
+                          {i > 0 && (
+                            <span className="text-[#9A9A9A] select-none" style={{ fontSize: "13px", lineHeight: 1, display: "inline-flex", alignItems: "center" }}>•</span>
+                          )}
+                          <span className="font-bold text-[#6E6E6E] uppercase font-['Cal_Sans',sans-serif] whitespace-nowrap" style={{ fontSize: "13px", letterSpacing: "0.08em", lineHeight: 1, display: "inline-flex", alignItems: "center" }}>
+                            {tag}
+                          </span>
+                        </React.Fragment>
                       ))}
                     </motion.div>
                   ))}

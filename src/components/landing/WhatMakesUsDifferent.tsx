@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, useScroll } from "motion/react";
 import svgPaths from "../../imports/svg-0jzj7gw8ha";
-import imgImage from "figma:asset/e65084b764b6b3a23611cf721764131dce2753ec.png";
-import imgImage1 from "figma:asset/b178cfc933d6e839b8ae373df90d9a43d32a3ba3.png";
-import imgImage2 from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
-import imgImage3 from "figma:asset/5ec29e10b8bc313af65bffb9348975a88addfd32.png";
+import imgAndhraSH from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
+import imgGoWheels from "../../assets/whatmakesus/2.png";
+import imgBrandopedia from "../../assets/whatmakesus/1.png";
+import imgKalki from "../../assets/whatmakesus/4.png";
 
 const CONTENT_DATA = [
   {
@@ -86,7 +86,7 @@ function RectangleGrid({ progress }: { progress: number }) {
   );
 }
 
-const IMAGES = [imgImage, imgImage1, imgImage2, imgImage3];
+const IMAGES = [imgBrandopedia, imgGoWheels, imgKalki, imgAndhraSH];
 
 // Restored specific rotations to hint at the stack depth
 // Image 1: 343.7 deg (-16.3 deg)
@@ -149,8 +149,9 @@ function CardStack({ activeIndex }: { activeIndex: number }) {
               animate={{ rotate: rotation }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
             >
-              <div 
-                className="relative rounded-[12px] shadow-[0px_3.4px_8.5px_0px_rgba(0,0,0,0.1)] w-[180px] lg:w-[266px] h-[194px] lg:h-[287px]"
+              <div
+                className="relative rounded-[12px] shadow-[0px_3.4px_8.5px_0px_rgba(0,0,0,0.1)]"
+                style={{ width: "290px", height: "314px" }}
               >
                 <img 
                   alt="" 
@@ -168,7 +169,7 @@ function CardStack({ activeIndex }: { activeIndex: number }) {
 
 function RoundForImage({ activeIndex }: { activeIndex: number }) {
   return (
-    <div className="absolute bg-[#f7f8fa] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full aspect-square w-[70vw] h-[70vw] lg:w-[912px] lg:h-[912px]" data-name="Round for image">
+    <div className="absolute bg-[#f7f8fa] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full" style={{ width: "min(620px, 56vw)", height: "min(620px, 56vw)" }} data-name="Round for image">
         <CardStack activeIndex={activeIndex} />
     </div>
   );
@@ -197,7 +198,7 @@ function HeaderContainer() {
   return (
     <div className="content-stretch flex flex-col gap-[16px] lg:gap-[32px] items-start relative shrink-0 w-full" data-name="Header Container">
       <HeaderTextContainer />
-      <p className="font-['Sora',sans-serif] font-normal leading-[1.4] relative text-[#5f5f5f] text-[18px] lg:text-[26px] tracking-normal w-full max-w-none">
+      <p className="font-['Sora',sans-serif] font-normal leading-[1.4] relative text-[#5f5f5f] text-[18px] lg:text-[26px] tracking-normal w-full max-w-none" style={{ marginBottom: "52px" }}>
         We blend strategy, design, and storytelling into work that feels modern, intentional, and built to move brands forward. Every idea is crafted with clarity and purpose — no noise, no filler, just high-impact creative that works.
       </p>
     </div>
@@ -206,30 +207,30 @@ function HeaderContainer() {
 
 function RevealText({ children, delay = 0, isActive }: { children: React.ReactNode, delay?: number, isActive: boolean }) {
   return (
-    <div className="relative inline-block overflow-hidden align-bottom pb-[0.2em] -mb-[0.2em] font-['Cal_Sans',sans-serif]">
-      {/* The Text Content - Initially Hidden, then Revealed */}
+    <div className="relative inline-block overflow-hidden align-bottom pb-[0.2em] -mb-[0.2em] font-['Sora',sans-serif]">
+      {/* Text fades in smoothly as curtain exits */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isActive ? 1 : 0 }}
-        transition={{ duration: 0.01, delay: isActive ? delay + 0.36 : 0 }} // ~45% of 0.8s
+        transition={{ duration: 0.2, delay: isActive ? delay + 0.25 : 0 }}
         className="leading-[1.15]"
       >
         {children}
       </motion.div>
 
-      {/* The Teal Curtain Block */}
+      {/* Teal curtain wipe */}
       <motion.div
         className="absolute top-0 bottom-0 left-0 right-0 bg-[#00A88D] z-10"
         initial={{ scaleX: 0, originX: 0 }}
-        animate={isActive ? { 
-          scaleX: [0, 1, 1, 0], 
-          originX: [0, 0, 1, 1] 
+        animate={isActive ? {
+          scaleX: [0, 1, 1, 0],
+          originX: [0, 0, 1, 1]
         } : { scaleX: 0 }}
-        transition={{ 
-          duration: 0.8, // 800ms duration
+        transition={{
+          duration: 0.55,
           delay: delay,
           times: [0, 0.45, 0.55, 1],
-          ease: [0.76, 0, 0.24, 1] // Custom smooth bezier
+          ease: [0.76, 0, 0.24, 1]
         }}
       />
     </div>
@@ -238,7 +239,7 @@ function RevealText({ children, delay = 0, isActive }: { children: React.ReactNo
 
 function SubheaderContainer({ title, id }: { title: string, id: string }) {
   return (
-    <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#060606] text-[18px] lg:text-[24px] uppercase w-full" data-name="Subheader Container">
+    <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#060606] uppercase w-full" style={{ fontSize: "clamp(20px, 2.2vw, 32px)" }} data-name="Subheader Container">
       <p className="basis-0 grow min-h-px min-w-px relative shrink-0">{title}</p>
     </div>
   );
@@ -246,12 +247,12 @@ function SubheaderContainer({ title, id }: { title: string, id: string }) {
 
 function ContentContainer({ description, title, id }: { description: string[], title: string, id: string }) {
   return (
-    <div className="content-stretch flex flex-col gap-[12px]  items-start relative shrink-0 w-full" data-name="Content Container">
+    <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full" data-name="Content Container">
       <SubheaderContainer title={title} id={id} />
       <div className="flex flex-col w-full">
         {description.map((line, idx) => (
-             <div key={idx} className="relative font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic text-[#6e6e6e] text-[clamp(28px,6vw,40px)] lg:text-[52px] w-full whitespace-normal">
-                <RevealText delay={idx * 0.15} isActive={true}>
+             <div key={idx} className="relative font-['Sora',sans-serif] font-normal leading-[1.4] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(18px, 1.8vw, 26px)" }}>
+                <RevealText delay={idx * 0.1} isActive={true}>
                   {line}
                 </RevealText>
              </div>
@@ -270,7 +271,7 @@ function RealContent({ activeIndex }: { activeIndex: number }) {
         key={content.id}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.3 }}
         className="w-full"
       >
         <ContentContainer 
@@ -285,7 +286,7 @@ function RealContent({ activeIndex }: { activeIndex: number }) {
 
 function TextContainer({ activeIndex }: { activeIndex: number }) {
   return (
-    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full gap-8 lg:gap-[48px]" style={{ padding: "clamp(24px, 5vw, 80px)", paddingTop: "clamp(40px, 4vw, 64px)", justifyContent: "flex-start" }} data-name="Text Container">
+    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full gap-[40px] lg:gap-[64px]" style={{ padding: "clamp(24px, 5vw, 80px)", paddingTop: "clamp(40px, 4vw, 64px)", justifyContent: "flex-start" }} data-name="Text Container">
       <HeaderContainer />
       <div>
         <RealContent activeIndex={activeIndex} />
@@ -326,7 +327,7 @@ export function WhatMakesUsDifferent() {
   }, [scrollYProgress]);
 
   return (
-    <div ref={containerRef} className="relative h-[400vh]" data-name="Scroll Container">
+    <div ref={containerRef} id="what-makes-us-different" className="relative h-[400vh]" data-name="Scroll Container">
       <div className="sticky top-0 h-screen overflow-hidden bg-white">
         <div className="content-stretch flex flex-col lg:flex-row items-stretch relative w-full h-full">
           {/* Image side - takes 40% height on mobile, 50% width on desktop */}

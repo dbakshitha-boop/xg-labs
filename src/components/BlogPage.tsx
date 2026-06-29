@@ -250,7 +250,7 @@ export function BlogPage() {
             </div>
 
             {/* Right */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-end" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-start" }}>
               <p
                 style={{
                   fontFamily: "'Space Grotesk', sans-serif",
@@ -260,12 +260,12 @@ export function BlogPage() {
                   margin: 0,
                   marginBottom: "12px",
                   letterSpacing: "0.02em",
-                  textAlign: "right",
+                  textAlign: "left",
                 }}
               >
                 {articles[0].readTime}
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "380px", alignItems: "flex-start" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%", alignItems: "flex-start" }}>
                 <p
                   style={{
                     fontFamily: "'Sora', sans-serif",

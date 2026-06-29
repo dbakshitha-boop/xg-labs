@@ -288,7 +288,7 @@ export function PortfolioPage() {
                     if (info.offset.x < -50) nextCard();
                     else if (info.offset.x > 50) prevCard();
                   }}
-                  style={{ display: "flex", gap: 0, height: "100%", cursor: "grab" }}
+                  style={{ display: "flex", gap: "24px", height: "100%", cursor: "grab" }}
                 >
                   {METRIC_CARDS.map((card, i) => {
                     const lid = i === 0 ? "pf-img-0" : i === 1 ? "pf-img-1" : undefined;
@@ -297,8 +297,8 @@ export function PortfolioPage() {
                       minWidth: cardPxWidth > 0 ? `${cardPxWidth}px` : "50%",
                       flexShrink: 0, height: "100%",
                       display: "flex", flexDirection: "column", gap: "14px",
-                      paddingRight: i % 2 === 0 ? "10px" : "0",
-                      paddingLeft:  i % 2 === 1 ? "10px" : "0",
+                      paddingRight: 0,
+                      paddingLeft: 0,
                       boxSizing: "border-box",
                     }}>
                       <motion.div

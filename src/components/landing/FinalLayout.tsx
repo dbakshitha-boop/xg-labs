@@ -59,11 +59,11 @@ function TextContainer() {
       data-name="Text Container"
     >
       <p className="font-['Sora:Regular',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
-      <p className="font-['Cal_Sans',sans-serif] leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full">Strategy Over Everything</p>
-      <p className="font-['Sora:Regular',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">
-        {`We align strategy, creative, and execution to `}
-        <br aria-hidden="true" />
-        drive measurable growth.
+      <p className="font-['Cal_Sans',sans-serif] leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center">From Vision<br />To Velocity</p>
+      <p className="font-['Sora:Regular',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full text-center">
+        We align strategy, creative, and performance
+        <br />
+        to accelerate growth.
       </p>
     </motion.div>
   );
@@ -109,11 +109,11 @@ function ArrowContainer({ onPrev, onNext }: { onPrev?: () => void; onNext?: () =
 function Frame4() {
   return (
     <div className="content-stretch flex flex-col gap-[24px] items-center relative shrink-0 w-full">
-      <div className="flex flex-col font-['Sora:Regular',sans-serif] font-normal justify-center leading-[0] relative shrink-0 text-[#5f5f5f] text-[32px] tracking-[-0.64px] uppercase w-full">
-        <p className="leading-[1.1]">WE'RE XG LABS</p>
+      <div className="flex flex-col justify-center relative shrink-0 w-full text-center">
+        <p className="font-['Sora',sans-serif] font-normal text-[32px] leading-[1.1] tracking-[-0.02em] uppercase text-[#5f5f5f]">WE'RE XG LABS</p>
       </div>
-      <p className="font-bold font-['Cal_Sans',sans-serif] leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#414141] text-[80px] w-full">
-        A creative partner for brands who refuse to be{" "}
+      <p className="font-['Cal_Sans',sans-serif] font-normal not-italic relative shrink-0 text-[#414141] text-center w-full" style={{ fontSize: '60px', lineHeight: '1.1', letterSpacing: '-0.02em' }}>
+        A creative partner for brands<br />who refuse to be{" "}
         <span className="relative inline-block mx-1 px-4">
           <span className="relative z-10 text-white">ordinary.</span>
           <motion.span
@@ -132,9 +132,9 @@ function Frame4() {
 
 function Frame5() {
   return (
-    <div className="absolute content-stretch flex flex-col gap-[24px] items-center left-1/2 text-center top-[calc(50%-70.5px)] translate-x-[-50%] translate-y-[-50%] w-[1050px]">
+    <div className="absolute flex flex-col gap-[28px] items-center left-1/2 text-center top-1/2 -translate-x-1/2 -translate-y-1/2 z-10" style={{ width: "min(900px, calc(100% - 20px))" }}>
       <Frame4 />
-      <p className="font-['Sora:Regular',sans-serif] font-normal leading-[normal] relative shrink-0 text-[#6e6e6e] text-[24px] w-[746px]">We turn ideas into visuals that move people — and move brands forward.Every piece we create is intentional, expressive, and designed to hit with purpose.</p>
+      <p className="font-['Sora',sans-serif] font-normal text-center relative shrink-0 text-[#6e6e6e] mx-auto" style={{ fontSize: '20px', lineHeight: '1.5', letterSpacing: '0', maxWidth: '650px' }}>We turn ideas into visuals that move people — and move brands forward. Every piece we create is intentional, expressive, and designed to hit with purpose.</p>
     </div>
   );
 }
@@ -192,16 +192,16 @@ export function AboutSection({ scrollStep }: { scrollStep: number }) {
   const isVisible = scrollStep === 2;
 
   return (
-    <div className="absolute bg-[#f7f8fa] h-[1080px] left-[2608px] overflow-hidden top-1/2 translate-y-[-50%] w-[1304px]">
+    <div className="absolute bg-[#f7f8fa] h-[1080px] overflow-hidden top-1/2 translate-y-[-50%]" style={{ left: "140vw", width: "70vw" }}>
       {/* Grid Background */}
-      <div className="absolute h-[1080px] left-1/2 opacity-5 top-1/2 translate-x-[-50%] translate-y-[-50%] w-[1304px]">
+      <div className="absolute h-[1080px] left-1/2 opacity-5 top-1/2 translate-x-[-50%] translate-y-[-50%] w-full">
         <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgGrid} />
       </div>
 
-      {/* Ellipse */}
-      <div className="absolute h-[1076px] left-[calc(50%-29.5px)] top-1/2 translate-x-[-50%] translate-y-[-50%] w-[1075px]">
-        <svg className="block size-full" fill="none" viewBox="0 0 1075 1076">
-          <ellipse cx="537.5" cy="538" fill="white" rx="537.5" ry="538" />
+      {/* Circle */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: "900px", height: "900px" }}>
+        <svg className="block w-full h-full" fill="none" viewBox="0 0 1040 1040">
+          <circle cx="520" cy="520" fill="white" r="520" />
         </svg>
       </div>
 
@@ -301,43 +301,45 @@ export function WorkSection({ scrollStep = 0 }: { scrollStep?: number }) {
     y3.set(spring3.get() + Math.sin(t * 0.32 + 3.0) * 50);
   });
 
+  // 40px left margin, 20px gaps between 3 cols, no right margin (next section provides the visual boundary)
+  const colWidth = "calc((100% - 80px) / 3)";
+
   return (
     <div
-      className="absolute h-[1080px] top-1/2 translate-y-[-50%] w-[1304px] overflow-hidden bg-white/5"
-      style={{ left: "70vw" }}
+      className="absolute h-[1080px] top-1/2 translate-y-[-50%] overflow-hidden"
+      style={{ left: "70vw", width: "70vw" }}
     >
       <motion.div
-        style={{ y: y1 }}
-        className="absolute content-stretch flex flex-col gap-[20px] h-auto items-start left-[20px] top-[-370px] w-[408px]"
+        style={{ y: y1, left: "20px", width: colWidth }}
+        className="absolute flex flex-col gap-[20px] h-auto items-start top-[-370px]"
       >
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage1} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage2} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage3} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage1} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage2} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage3} /></div>
       </motion.div>
 
       <motion.div
-        style={{ y: y2 }}
-        className="absolute content-stretch flex flex-col gap-[20px] h-auto items-start left-[448px] top-[-600px] w-[408px]"
+        style={{ y: y2, left: "calc(40px + (100% - 80px) / 3)", width: colWidth }}
+        className="absolute flex flex-col gap-[20px] h-auto items-start top-[-600px]"
       >
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage4} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage5} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px] overflow-clip">
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage4} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage5} /></div>
+        <div className="h-[440px] relative shrink-0 w-full overflow-clip">
           <img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage6} />
-          <div className="absolute h-[510px] left-0 top-0 w-[408px]" />
         </div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage7} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage5} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage7} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage5} /></div>
       </motion.div>
 
       <motion.div
-        style={{ y: y3 }}
-        className="absolute content-stretch flex flex-col gap-[20px] h-auto items-start left-[876px] top-[-370px] w-[408px]"
+        style={{ y: y3, left: "calc(60px + (100% - 80px) * 2 / 3)", width: colWidth }}
+        className="absolute flex flex-col gap-[20px] h-auto items-start top-[-370px]"
       >
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage8} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage9} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage10} /></div>
-        <div className="h-[440px] relative shrink-0 w-[408px]"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage11} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage8} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage9} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage10} /></div>
+        <div className="h-[440px] relative shrink-0 w-full"><img alt="" className="absolute inset-0 object-cover w-full h-full" src={imgImage11} /></div>
       </motion.div>
     </div>
   );
@@ -426,7 +428,7 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
       animate={{ y: hidden ? -120 : 0, opacity: hidden ? 0 : 1 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       onMouseLeave={() => setServiceOpen(false)}
-      className={`absolute flex flex-col left-1/2 -translate-x-1/2 top-[40px] z-50 pointer-events-auto rounded-[8px] ${dark ? "ring-1 ring-white/[0.15]" : "bg-white shadow-[0px_0px_15px_0px_rgba(0,0,0,0.05)]"}`}
+      className={`fixed flex flex-col left-1/2 -translate-x-1/2 top-[40px] z-50 pointer-events-auto rounded-[8px] ${dark ? "ring-1 ring-white/[0.15]" : "bg-white shadow-[0px_0px_15px_0px_rgba(0,0,0,0.05)]"}`}
       style={{ width: "min(1224px, calc(100% - 80px))", ...(dark ? { background: "#2A2A2A" } : {}) }}
     >
       {/* Main bar row */}
@@ -670,7 +672,7 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
             </div>
 
             {/* Crossfading image */}
-            <div style={{ width: "140px", flexShrink: 0, borderRadius: "10px", overflow: "hidden", alignSelf: "stretch", position: "relative", minHeight: "160px" }}>
+            <div style={{ width: "200px", flexShrink: 0, borderRadius: "10px", overflow: "hidden", alignSelf: "stretch", position: "relative", minHeight: "160px" }}>
               {SERVICE_ITEMS.map((svc) => (
                 <img
                   key={svc.slug}
@@ -692,30 +694,31 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
           </div>
 
           {/* Right: Connect With */}
-          <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "12px" }}>
+          <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "6px", marginLeft: "26px" }}>
             <p style={{
               fontFamily: "'Space Grotesk', sans-serif",
               fontWeight: 700,
-              fontSize: "11px",
+              fontSize: "10px",
               letterSpacing: "0.14em",
               textTransform: "uppercase",
               color: dark ? "rgba(255,255,255,0.4)" : "#888888",
               margin: 0,
+              marginBottom: "2px",
             }}>
               Connect With
             </p>
             {[
-              "+91 98765 43210",
-              "hello@xglabs.agency",
-              "Ramachantra Medical College, Porur Chennai",
+              "+91 63699 74530",
+              "xglabs@thebrandopedia.in",
+              "Chennai, Tamilnadu, India.",
             ].map((line) => (
               <p key={line} style={{
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontWeight: 400,
-                fontSize: "13px",
+                fontSize: "12px",
                 color: dark ? "rgba(255,255,255,0.7)" : "#1a1a1a",
                 margin: 0,
-                lineHeight: "1.5",
+                lineHeight: "1.4",
               }}>
                 {line}
               </p>
@@ -731,13 +734,13 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
 
 // --- Contact Section ---
 
-export function ContactSection() {
+export function ContactSection({ onClose }: { onClose?: () => void }) {
   return (
     <div
-      className="absolute h-[1080px] left-[3912px] overflow-clip top-1/2 translate-y-[-50%] w-[1304px]"
-      style={{ background: "#0e0e0e", display: "flex", flexDirection: "column" }}
+      className="absolute h-[1080px] overflow-clip top-1/2 translate-y-[-50%]"
+      style={{ left: "210vw", width: "100vw", background: "#0e0e0e", display: "flex", flexDirection: "column" }}
     >
-      <ContactFormContent embedded />
+      <ContactFormContent embedded onClose={onClose} />
     </div>
   );
 }

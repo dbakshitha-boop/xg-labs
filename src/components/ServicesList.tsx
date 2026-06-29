@@ -370,7 +370,7 @@ function ServiceCard({
         </div>
 
         {/* Right Column: Content Lines & Deliverables */}
-        <div className="w-full lg:flex-1 min-w-0 relative z-10 py-10 lg:py-[60px]" style={{ borderTop: "1px solid #6E6E6E", borderBottom: "1px solid #6E6E6E" }}>
+        <div className="w-full lg:flex-1 min-w-0 relative z-10 py-10 lg:py-[60px]" style={{ borderBottom: "1px solid #6E6E6E" }}>
           <div className="flex flex-col h-full">
             {/* Content Lines */}
             <div className="flex flex-col gap-0 mb-6 lg:mb-[60px] w-full z-30">

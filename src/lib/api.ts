@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.VITE_API_URL ?? "";
+
 // MongoDB _id can come as a plain string, an ObjectId toString, or { $oid: "..." }
 export function getArticleId(article: any): string {
   const id = article?._id ?? article?.id;
@@ -114,7 +116,7 @@ function transformArticle(raw: RawArticle): Article {
 }
 
 export async function fetchArticles(): Promise<Article[]> {
-  const res = await fetch("/api/articles");
+  const res = await fetch(`${API_URL}/api/articles`);
   if (!res.ok) throw new Error(`Error ${res.status}`);
   const raw: RawArticle[] = await res.json();
   return raw.map(transformArticle);
@@ -129,7 +131,7 @@ export interface ContactSubmission {
 }
 
 export async function subscribeEmail(email: string): Promise<void> {
-  const res = await fetch("/api/subscribe", {
+  const res = await fetch(`${API_URL}/api/subscribe`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -141,7 +143,7 @@ export async function subscribeEmail(email: string): Promise<void> {
 }
 
 export async function submitContactForm(data: ContactSubmission): Promise<void> {
-  const res = await fetch("/api/contact", {
+  const res = await fetch(`${API_URL}/api/contact`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -153,7 +155,7 @@ export async function submitContactForm(data: ContactSubmission): Promise<void> 
 }
 
 export async function fetchArticle(id: string): Promise<Article> {
-  const res = await fetch(`/api/articles/${id}`);
+  const res = await fetch(`${API_URL}/api/articles/${id}`);
   if (!res.ok) throw new Error(`Error ${res.status}`);
   const raw: RawArticle = await res.json();
   return transformArticle(raw);
