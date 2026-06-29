@@ -66,6 +66,12 @@ export function BlogPage() {
     </div>
   );
 
+  if (!articles.length) return (
+    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888" }}>No articles found. Check that VITE_API_URL is set correctly.</p>
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: "#F7F8FA" }}>
 
