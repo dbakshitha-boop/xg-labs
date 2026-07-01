@@ -80,7 +80,7 @@ const WordItem = memo(({ word, index, progress }: { word: string, index: number,
 const PercentageDisplay = ({ progress, start, end }: { progress: any, start: number, end: number }) => {
   const [displayVal, setDisplayVal] = useState(0);
 
-  useMotionValueEvent(progress, "change", (latest) => {
+  useMotionValueEvent(progress, "change", (latest: number) => {
     // Map progress range [start, end] to 0..100
     const rawPct = ((latest - start) / (end - start)) * 100;
     const pct = Math.min(100, Math.max(0, Math.round(rawPct)));
@@ -154,7 +154,7 @@ export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
         <PercentageDisplay progress={progress} start={startIndex} end={endIndex} />
 
         {/* List Container */}
-        <div className="absolute left-[50%] md:left-[60%] top-0 bottom-0 w-[500px] pointer-events-none">
+        <div className="absolute left-[5%] md:left-[60%] top-0 bottom-0 w-[500px] pointer-events-none">
           <div className="absolute top-1/2 left-0 w-full h-0">
             {loopedWords.map((word, index) => (
               <WordItem 

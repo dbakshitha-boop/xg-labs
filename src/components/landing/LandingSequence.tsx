@@ -5,6 +5,19 @@ import Rectangle from "../../imports/Rectangle21";
 import { WhatMakesUsDifferent } from "./WhatMakesUsDifferent";
 import { FinalGrid, FinalCircle, FinalOverlay, WorkSection, AboutSection, VerticalContent, ScrollContainer, TopBar, ContactSection } from "./FinalLayout";
 
+// Work images for mobile image grid
+import imgWork1 from "figma:asset/3c2c8cefce5b34701acad992ed09e777d455d5d9.png";
+import imgWork2 from "figma:asset/8f9e45e34b390cad65d224cd4228fa1ab5977543.png";
+import imgWork3 from "figma:asset/57b2a045a1c474c35c83405b1c0e732165941c8c.png";
+import imgWork4 from "figma:asset/3928f5a725db8937d4474329e22213a3e4710bec.png";
+import imgWork5 from "figma:asset/7fb04902ca908bbcead7b1bfd2272d87b766cc5b.png";
+import imgWork6 from "figma:asset/b178cfc933d6e839b8ae373df90d9a43d32a3ba3.png";
+import imgWork7 from "figma:asset/e65084b764b6b3a23611cf721764131dce2753ec.png";
+import imgWork8 from "figma:asset/83d4a69b3e9c8f0a9728fcee74adb0198bf260f8.png";
+import imgWork9 from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
+
+const mobileWorkImages = [imgWork1, imgWork2, imgWork3, imgWork4, imgWork5, imgWork6, imgWork7, imgWork8, imgWork9];
+
 export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     const [containerExpanded, setContainerExpanded] = useState(false);
     const [showLogos, setShowLogos] = useState(false);
@@ -234,19 +247,40 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     // ── Mobile layout — completely bypasses the JS horizontal scroll animation ──
     if (isMobile) {
         return (
-            <div style={{ background: "#f7f8fa", minHeight: "100svh", display: "flex", flexDirection: "column", position: "relative" }}>
+            <div style={{ background: "#f7f8fa", position: "relative" }}>
                 <TopBar />
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-end", padding: "120px 24px 48px", gap: "20px" }}>
+
+                {/* Hero — full-screen, vertically centred */}
+                <div style={{
+                    minHeight: "100svh",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    padding: "100px 24px 48px",
+                    gap: "16px",
+                }}>
                     <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#02A884", margin: 0 }}>
                         Strategy First
                     </p>
-                    <h1 style={{ fontFamily: "'Cal Sans', 'Sora', sans-serif", fontWeight: 700, fontSize: "clamp(44px, 12vw, 80px)", lineHeight: "1.04", letterSpacing: "-0.03em", color: "#111", margin: 0 }}>
-                        From Vision<br />To Velocity.
+                    <h1 style={{ fontFamily: "'Cal Sans', 'Sora', sans-serif", fontWeight: 700, fontSize: "clamp(44px, 12vw, 72px)", lineHeight: "1.04", letterSpacing: "-0.03em", color: "#111", margin: 0, textTransform: "uppercase" }}>
+                        Strategy Over<br />Everything
                     </h1>
-                    <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 4vw, 18px)", lineHeight: "1.6", color: "#555", margin: 0, maxWidth: "320px" }}>
-                        We build brands that perform — creative strategy backed by data.
+                    <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 4vw, 17px)", lineHeight: "1.6", color: "#555", margin: 0, maxWidth: "300px" }}>
+                        We align strategy, creative, and execution to drive measurable growth.
                     </p>
                 </div>
+
+                {/* 3-column image grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "3px" }}>
+                    {mobileWorkImages.map((src, i) => (
+                        <div key={i} style={{ aspectRatio: "3/4", overflow: "hidden" }}>
+                            <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        </div>
+                    ))}
+                </div>
+
                 <WhatMakesUsDifferent />
                 <VerticalContent />
             </div>
