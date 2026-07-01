@@ -375,7 +375,7 @@ function ServiceCard({
             {/* Content Lines */}
             <div className="flex flex-col gap-0 mb-6 lg:mb-[60px] w-full z-30">
               {contentLines.map((line, idx) => (
-                <div key={idx} className="relative leading-[1.2] tracking-[-0.02em] font-normal text-[#6E6E6E] font-['Sora',sans-serif] py-0 lg:py-[2px]" style={{ fontSize: "32px" }}>
+                <div key={idx} className="relative leading-[1.2] tracking-[-0.02em] font-normal text-[#6E6E6E] font-['Sora',sans-serif] py-0 lg:py-[2px]" style={{ fontSize: "clamp(18px, 4.5vw, 32px)" }}>
                   <RevealText
                     isActive={active}
                     hasBeenRevealed={hasBeenRevealed}
@@ -409,7 +409,7 @@ function ServiceCard({
                   animate={{ opacity: active ? 1 : 0, x: active ? 0 : -10 }}
                   transition={{ duration: 0.25, delay: active ? 0.2 + (i * 0.03) : 0, ease: [0.76, 0, 0.24, 1] }}
                   className="text-[#414141] font-medium font-['Sora',sans-serif] flex items-center gap-3"
-                  style={{ fontSize: "20px", marginRight: "32px" }}
+                  style={{ fontSize: "clamp(14px, 3vw, 20px)", marginRight: "16px" }}
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-[#00A88D] shrink-0" />
                   {item}

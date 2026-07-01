@@ -100,6 +100,8 @@ export function Footer() {
         @media (max-width: 767px) {
           .footer-grid { grid-template-columns: 1fr !important; padding: 24px 20px !important; }
           .footer-bottom { flex-direction: column !important; gap: 12px !important; padding: 16px 20px !important; }
+          .footer-bottom-bar { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 20px !important; padding: 24px 20px !important; text-align: center !important; }
+          .footer-bottom-bar-legal { align-items: center !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
           .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 24px 32px !important; }
@@ -222,6 +224,7 @@ export function Footer() {
 
       {/* ── Bottom bar ── */}
       <div
+        className="footer-bottom-bar"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr auto 1fr",
@@ -273,6 +276,7 @@ export function Footer() {
 
         {/* Legal */}
         <div
+          className="footer-bottom-bar-legal"
           style={{
             display: "flex",
             flexDirection: "column",

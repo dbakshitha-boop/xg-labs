@@ -29,8 +29,12 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
     // Viewport width — drives all horizontal scroll math
     const [viewWidth, setViewWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1440);
+    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 1024 : false);
     useEffect(() => {
-        const onResize = () => setViewWidth(window.innerWidth);
+        const onResize = () => {
+            setViewWidth(window.innerWidth);
+            setIsMobile(window.innerWidth < 1024);
+        };
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
@@ -100,6 +104,11 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
     // Lock Body Scroll when in Horizontal Mode
     useEffect(() => {
+        if (isMobile) {
+            document.body.style.overflow = "auto";
+            return;
+        }
+
         if (!showContent) {
             document.body.style.overflow = "hidden";
             return () => { document.body.style.overflow = "auto"; };
@@ -112,12 +121,12 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
         }
 
         return () => { document.body.style.overflow = "auto"; };
-    }, [showContent, scrollStep]);
+    }, [showContent, scrollStep, isMobile]);
 
 
     // Scroll Event Listener
     useEffect(() => {
-        if (!showContent) return;
+        if (!showContent || isMobile) return;
 
         const handleWheel = (e: WheelEvent) => {
             if (scrollStep >= 3) return;
@@ -221,6 +230,28 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
             y: "-50%"
         };
     };
+
+    // ── Mobile layout — completely bypasses the JS horizontal scroll animation ──
+    if (isMobile) {
+        return (
+            <div style={{ background: "#f7f8fa", minHeight: "100svh", display: "flex", flexDirection: "column", position: "relative" }}>
+                <TopBar />
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-end", padding: "120px 24px 48px", gap: "20px" }}>
+                    <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#02A884", margin: 0 }}>
+                        Strategy First
+                    </p>
+                    <h1 style={{ fontFamily: "'Cal Sans', 'Sora', sans-serif", fontWeight: 700, fontSize: "clamp(44px, 12vw, 80px)", lineHeight: "1.04", letterSpacing: "-0.03em", color: "#111", margin: 0 }}>
+                        From Vision<br />To Velocity.
+                    </h1>
+                    <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 4vw, 18px)", lineHeight: "1.6", color: "#555", margin: 0, maxWidth: "320px" }}>
+                        We build brands that perform — creative strategy backed by data.
+                    </p>
+                </div>
+                <WhatMakesUsDifferent />
+                <VerticalContent />
+            </div>
+        );
+    }
 
     return (
         <div className="bg-[#060606] relative w-full">

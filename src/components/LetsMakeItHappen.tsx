@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import type { MotionValue } from "motion/react";
 import { ContactFormContent } from "./ContactFormOverlay";
@@ -96,6 +96,12 @@ function ScrollImage({
 // ─── Main component ──────────────────────────────────────────────────────────
 export function LetsMakeItHappen() {
   const [formOpen, setFormOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" ? window.innerWidth < 768 : false);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   // 400 vh wrapper → hero is sticky for 300 vh of actual scroll.
   // "Let's Talk" bar only enters the viewport after the hero releases.
@@ -191,10 +197,12 @@ export function LetsMakeItHappen() {
         style={{
           position: "relative",
           background: "#0e0e0e",
-          padding: "44px 72px",
+          padding: isMobile ? "32px 24px" : "44px 72px",
           display: "flex",
-          alignItems: "center",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "flex-start" : "center",
           justifyContent: "space-between",
+          gap: isMobile ? "20px" : undefined,
           cursor: "pointer",
           overflow: "hidden",
         }}
@@ -215,9 +223,11 @@ export function LetsMakeItHappen() {
           {"Let's Talk"}
         </h2>
         <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: "32px" }}>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1.1vw, 16px)", color: "rgba(255,255,255,0.5)", margin: 0, maxWidth: "340px", lineHeight: "1.55" }}>
-            {"We'd love to understand what you're building."}
-          </p>
+          {!isMobile && (
+            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1.1vw, 16px)", color: "rgba(255,255,255,0.5)", margin: 0, maxWidth: "340px", lineHeight: "1.55" }}>
+              {"We'd love to understand what you're building."}
+            </p>
+          )}
           <div style={{ width: 48, height: 48, borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
               <path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />

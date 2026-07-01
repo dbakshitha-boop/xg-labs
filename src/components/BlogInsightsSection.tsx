@@ -3,6 +3,16 @@ import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { fetchArticles, getArticleId, type Article } from "../lib/api";
 
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" ? window.innerWidth < breakpoint : false);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 // Vertical offset for each card — creates the staggered waterfall layout
 const OFFSETS = [0, 64, 16, 108, 48, 92, 24, 72];
 
@@ -12,6 +22,7 @@ function pad(n: number) {
 
 export function BlogInsightsSection() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile(768);
   const trackRef = useRef<HTMLDivElement>(null);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [cards, setCards] = useState<Article[]>([]);
@@ -41,9 +52,9 @@ export function BlogInsightsSection() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr auto",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr auto",
           alignItems: "flex-start",
-          padding: "0 72px 32px",
+          padding: isMobile ? "0 20px 24px" : "0 72px 32px",
           gap: "48px",
         }}
       >
@@ -188,8 +199,8 @@ export function BlogInsightsSection() {
         style={{
           overflowX: "auto",
           overflowY: "visible",
-          paddingLeft: "72px",
-          paddingRight: "72px",
+          paddingLeft: isMobile ? "20px" : "72px",
+          paddingRight: isMobile ? "20px" : "72px",
           paddingBottom: "60px",
           paddingTop: "4px",
           scrollbarWidth: "none",
@@ -244,7 +255,7 @@ export function BlogInsightsSection() {
                   onHoverStart={() => setHoveredCard(i)}
                   onHoverEnd={() => setHoveredCard(null)}
                   style={{
-                    width: "calc((100vw - 144px - 2 * 24px) / 3)",
+                    width: isMobile ? "min(82vw, 320px)" : "calc((100vw - 144px - 2 * 24px) / 3)",
                     cursor: "pointer",
                     flexShrink: 0,
                     display: "flex",

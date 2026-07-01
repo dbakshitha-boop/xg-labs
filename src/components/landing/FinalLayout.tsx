@@ -4,7 +4,7 @@ import { useContactForm } from "../ContactFormContext";
 import { useNavigate } from "react-router-dom";
 import svgPaths from "../../imports/svg-u8a253v5v5";
 import svgPaths2 from "../../imports/svg-qt598ft3du";
-import { motion, useMotionValue, useSpring, useAnimationFrame } from "motion/react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useAnimationFrame } from "motion/react";
 import CardImages from "../../imports/CardImages";
 
 // Raster Images
@@ -403,6 +403,7 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
   const [serviceOpen, setServiceOpen] = useState(false);
   const [hoveredSlug, setHoveredSlug] = useState<string>("performance-marketing");
   const [hidden, setHidden] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { open: openContactForm } = useContactForm();
   const lastScrollY = useRef(0);
 
@@ -423,7 +424,68 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
   }, []);
 
   return (
-    <motion.div
+    <>
+      {/* ── Mobile full-screen menu ── */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-[200] flex flex-col lg:hidden"
+            style={{ background: "#0a0a0a" }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              <img alt="Xg Labs" style={{ height: "52px", width: "auto" }} src={imgImage12} />
+              <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" style={{ color: "#fff", background: "none", border: "none", cursor: "pointer", padding: "8px" }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+            <nav style={{ display: "flex", flexDirection: "column", padding: "24px", flex: 1, overflowY: "auto" }}>
+              {["Our Edge", "Service", "Portfolio", "Blog", "Contact"].map((item, i) => (
+                <motion.button
+                  key={item}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06 + 0.06, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (item === "Service") navigate("/services");
+                    else if (item === "Portfolio") navigate("/portfolio");
+                    else if (item === "Blog") navigate("/blog");
+                    else if (item === "Our Edge") {
+                      const el = document.getElementById("selected-work");
+                      if (el) { document.body.style.overflow = "auto"; el.scrollIntoView({ behavior: "smooth" }); }
+                      else navigate("/", { state: { skipLoading: true, scrollToSection: "selected-work" } });
+                    } else if (item === "Contact") {
+                      const footerEl = document.getElementById("footer");
+                      if (footerEl) { document.body.style.overflow = "auto"; footerEl.scrollIntoView({ behavior: "smooth" }); }
+                      else navigate("/", { state: { skipLoading: true, scrollToFooter: true } });
+                    }
+                  }}
+                  style={{ width: "100%", textAlign: "left", padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#fff", background: "none", border: "none", borderBottomStyle: "solid", borderBottomWidth: "1px", borderBottomColor: "rgba(255,255,255,0.08)", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "clamp(22px, 6vw, 28px)", textTransform: "uppercase", letterSpacing: "0.02em" }}
+                >
+                  {item}
+                </motion.button>
+              ))}
+            </nav>
+            <div style={{ padding: "16px 24px 40px" }}>
+              <button
+                onClick={() => { setMobileMenuOpen(false); openContactForm(); }}
+                style={{ width: "100%", padding: "16px", background: "#fff", color: "#000", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
+              >
+                Let's Talk
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Nav bar (unchanged desktop layout) ── */}
+      <motion.div
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: hidden ? -120 : 0, opacity: hidden ? 0 : 1 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
@@ -437,7 +499,8 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
           <img alt="" style={{ height: "68px", width: "auto", display: "block" }} src={imgImage12} />
         </div>
 
-        <div className="flex gap-1 xl:gap-4 items-center">
+        {/* Desktop nav — hidden on mobile */}
+        <div className="hidden lg:flex gap-1 xl:gap-4 items-center">
           {["Our Edge", "Service", "Portfolio", "Blog", "Contact"].map(item => {
             const isService = item === "Service";
             const isActive = isService && serviceOpen;
@@ -521,7 +584,8 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
           })}
         </div>
 
-        <div className="flex items-center">
+        {/* Let's Talk button — hidden on mobile */}
+        <div className="hidden lg:flex items-center">
           <motion.div
             initial="rest"
             whileHover="hover"
@@ -609,6 +673,16 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
             </motion.div>
           </motion.div>
         </div>
+        {/* Hamburger — visible only on mobile */}
+        <button
+          className="lg:hidden flex flex-col gap-[5px] p-2"
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Open menu"
+        >
+          <span className="block w-6 h-[2px] rounded-full" style={{ background: dark ? "#fff" : "#111" }} />
+          <span className="block w-4 h-[2px] rounded-full" style={{ background: dark ? "#fff" : "#111" }} />
+          <span className="block w-6 h-[2px] rounded-full" style={{ background: dark ? "#fff" : "#111" }} />
+        </button>
       </div>
 
       {/* Service Dropdown Panel */}
@@ -729,6 +803,7 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
       </motion.div>
 
     </motion.div>
+    </>
   );
 }
 
