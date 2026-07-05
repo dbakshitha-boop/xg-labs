@@ -1,4 +1,7 @@
+import React, { useState } from "react";
+import xgLogoWhite from "../assets/2.png";
 import { motion } from "motion/react";
+import { submitContactForm } from "../lib/api";
 import { useNavigate } from "react-router-dom";
 import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
@@ -154,9 +157,124 @@ const sectionLabel: React.CSSProperties = {
   margin: 0,
 };
 
+function EmbeddedContactForm({ px }: { px: string }) {
+  const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+  const handleSubmit = async () => {
+    if (!email || !isValidEmail(email)) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await submitContactForm({ name, company, email, phone, message });
+      setSubmitted(true);
+    } catch (err: any) {
+      setSubmitError(err.message ?? "Something went wrong.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    background: "transparent", border: "none", outline: "none",
+    fontFamily: "'Poppins', sans-serif", fontWeight: 600,
+    fontSize: "clamp(20px, 2.6vw, 40px)", color: "#6F6F6F",
+    lineHeight: 1, caretColor: "#2E2E2E", width: "100%",
+  };
+  const labelStyle: React.CSSProperties = {
+    fontFamily: "'Poppins', sans-serif", fontWeight: 400,
+    fontSize: "13px", letterSpacing: "0.04em",
+    textTransform: "uppercase", color: "#9D9D9D", margin: "0 0 8px",
+  };
+  const fieldStyle: React.CSSProperties = {
+    borderBottom: "2px solid #8E8E8E", paddingBottom: "12px",
+  };
+  const btnColor = submitted ? "#02A884" : submitting ? "rgba(0,0,0,0.25)" : "#8B8B8B";
+
+  return (
+    <section style={{ background: "#E8ECFF", padding: `72px ${px}` }}>
+      <style>{`.ecf-input::placeholder { color: #6F6F6F; font-family: 'Poppins', sans-serif; font-weight: 600; }`}</style>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "72px", marginBottom: "64px", alignItems: "start" }}>
+        <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1.08, letterSpacing: "-0.04em", color: "#2E2E2E", margin: 0 }}>
+          Let's create work that drives real growth.
+        </h2>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1.2vw, 18px)", lineHeight: 1.3, color: "#474747", margin: 0, paddingTop: "8px" }}>
+          From strategy to creative, we help brands move with clarity, purpose, and measurable impact.
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "72px", rowGap: "48px" }}>
+        <div style={fieldStyle}>
+          <p style={labelStyle}>Who you are</p>
+          <input className="ecf-input" value={name} onChange={e => setName(e.target.value)} placeholder="[ Your Name ]" style={inputStyle} />
+        </div>
+        <div style={fieldStyle}>
+          <p style={labelStyle}>Your Company</p>
+          <input className="ecf-input" value={company} onChange={e => setCompany(e.target.value)} placeholder="[ Company Name ]" style={inputStyle} />
+        </div>
+        <div style={fieldStyle}>
+          <p style={labelStyle}>How do we reach you</p>
+          <input className="ecf-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="[ Your Email ]" style={inputStyle} />
+        </div>
+        <div style={fieldStyle}>
+          <p style={labelStyle}>Faster Replies</p>
+          <input className="ecf-input" type="tel" value={phone} onChange={e => setPhone(e.target.value.replace(/[^\d+\-\s()]/g, ""))} placeholder="[ Your Phone Number ]" style={inputStyle} />
+        </div>
+        <div style={{ ...fieldStyle, gridColumn: "1 / -1", display: "flex", alignItems: "flex-end", gap: "24px" }}>
+          <div style={{ flex: 1 }}>
+            <p style={labelStyle}>How can we help?</p>
+            <input className="ecf-input" value={message} onChange={e => setMessage(e.target.value)} placeholder="[ Tell us briefly what you need ]" style={inputStyle} />
+          </div>
+          <motion.button
+            disabled={submitting || submitted}
+            onClick={handleSubmit}
+            initial="rest"
+            whileHover={!submitting && !submitted ? "hover" : "rest"}
+            style={{ background: "none", border: "none", cursor: submitting || submitted ? "default" : "pointer", padding: 0, flexShrink: 0, height: "72px", display: "flex", alignItems: "center", gap: "2px" }}
+          >
+            <svg width="12" height="52" viewBox="0 0 12 52" fill="none" style={{ display: "block", flexShrink: 0 }}>
+              <path d="M12 0 H0 V52 H12" stroke={btnColor} strokeWidth="2" strokeLinecap="butt" strokeLinejoin="miter" />
+            </svg>
+            <motion.div
+              variants={{ rest: { width: 36 }, hover: { width: 116 } }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}
+            >
+              <motion.span variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }} transition={{ duration: 0.15 }} style={{ position: "absolute" }}>
+                {submitted ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "'Space Grotesk',sans-serif", color: "#02A884" }}>✓</span>
+                  : submitting ? <span style={{ fontSize: "22px", fontFamily: "'Space Grotesk',sans-serif", color: "rgba(0,0,0,0.25)" }}>·</span>
+                  : <svg width="36" height="36" viewBox="0 0 64 64"><g fill={btnColor} transform="rotate(-30 32 32)"><rect x="29" y="18" width="6" height="34" /><rect x="18" y="14" width="28" height="6" /><rect x="14" y="18" width="6" height="6" /><rect x="10" y="24" width="6" height="6" /><rect x="46" y="18" width="6" height="6" /><rect x="52" y="24" width="6" height="6" /></g></svg>}
+              </motion.span>
+              {!submitting && !submitted && (
+                <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }}
+                  style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 500, fontSize: "28px", lineHeight: "1", textTransform: "uppercase" as const, color: "#0f0f0f", whiteSpace: "nowrap" as const, position: "absolute" as const }}>
+                  ENTER
+                </motion.span>
+              )}
+            </motion.div>
+            <svg width="12" height="52" viewBox="0 0 12 52" fill="none" style={{ display: "block", flexShrink: 0 }}>
+              <path d="M0 0 H12 V52 H0" stroke={btnColor} strokeWidth="2" strokeLinecap="butt" strokeLinejoin="miter" />
+            </svg>
+          </motion.button>
+        </div>
+        {submitError && <p style={{ gridColumn: "1 / -1", fontFamily: "'Space Grotesk',sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "4px 0 0" }}>{submitError}</p>}
+      </div>
+    </section>
+  );
+}
+
 export function CaseStudyPage({ id }: { id?: number }) {
   const navigate = useNavigate();
-  const { open: openContactForm } = useContactForm();
+  useContactForm();
   const idx = id !== undefined ? id : 0;
   const study = CASE_STUDIES[idx] ?? CASE_STUDIES[0];
 
@@ -204,7 +322,7 @@ export function CaseStudyPage({ id }: { id?: number }) {
         {/* TopBar floats over the dark hero */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 100, height: "114px" }}>
           <div style={{ position: "relative", width: "100%", height: "100%" }}>
-            <TopBar dark />
+            <TopBar dark logoSrc={xgLogoWhite} />
           </div>
         </div>
 
@@ -748,142 +866,8 @@ export function CaseStudyPage({ id }: { id?: number }) {
         </div>
       </section>
 
-      {/* ── Green CTA Banner ── */}
-      <section
-        style={{
-          position: "relative",
-          background: "#3aA882",
-          paddingTop: "120px", paddingBottom: "120px", paddingLeft: px, paddingRight: px,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
-          gap: "20px",
-          overflow: "hidden",
-        }}
-      >
-        {/* Vertical grid lines — fading top & bottom, thicker in middle */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: "repeating-linear-gradient(to right, rgba(255,255,255,0.28) 0px, rgba(255,255,255,0.28) 2px, transparent 2px, transparent calc(100vw / 12))",
-            maskImage: "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 25%, black 50%, rgba(0,0,0,0.6) 75%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 25%, black 50%, rgba(0,0,0,0.6) 75%, transparent 100%)",
-            pointerEvents: "none",
-            zIndex: 0,
-          }}
-        />
-
-        <h2
-          style={{
-            position: "relative",
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 700,
-            fontSize: "clamp(32px, 4vw, 64px)",
-            lineHeight: "1.1",
-            letterSpacing: "-0.03em",
-            color: "#ffffff",
-            margin: 0,
-            maxWidth: "640px",
-          }}
-        >
-          Want insights tailored to your brand?
-        </h2>
-
-        <p
-          style={{
-            position: "relative",
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 400,
-            fontSize: "clamp(13px, 1.05vw, 16px)",
-            color: "rgba(255,255,255,0.7)",
-            margin: 0,
-          }}
-        >
-          We can build a custom workshop or audit based on these ideas.
-        </p>
-
-        <motion.button
-          onClick={openContactForm}
-          initial="rest"
-          whileHover="hover"
-          animate="rest"
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            border: "none",
-            borderRadius: "100px",
-            background: "#ffffff",
-            padding: "10px 10px 10px 24px",
-            cursor: "pointer",
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 700,
-            fontSize: "13px",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "#0f0f0f",
-            marginTop: "12px",
-            overflow: "hidden",
-          }}
-        >
-          {/* Black fill that pans out from left on hover */}
-          <motion.span
-            aria-hidden
-            variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "#000000",
-              borderRadius: "100px",
-              transformOrigin: "left center",
-              zIndex: 0,
-            }}
-          />
-
-          {/* Text */}
-          <motion.span
-            variants={{ rest: { color: "#0f0f0f" }, hover: { color: "#ffffff" } }}
-            transition={{ duration: 0.3 }}
-            style={{ position: "relative", zIndex: 1 }}
-          >
-            BECOME CLIENT
-          </motion.span>
-
-          {/* Arrow circle */}
-          <motion.div
-            variants={{ rest: { background: "#0f0f0f" }, hover: { background: "#3aA882" } }}
-            transition={{ duration: 0.3 }}
-            style={{
-              position: "relative",
-              zIndex: 1,
-              width: "36px",
-              height: "36px",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <motion.svg
-              width="14" height="14" viewBox="0 0 14 14" fill="none"
-              variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }}
-              transition={{ duration: 0.3 }}
-            >
-              <motion.path
-                d="M2 7H12M12 7L7 2M12 7L7 12"
-                variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }}
-                transition={{ duration: 0.3 }}
-                strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
-              />
-            </motion.svg>
-          </motion.div>
-        </motion.button>
-      </section>
+      {/* ── Embedded Contact Form ── */}
+      <EmbeddedContactForm px={px} />
 
       {/* ── Related Blogs ── */}
       {/* <section style={{ padding: "80px 80px 100px", background: "#ffffff" }}>

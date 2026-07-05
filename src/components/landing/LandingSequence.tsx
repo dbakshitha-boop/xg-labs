@@ -1,24 +1,23 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { useNavigate } from "react-router-dom";
 import { LogoGroup } from "./LandingLogos";
 import Rectangle from "../../imports/Rectangle21";
 import { WhatMakesUsDifferent } from "./WhatMakesUsDifferent";
 import { FinalGrid, FinalCircle, FinalOverlay, WorkSection, AboutSection, VerticalContent, ScrollContainer, TopBar, ContactSection } from "./FinalLayout";
+import mobileLogo from "../../assets/logo.jpeg";
 
-// Work images for mobile image grid
-import imgWork1 from "figma:asset/3c2c8cefce5b34701acad992ed09e777d455d5d9.png";
-import imgWork2 from "figma:asset/8f9e45e34b390cad65d224cd4228fa1ab5977543.png";
-import imgWork3 from "figma:asset/57b2a045a1c474c35c83405b1c0e732165941c8c.png";
-import imgWork4 from "figma:asset/3928f5a725db8937d4474329e22213a3e4710bec.png";
-import imgWork5 from "figma:asset/7fb04902ca908bbcead7b1bfd2272d87b766cc5b.png";
-import imgWork6 from "figma:asset/b178cfc933d6e839b8ae373df90d9a43d32a3ba3.png";
-import imgWork7 from "figma:asset/e65084b764b6b3a23611cf721764131dce2753ec.png";
-import imgWork8 from "figma:asset/83d4a69b3e9c8f0a9728fcee74adb0198bf260f8.png";
-import imgWork9 from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
-
-const mobileWorkImages = [imgWork1, imgWork2, imgWork3, imgWork4, imgWork5, imgWork6, imgWork7, imgWork8, imgWork9];
+// Portfolio images for mobile hero scattered layout
+import mImg_cup      from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png"; // Andhra Spicy House cup
+import mImg_pamph    from "figma:asset/e65084b764b6b3a23611cf721764131dce2753ec.png"; // Pamphlets on olive
+import mImg_goCards  from "figma:asset/fad7be819dbbdd4aa88e7779ed4b7c2a87bf23e6.png"; // Go Wheels cards
+import mImg_billboard from "figma:asset/b178cfc933d6e839b8ae373df90d9a43d32a3ba3.png"; // XG Labs billboard
+import mImg_disc     from "figma:asset/d1e53c97c1810297d3642b6fa789643c8fe962af.png"; // Green Go! disc
+import mImg_maha     from "figma:asset/8f9e45e34b390cad65d224cd4228fa1ab5977543.png"; // Mahaspeakss sign
 
 export function LandingSequence({ startSequence }: { startSequence: boolean }) {
+    const navigate = useNavigate();
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [containerExpanded, setContainerExpanded] = useState(false);
     const [showLogos, setShowLogos] = useState(false);
     const [slideLogos, setSlideLogos] = useState(false);
@@ -246,39 +245,146 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
     // ── Mobile layout — completely bypasses the JS horizontal scroll animation ──
     if (isMobile) {
+        const NAV_ITEMS = ["Our Edge", "Services", "Portfolio", "Blog", "Contact"] as const;
+        const handleNavClick = (item: string) => {
+            setMobileMenuOpen(false);
+            if (item === "Services") navigate("/services");
+            else if (item === "Portfolio") navigate("/portfolio");
+            else if (item === "Blog") navigate("/blog");
+            else if (item === "Our Edge") {
+                const el = document.getElementById("selected-work");
+                if (el) { document.body.style.overflow = "auto"; el.scrollIntoView({ behavior: "smooth" }); }
+                else navigate("/", { state: { skipLoading: true, scrollToSection: "selected-work" } });
+            } else if (item === "Contact") {
+                const el = document.getElementById("footer");
+                if (el) { document.body.style.overflow = "auto"; el.scrollIntoView({ behavior: "smooth" }); }
+                else navigate("/", { state: { skipLoading: true, scrollToFooter: true } });
+            }
+        };
+
         return (
             <div style={{ background: "#f7f8fa", position: "relative" }}>
-                <TopBar />
 
-                {/* Hero — full-screen, vertically centred */}
+                {/* ── Slide-in sidebar menu ── */}
+                <AnimatePresence>
+                    {mobileMenuOpen && (
+                        <motion.div
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                            style={{ position: "fixed", inset: 0, zIndex: 400, background: "#0a0a0a", display: "flex", flexDirection: "column" }}
+                        >
+                            {/* Sidebar header */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                                <img alt="XG Labs" style={{ height: "48px", width: "auto", display: "block" }} src={mobileLogo} />
+                                <button
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    aria-label="Close menu"
+                                    style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.08)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Nav links */}
+                            <nav style={{ display: "flex", flexDirection: "column", padding: "16px 24px", flex: 1 }}>
+                                {NAV_ITEMS.map((item, i) => (
+                                    <motion.button
+                                        key={item}
+                                        initial={{ opacity: 0, x: 24 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.06 + 0.05, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                        onClick={() => handleNavClick(item)}
+                                        style={{ width: "100%", textAlign: "left", padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "none", border: "none", borderBottomStyle: "solid", borderBottomWidth: "1px", borderBottomColor: "rgba(255,255,255,0.08)", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(22px, 6vw, 28px)", textTransform: "uppercase", letterSpacing: "0.02em", color: "#fff" }}
+                                    >
+                                        {item}
+                                    </motion.button>
+                                ))}
+                            </nav>
+
+                            {/* Let's Talk CTA */}
+                            <div style={{ padding: "16px 24px 48px" }}>
+                                <button
+                                    onClick={() => { setMobileMenuOpen(false); navigate("/", { state: { skipLoading: true, scrollToFooter: true } }); }}
+                                    style={{ width: "100%", padding: "16px", background: "#fff", color: "#000", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
+                                >
+                                    Let's Talk
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* ── Fixed mobile navbar ── */}
+                <div style={{ position: "fixed", top: 24, left: "50%", transform: "translateX(-50%)", width: "calc(100% - 48px)", maxWidth: 600, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 0 15px rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 16px 6px 8px", height: 64 }}>
+                    <img alt="XG Labs" src={mobileLogo} style={{ height: 52, width: "auto", display: "block", cursor: "pointer" }} onClick={() => navigate("/", { state: { skipLoading: true } })} />
+                    <button
+                        onClick={() => setMobileMenuOpen(true)}
+                        aria-label="Open menu"
+                        style={{ width: 44, height: 44, borderRadius: "50%", background: "#0a0a0a", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, flexShrink: 0 }}
+                    >
+                        <span style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
+                        <span style={{ display: "block", width: 14, height: 2, borderRadius: 99, background: "#fff" }} />
+                        <span style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
+                    </button>
+                </div>
+
+                {/* Hero */}
                 <div style={{
-                    minHeight: "100svh",
+                    position: "relative",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    justifyContent: "center",
                     textAlign: "center",
-                    padding: "100px 24px 48px",
-                    gap: "16px",
+                    paddingTop: "110px",
+                    overflow: "hidden",
+                    background: "#f7f8fa",
                 }}>
-                    <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "11px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#02A884", margin: 0 }}>
-                        Strategy First
-                    </p>
-                    <h1 style={{ fontFamily: "'Cal Sans', 'Sora', sans-serif", fontWeight: 700, fontSize: "clamp(44px, 12vw, 72px)", lineHeight: "1.04", letterSpacing: "-0.03em", color: "#111", margin: 0, textTransform: "uppercase" }}>
-                        Strategy Over<br />Everything
-                    </h1>
-                    <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 4vw, 17px)", lineHeight: "1.6", color: "#555", margin: 0, maxWidth: "300px" }}>
-                        We align strategy, creative, and execution to drive measurable growth.
-                    </p>
-                </div>
+                    <FinalCircle />
 
-                {/* 3-column image grid */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "3px" }}>
-                    {mobileWorkImages.map((src, i) => (
-                        <div key={i} style={{ aspectRatio: "3/4", overflow: "hidden" }}>
-                            <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                    {/* Text block — matches desktop TextContainer */}
+                    <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", padding: "0 28px 44px" }}>
+                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "-0.96px", color: "#414141", margin: 0 }}>
+                            STRATEGY FIRST
+                        </p>
+                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(40px, 13vw, 72px)", lineHeight: "1.04", letterSpacing: "-0.02em", color: "#060606", margin: 0, textTransform: "uppercase" }}>
+                            From Vision<br />To Velocity
+                        </h1>
+                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 3.8vw, 17px)", lineHeight: "1.4", letterSpacing: "-0.04em", color: "#414141", margin: 0, maxWidth: "300px" }}>
+                            We align strategy, creative, and performance to accelerate growth.
+                        </p>
+                    </div>
+
+                    {/* Scattered portfolio images */}
+                    <div style={{ position: "relative", width: "100%", height: "420px", zIndex: 1 }}>
+                        {/* Cup — top centre-right */}
+                        <div style={{ position: "absolute", top: "0%", left: "38%", width: "42%", transform: "rotate(-6deg)", zIndex: 5 }}>
+                            <img src={mImg_cup} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
                         </div>
-                    ))}
+                        {/* Go Wheels cards — top right */}
+                        <div style={{ position: "absolute", top: "0%", left: "62%", width: "44%", transform: "rotate(9deg)", zIndex: 4 }}>
+                            <img src={mImg_goCards} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
+                        </div>
+                        {/* Pamphlets — left, slightly rotated */}
+                        <div style={{ position: "absolute", top: "10%", left: "-6%", width: "50%", transform: "rotate(-13deg)", zIndex: 3 }}>
+                            <img src={mImg_pamph} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
+                        </div>
+                        {/* XG Billboard — bottom left */}
+                        <div style={{ position: "absolute", bottom: "0%", left: "-6%", width: "58%", transform: "rotate(-4deg)", zIndex: 6 }}>
+                            <img src={mImg_billboard} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
+                        </div>
+                        {/* Green Go! disc — bottom centre */}
+                        <div style={{ position: "absolute", bottom: "4%", left: "28%", width: "36%", transform: "rotate(6deg)", zIndex: 7 }}>
+                            <img src={mImg_disc} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
+                        </div>
+                        {/* Mahaspeakss sign — bottom right */}
+                        <div style={{ position: "absolute", bottom: "2%", left: "57%", width: "46%", transform: "rotate(-9deg)", zIndex: 8 }}>
+                            <img src={mImg_maha} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
+                        </div>
+                    </div>
                 </div>
 
                 <WhatMakesUsDifferent />
@@ -352,8 +458,14 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                                 onClose={() => {
                                     document.body.style.overflow = "auto";
                                     const next = document.getElementById("what-makes-us-different");
-                                    if (next) next.scrollIntoView({ behavior: "smooth" });
-                                    else window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+                                    if (next) {
+                                        // Scroll 2px past the section top so scrollYProgress > 0,
+                                        // which is required to trigger the hasSeen animation gate.
+                                        const top = next.getBoundingClientRect().top + window.scrollY + 2;
+                                        window.scrollTo({ top, behavior: "smooth" });
+                                    } else {
+                                        window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+                                    }
                                 }}
                             />
                         </div>
@@ -371,12 +483,12 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                         </motion.div>
 
                         <motion.div
-                             animate={{ width: scrollStep === 3 ? "100vw" : "70vw", opacity: scrollStep === 1 ? 0 : 1 }}
+                             animate={{ width: scrollStep === 3 ? "100vw" : "70vw", opacity: (scrollStep === 1 || scrollStep === 3) ? 0 : 1 }}
                              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                              className="absolute top-0 left-0 h-full z-50 pointer-events-none"
                         >
                             <div className="pointer-events-none absolute inset-0">
-                                <TopBar />
+                                <TopBar containerWidth={scrollStep === 3 ? "100vw" : "70vw"} />
                             </div>
                         </motion.div>
 
@@ -398,7 +510,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                                 exit={{ opacity: 0 }}
                                 onClick={handlePrevScroll}
                                 className="absolute bottom-[40px] z-[200] pointer-events-auto cursor-pointer"
-                                style={{ left: "max(40px, calc((100vw - 1224px) / 2))" }}
+                                style={{ left: "24px" }}
                             >
                                 <div className="relative size-[40px]">
                                     <svg className="block size-full" fill="none" viewBox="0 0 40 40">

@@ -11,6 +11,14 @@ import img3 from "../assets/portfolio/1248070d103a19f145ae0f832592d24f14f6062d.j
 import img4 from "../assets/portfolio/b02af7d4fc1674218c1fad477c943436f1779a18.jpg";
 import img5 from "../assets/portfolio/143ce4dc78b3934cc2b5dfa00d6839d1276386b9.jpg";
 
+import svcPerformanceMarketing from "../assets/service section - xg web/Performance Marketing.png";
+import svcSEO from "../assets/service section - xg web/SEO.png";
+import svcWebDevelopment from "../assets/service section - xg web/Web Development.png";
+import svcSocialMedia from "../assets/service section - xg web/Social Media Management.png";
+import svcContentCreation from "../assets/service section - xg web/Content Creation & VP.png";
+import svcInfluencer from "../assets/service section - xg web/Influencer Marketing.png";
+import svcBranding from "../assets/service section - xg web/Branding.png";
+
 // ─── Data ────────────────────────────────────────────────────────────────────
 interface ServiceItem {
   label: string;
@@ -29,7 +37,7 @@ const SERVICES: ServiceData[] = [
     title: "PERFORMANCE MARKETING",
     description:
       "We build paid growth systems focused on conversions, efficiency, and measurable ROI — not vanity metrics. Every campaign is structured, optimized, and scaled using real data.",
-    images: [img1, img3, img2, img5, img4],
+    images: [svcPerformanceMarketing, img1, img3, img2, img5],
     items: [
       { label: "Growth Strategy & Funnel Audit", description: "Identifies audience gaps, conversion bottlenecks, and revenue opportunities." },
       { label: "Paid Media Planning", description: "Selects the right platforms, budgets, and audience segments for maximum ROI." },
@@ -42,7 +50,7 @@ const SERVICES: ServiceData[] = [
     title: "SEO",
     description:
       "We build sustainable search visibility through technical precision and content strategy — converting organic traffic into consistent, compounding business growth.",
-    images: [img4, img2, img1, img3, img5],
+    images: [svcSEO, img4, img2, img1, img3],
     items: [
       { label: "SEO Audit & Roadmap", description: "Evaluates website performance and defines a long-term growth strategy." },
       { label: "Keyword Research & Intent Mapping", description: "Aligns search intent with high-value keywords across key pages." },
@@ -55,7 +63,7 @@ const SERVICES: ServiceData[] = [
     title: "WEB DEVELOPMENT",
     description:
       "We design and build performance-focused landing pages, funnels, and web experiences optimised for conversion — every pixel earns its place.",
-    images: [img2, img5, img4, img1, img3],
+    images: [svcWebDevelopment, img2, img5, img4, img1],
     items: [
       { label: "UI/UX Design", description: "Creates intuitive experiences focused on usability and conversions." },
       { label: "Website & Landing Page Development", description: "Builds responsive websites and campaign-specific landing pages." },
@@ -68,7 +76,7 @@ const SERVICES: ServiceData[] = [
     title: "SOCIAL MEDIA MANAGEMENT",
     description:
       "We manage your brand presence across platforms with consistent, strategic content — building community and protecting reputation at scale.",
-    images: [img3, img1, img5, img2, img4],
+    images: [svcSocialMedia, img3, img1, img5, img2],
     items: [
       { label: "Content Planning & Publishing", description: "Organises and schedules content across platforms consistently." },
       { label: "Community Management", description: "Engages audiences and manages interactions in real time." },
@@ -81,7 +89,7 @@ const SERVICES: ServiceData[] = [
     title: "CONTENT CREATION & VIDEO PRODUCTION",
     description:
       "We produce content and videos built to capture attention and drive action — from short-form reels to long-form brand films.",
-    images: [img5, img4, img3, img1, img2],
+    images: [svcContentCreation, img5, img4, img3, img1],
     items: [
       { label: "Content Strategy & Scripting", description: "Develops content themes, messaging, and creative direction." },
       { label: "Short-Form Content & Reels", description: "Produces platform-native content designed for engagement." },
@@ -94,7 +102,7 @@ const SERVICES: ServiceData[] = [
     title: "INFLUENCER MARKETING",
     description:
       "We run influencer campaigns with 1,000+ creators — micro to macro — built around strategy, relevance, and measurable reach.",
-    images: [img2, img3, img1, img4, img5],
+    images: [svcInfluencer, img2, img3, img1, img4],
     items: [
       { label: "Influencer Strategy & Planning", description: "Defines creator profiles, objectives, and campaign direction." },
       { label: "Creator Discovery & Vetting", description: "Identifies relevant influencers based on audience quality and fit." },
@@ -107,7 +115,7 @@ const SERVICES: ServiceData[] = [
     title: "BRANDING",
     description:
       "We build brand identities that are distinct, strategic, and built to scale — from logos and systems to full brand guidelines.",
-    images: [img4, img1, img2, img5, img3],
+    images: [svcBranding, img4, img1, img2, img5],
     items: [
       { label: "Brand Strategy & Positioning", description: "Defines purpose, audience, and market differentiation." },
       { label: "Logo & Visual Identity Design", description: "Creates memorable and scalable brand identities." },

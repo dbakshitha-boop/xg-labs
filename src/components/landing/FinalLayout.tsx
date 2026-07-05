@@ -23,10 +23,13 @@ import imgImage10 from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png
 import imgImage11 from "figma:asset/fad7be819dbbdd4aa88e7779ed4b7c2a87bf23e6.png";
 import imgImage48 from "figma:asset/f302e7d71b5ba9d33f529d7d6f3a6b94232703c5.png";
 import imgImage12 from "../../assets/logo.jpeg";
-import pm from "../../assets/servicelist_topbar/Performance marketing_servicelist.jpeg";
-import cc from "../../assets/servicelist_topbar/Contentcreation_servicelist.jpeg";
-import influencer from "../../assets/servicelist_topbar/Influencer_servicelist.jpeg";
-import SEO from "../../assets/servicelist_topbar/SEO_servicelist.jpeg";
+import pm from "../../assets/service section - xg web/Performance Marketing.png";
+import cc from "../../assets/service section - xg web/Content Creation & VP.png";
+import influencer from "../../assets/service section - xg web/Influencer Marketing.png";
+import SEO from "../../assets/service section - xg web/SEO.png";
+import svcWebDev from "../../assets/service section - xg web/Web Development.png";
+import svcSocialMedia from "../../assets/service section - xg web/Social Media Management.png";
+import svcBranding from "../../assets/service section - xg web/Branding.png";
 // --- Existing Components ---
 
 function WeAre() {
@@ -58,9 +61,9 @@ function TextContainer() {
       className="absolute content-stretch flex flex-col gap-[24px] items-center justify-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] text-center"
       data-name="Text Container"
     >
-      <p className="font-['Sora:Regular',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
-      <p className="font-['Cal_Sans',sans-serif] leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center">From Vision<br />To Velocity</p>
-      <p className="font-['Sora:Regular',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full text-center">
+      <p className="font-['Sora:Regular'] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
+      <p className="font-['Cal_Sans'] font-semibold leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center mt-[-12px]">From Vision<br />To Velocity</p>
+      <p className="font-['Sora:Regular'] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full text-center">
         We align strategy, creative, and performance
         <br />
         to accelerate growth.
@@ -226,8 +229,8 @@ export function VerticalContent() {
 
 export function FinalGrid() {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} className="absolute inset-0 pointer-events-none">
-      <div className="absolute h-[1080px] left-1/2 opacity-[0.02] top-1/2 translate-x-[-50%] translate-y-[-50%] w-[1304px]">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 opacity-[0.02]">
         <div className="w-full h-full bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
     </motion.div>
@@ -237,13 +240,13 @@ export function FinalGrid() {
 export function FinalCircle() {
   return (
     <motion.div
-      initial={{ scale: 0.5, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      initial={{ scale: 0.45, opacity: 0 }}
+      animate={{ scale: 0.8, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="absolute left-1/2 size-[1016px] top-1/2 translate-x-[-50%] translate-y-[-50%] pointer-events-none"
     >
       <svg className="block size-full" fill="none" viewBox="0 0 1016 1016">
-        <circle cx="508" cy="508" fill="var(--fill-0, white)" opacity="0.5" r="508" />
+        <circle cx="508" cy="508" fill="var(--fill-0, white)" opacity="1" r="508" />
       </svg>
     </motion.div>
   )
@@ -388,17 +391,17 @@ const SERVICE_IMG_MAP: Record<string, string> = {
   img1: imgImage,
   img2: imgImage1,
   img3: imgImage2,
-  img4: imgImage3,
-  img5: imgImage4,
+  img4: svcSocialMedia,
+  img5: svcWebDev,
   img6: imgImage5,
-  img7: imgImage6,
+  img7: svcBranding,
   pm,
   SEO,
   cc,
   influencer,
 };
 
-export function TopBar({ dark = false }: { dark?: boolean }) {
+export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boolean; containerWidth?: string; logoSrc?: string }) {
   const navigate = useNavigate();
   const [serviceOpen, setServiceOpen] = useState(false);
   const [hoveredSlug, setHoveredSlug] = useState<string>("performance-marketing");
@@ -437,7 +440,13 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
             style={{ background: "#0a0a0a" }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              <img alt="Xg Labs" style={{ height: "52px", width: "auto" }} src={imgImage12} />
+              {logoSrc ? (
+                <div style={{ overflow: "hidden", height: "50px", width: "160px" }}>
+                  <img alt="Xg Labs" src={logoSrc} style={{ height: "200px", width: "200px", marginTop: "-72px", marginLeft: "-16px", display: "block" }} />
+                </div>
+              ) : (
+                <img alt="Xg Labs" src={imgImage12} style={{ height: "52px", width: "auto", display: "block" }} />
+              )}
               <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" style={{ color: "#fff", background: "none", border: "none", cursor: "pointer", padding: "8px" }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -490,13 +499,30 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
       animate={{ y: hidden ? -120 : 0, opacity: hidden ? 0 : 1 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       onMouseLeave={() => setServiceOpen(false)}
-      className={`fixed flex flex-col left-1/2 -translate-x-1/2 top-[40px] z-50 pointer-events-auto rounded-[8px] ${dark ? "ring-1 ring-white/[0.15]" : "bg-white shadow-[0px_0px_15px_0px_rgba(0,0,0,0.05)]"}`}
-      style={{ width: "min(1224px, calc(100% - 80px))", ...(dark ? { background: "#2A2A2A" } : {}) }}
+      className={`fixed flex flex-col top-[40px] z-50 pointer-events-auto rounded-[8px] ${dark ? "ring-1 ring-white/[0.15]" : "bg-white shadow-[0px_0px_15px_0px_rgba(0,0,0,0.05)]"}`}
+      style={(() => {
+        const w = containerWidth ?? "100vw";
+        const pad = containerWidth ? "40px" : "80px";
+        const minW = containerWidth ? "1200px" : "1224px";
+        const barW = `min(${minW}, calc(${w} - ${pad}))`;
+        const barLeft = `max(20px, calc((${w} - ${barW}) / 2))`;
+        return {
+          left: barLeft,
+          width: barW,
+          ...(dark ? { background: "#2A2A2A" } : {}),
+        };
+      })()}
     >
       {/* Main bar row */}
       <div className="flex items-center justify-between px-[24px] py-[8px] h-[74px]">
-        <div className="shrink-0 cursor-pointer" onClick={() => navigate("/", { state: { skipLoading: true } })}>
-          <img alt="" style={{ height: "68px", width: "auto", display: "block" }} src={imgImage12} />
+        <div className="shrink-0 cursor-pointer" onClick={() => navigate("/", { state: { skipLoading: true } })} onMouseEnter={() => setServiceOpen(false)}>
+          {logoSrc ? (
+            <div style={{ overflow: "hidden", height: "50px", width: "160px" }}>
+              <img alt="Xg Labs" src={logoSrc} style={{ height: "200px", width: "200px", marginTop: "-72px", marginLeft: "-16px", display: "block" }} />
+            </div>
+          ) : (
+            <img alt="Xg Labs" src={imgImage12} style={{ height: "68px", width: "auto", display: "block" }} />
+          )}
         </div>
 
         {/* Desktop nav — hidden on mobile */}
@@ -507,26 +533,56 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
 
             if (isService) {
               return (
-                <div
+                <motion.div
                   key={item}
-                  className={`relative cursor-pointer rounded px-3 py-2 flex items-center gap-[6px] font-space text-sm font-medium uppercase transition-colors duration-200 ${isActive ? "bg-black text-white" : "bg-transparent"}`}
-                  style={{ color: dark ? "#9A9A9A" : undefined }}
+                  initial="rest"
+                  whileHover="hover"
+                  animate={isActive ? "hover" : "rest"}
+                  className="relative cursor-pointer px-3 py-2 flex items-center gap-[6px] overflow-hidden"
+                  style={{ borderRadius: "6px" }}
                   onClick={() => navigate("/services")}
                   onMouseEnter={() => setServiceOpen(true)}
                 >
-                  {item}
-                  <svg
-                    width="12" height="12" viewBox="0 0 12 12" fill="none"
-                    style={{
-                      transform: isActive ? "rotate(180deg)" : "rotate(0deg)",
-                      transition: "transform 0.3s ease",
-                      display: "block",
-                      flexShrink: 0,
+                  {/* Teal — leads */}
+                  <motion.span
+                    aria-hidden="true"
+                    variants={{
+                      rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
+                      hover: { clipPath: "polygon(0% 35%, 100% 0%, 100% 100%, 0% 100%)" },
                     }}
+                    transition={{ duration: 0.32, ease: [0.65, 0, 0.35, 1] }}
+                    style={{ position: "absolute", inset: 0, background: "#02A884", zIndex: 1 }}
+                  />
+                  {/* Black — trails, ends fully covering */}
+                  <motion.span
+                    aria-hidden="true"
+                    variants={{
+                      rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
+                      hover: { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" },
+                    }}
+                    transition={{ duration: 0.42, ease: [0.65, 0, 0.35, 1], delay: 0.09 }}
+                    style={{ position: "absolute", inset: 0, background: "#0a0a0a", zIndex: 2 }}
+                  />
+                  <motion.span
+                    variants={{ rest: { color: dark ? "#9A9A9A" : "#000000" }, hover: { color: "#ffffff" } }}
+                    transition={{ duration: 0.15, ease: "easeOut", delay: 0.2 }}
+                    style={{ position: "relative", zIndex: 3 }}
+                    className="font-space text-sm font-medium uppercase"
                   >
-                    <path d="M2 4L6 8L10 4" stroke={isActive ? "#ffffff" : dark ? "#9A9A9A" : "#000000"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
+                    {item}
+                  </motion.span>
+                  <motion.svg
+                    width="12" height="12" viewBox="0 0 12 12" fill="none"
+                    style={{ position: "relative", zIndex: 3, flexShrink: 0, transform: isActive ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s ease" }}
+                  >
+                    <motion.path
+                      d="M2 4L6 8L10 4"
+                      variants={{ rest: { stroke: dark ? "#9A9A9A" : "#000000" }, hover: { stroke: "#ffffff" } }}
+                      transition={{ duration: 0.15, ease: "easeOut", delay: 0.2 }}
+                      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
+                    />
+                  </motion.svg>
+                </motion.div>
               );
             }
 
@@ -536,7 +592,9 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
                 initial="rest"
                 whileHover="hover"
                 animate="rest"
-                className="relative cursor-pointer rounded px-3 py-2"
+                className="relative cursor-pointer px-3 py-2 overflow-hidden"
+                style={{ borderRadius: "6px" }}
+                onMouseEnter={() => setServiceOpen(false)}
                 onClick={() => {
                   setServiceOpen(false);
                   if (item === "Contact") {
@@ -560,22 +618,32 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
                   }
                 }}
               >
+                {/* Teal — leads, no delay */}
                 <motion.span
                   aria-hidden="true"
-                  variants={{ rest: { scaleY: 0 }, hover: { scaleY: 1 } }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "#000000", transformOrigin: "bottom center", borderRadius: "6px" }}
+                  variants={{
+                    rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
+                    hover: { clipPath: "polygon(0% 35%, 100% 0%, 100% 100%, 0% 100%)" },
+                  }}
+                  transition={{ duration: 0.32, ease: [0.65, 0, 0.35, 1] }}
+                  style={{ position: "absolute", inset: 0, background: "#02A884", zIndex: 1 }}
                 />
+                {/* Black — trails 90 ms behind teal, ends fully covering */}
                 <motion.span
                   aria-hidden="true"
-                  variants={{ rest: { scaleY: 0, opacity: 1 }, hover: { scaleY: 1, opacity: 0 } }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "#02A884", transformOrigin: "bottom center", borderRadius: "6px 6px 0 0", zIndex: 1 }}
+                  variants={{
+                    rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
+                    hover: { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" },
+                  }}
+                  transition={{ duration: 0.42, ease: [0.65, 0, 0.35, 1], delay: 0.09 }}
+                  style={{ position: "absolute", inset: 0, background: "#0a0a0a", zIndex: 2 }}
                 />
+                {/* Text turns white after black fill rises */}
                 <motion.span
                   variants={{ rest: { color: dark ? "#9A9A9A" : "#000000" }, hover: { color: "#ffffff" } }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative z-10 font-space text-sm font-medium uppercase"
+                  transition={{ duration: 0.15, ease: "easeOut", delay: 0.2 }}
+                  style={{ position: "relative", zIndex: 3 }}
+                  className="font-space text-sm font-medium uppercase"
                 >
                   {item}
                 </motion.span>
@@ -585,12 +653,12 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
         </div>
 
         {/* Let's Talk button — hidden on mobile */}
-        <div className="hidden lg:flex items-center">
+        <div className="hidden lg:flex items-center" onMouseEnter={() => setServiceOpen(false)}>
           <motion.div
             initial="rest"
             whileHover="hover"
             animate="rest"
-            style={{ position: 'relative', width: 134, height: 50 }}
+            style={{ position: 'relative', width: 138, height: 50 }}
           >
             {/* Black fill that pans out from left on hover */}
             <motion.span
@@ -600,7 +668,7 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
               style={{
                 position: 'absolute',
                 top: 0, left: 0, bottom: 0,
-                width: 134,
+                width: 138,
                 background: '#000000',
                 borderRadius: 42,
                 transformOrigin: 'left center',
@@ -613,15 +681,15 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
               aria-label="Let's talk"
               onClick={() => openContactForm()}
               style={{
-                width: 134,
+                width: 138,
                 height: 50,
                 paddingTop: 12,
-                paddingRight: 28,
+                paddingRight: 20,
                 paddingBottom: 12,
-                paddingLeft: 12,
+                paddingLeft: 20,
                 display: 'flex',
                 alignItems: 'center',
-                gap: 4,
+                justifyContent: 'center',
                 background: dark ? '#3a3a3a' : '#ffffff',
                 borderRadius: 42,
                 border: dark ? '1px solid rgba(255,255,255,0.25)' : '1px solid #9A9A9A',
@@ -645,14 +713,14 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
               </motion.span>
             </button>
 
-            {/* Overlapping arrow circle */}
+            {/* Overlapping arrow circle — same height as button, half-overlapping right edge */}
             <motion.div
               variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }}
               transition={{ duration: 0.3 }}
               style={{
                 position: 'absolute',
                 top: 0,
-                right: -6,
+                right: -25,
                 width: 50,
                 height: 50,
                 borderRadius: 50,
@@ -663,8 +731,8 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
               }}
             >
               <motion.svg
-                width={24} height={24} viewBox="0 0 24 24"
-                style={{ transform: 'translateX(4px)', position: 'relative' }}
+                width={18} height={18} viewBox="0 0 24 24"
+                style={{ display: 'block' }}
                 fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
               >
                 <motion.path d="M5 12h14" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.3 }} />
@@ -673,15 +741,24 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
             </motion.div>
           </motion.div>
         </div>
-        {/* Hamburger — visible only on mobile */}
+        {/* Hamburger — visible only on mobile (<lg), styled as black circle */}
         <button
-          className="lg:hidden flex flex-col gap-[5px] p-2"
+          className="lg:hidden flex flex-col items-center justify-center shrink-0"
           onClick={() => setMobileMenuOpen(true)}
           aria-label="Open menu"
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: "50%",
+            background: "#0a0a0a",
+            gap: 5,
+            border: "none",
+            cursor: "pointer",
+          }}
         >
-          <span className="block w-6 h-[2px] rounded-full" style={{ background: dark ? "#fff" : "#111" }} />
-          <span className="block w-4 h-[2px] rounded-full" style={{ background: dark ? "#fff" : "#111" }} />
-          <span className="block w-6 h-[2px] rounded-full" style={{ background: dark ? "#fff" : "#111" }} />
+          <span style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
+          <span style={{ display: "block", width: 14, height: 2, borderRadius: 99, background: "#fff" }} />
+          <span style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
         </button>
       </div>
 
@@ -784,7 +861,7 @@ export function TopBar({ dark = false }: { dark?: boolean }) {
             {[
               "+91 63699 74530",
               "xglabs@thebrandopedia.in",
-              "Chennai, Tamilnadu, India.",
+              "Chennai, Tamil Nadu, India",
             ].map((line) => (
               <p key={line} style={{
                 fontFamily: "'Space Grotesk', sans-serif",

@@ -6,17 +6,14 @@ import imgPerformance from "figma:asset/829c7dea73546d44cdf81f9fa2d6cd9ab132117d
 import imgSEO from "figma:asset/b5047b31ab40cf51abf5e89f3b5017013a810db8.png";
 import imgBranding from "figma:asset/97255d534336f1ae220810ce0585cdde411c6098.png";
 import hoverImage from "figma:asset/c47096a00cbb223b6c6e2a485653499e5b4c9291.png";
-import imgPerformanceNew from "../assets/servicelist_topbar/Performance marketing_servicelist.jpeg";
-import imgWebDevNew from "figma:asset/3928f5a725db8937d4474329e22213a3e4710bec.png";
-import imgSEONew from "../assets/servicelist_topbar/SEO_servicelist.jpeg";
-import imgSocialMediaNew from "figma:asset/06355012afb0087b8c9bfc9843e66981c1b4fc10.png";
-import imgContentCreationNew from "../assets/servicelist_topbar/Contentcreation_servicelist.jpeg";
-import imgInfluencerNew from "../assets/servicelist_topbar/Influencer_servicelist.jpeg";
-import imgBrandingNew from "figma:asset/b178cfc933d6e839b8ae373df90d9a43d32a3ba3.png";
-import imgFreeIPhone17Pro from "figma:asset/5b825e76949bb7e4a44591c49d22c2454be4fcbb.png";
-import imgKraftPaperPostalBagAndSticker from "figma:asset/e99bbe75d12e6f0fde7bad8f2fe82a3e1af79637.png";
-import imgLoadingScreen1 from "figma:asset/8cfd0d9e1f1eb6a0794e4dd6eaf7fd03d5fc8ac9.png";
-import imgDuctTapeMockup from "figma:asset/60a79c2d680a8bef3af588bb3ff626d64a3d8125.png";
+import imgPerformanceNew from "../assets/service section - xg web/Performance Marketing.png";
+import imgWebDevNew from "../assets/service section - xg web/Web Development.png";
+import imgSEONew from "../assets/service section - xg web/SEO.png";
+import imgSocialMediaNew from "../assets/service section - xg web/Social Media Management.png";
+import imgContentCreationNew from "../assets/service section - xg web/Content Creation & VP.png";
+import imgInfluencerNew from "../assets/service section - xg web/Influencer Marketing.png";
+import imgBrandingNew from "../assets/service section - xg web/Branding.png";
+
 import svgPaths from "./imports/svg-k2dl7joxgv";
 
 interface ServiceItemProps {
@@ -275,59 +272,8 @@ function ServiceCard({
 
               {/* Branding (Last Item) */}
               {index === 6 && (
-                <div className="bg-white relative rounded-[8px] size-full overflow-hidden">
-                  <div className="flex flex-col gap-[4px] p-[4px] size-full relative">
-                    {/* Background Pattern */}
-                    <div className="absolute h-[615px] left-[calc(50%+0.5px)] opacity-[0.06] top-[calc(50%-0.5px)] translate-x-[-50%] translate-y-[-50%] w-[346px] pointer-events-none">
-                      <img src={imgLoadingScreen1} className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" alt="" />
-                    </div>
-
-                    {/* Top Section - iPhone */}
-                    <div className="bg-[rgba(247,228,70,0.25)] h-[180px] overflow-clip relative rounded-[4px] shrink-0 w-full">
-                      <div className="absolute h-[251px] left-[calc(50%+0.5px)] top-[calc(50%-0.5px)] translate-x-[-50%] translate-y-[-50%] w-[334px]">
-                        <img src={imgFreeIPhone17Pro} className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" alt="" />
-                      </div>
-                    </div>
-
-                    {/* Bottom Section - Team & Bag */}
-                    <div className="flex gap-[10px] items-start relative shrink-0 w-full">
-                      {/* Left Blue Box */}
-                      <div className="bg-[#002ae8] h-[160px] overflow-clip relative rounded-[4px] shrink-0 w-[157.5px]">
-                        <p className="absolute font-['Cal_Sans',sans-serif] leading-[1.2] left-[25.5px] not-italic text-[4px] text-center text-nowrap text-white top-[calc(50%-3px)] tracking-[-0.08px] translate-x-[-50%]">A TEAM OF</p>
-                        <div className="absolute content-stretch flex items-center left-[42px] px-0 py-[10px] top-1/2 translate-y-[-50%]">
-                          <div className="flex flex-col font-['Cal_Sans',sans-serif] items-start leading-[0.96] not-italic text-[24px] text-nowrap tracking-[-0.48px] w-[116px]">
-                            <p className="relative shrink-0 text-[rgba(255,255,255,0.4)] text-center">LEADERS</p>
-                            <p className="relative shrink-0 text-[rgba(255,255,255,0.4)] text-center">CREATORS</p>
-                            <p className="bg-clip-text bg-gradient-to-b from-[rgba(255,255,255,0.5)] relative shrink-0 to-[#ffffff]" style={{ WebkitTextFillColor: "transparent" }}>
-                              BUILDERS
-                            </p>
-                            <p className="relative shrink-0 text-white">THINKERS</p>
-                            <p className="bg-clip-text bg-gradient-to-b from-[rgba(255,255,255,0.5)] relative shrink-0 text-center to-[rgba(255,255,255,0.25)]" style={{ WebkitTextFillColor: "transparent" }}>
-                              EXPLORERS
-                            </p>
-                            <p className="relative shrink-0 text-[rgba(255,255,255,0.4)]">DOERS</p>
-                            <p className="relative shrink-0 text-[rgba(255,255,255,0.4)]">CODERS</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right Yellow Box */}
-                      <div className="basis-0 bg-[rgba(247,228,70,0.25)] grow h-[160px] min-h-px min-w-px relative rounded-[4px] shrink-0">
-                        <div className="absolute h-[236px] left-[calc(50%-8.25px)] top-[calc(50%-8px)] translate-x-[-50%] translate-y-[-50%] w-[316px]">
-                          <img src={imgKraftPaperPostalBagAndSticker} className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" alt="" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Duct Tape Overlay */}
-                    <div className="absolute flex h-[267px] items-center justify-center left-[-10px] top-[231px] w-[355px] pointer-events-none z-20">
-                      <div className="flex-none rotate-[180deg] scale-y-[-100%]">
-                        <div className="h-[267px] relative w-[355px]">
-                          <img src={imgDuctTapeMockup} className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" alt="" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="absolute inset-0">
+                  <img alt="" className="w-full h-full object-cover pointer-events-none" src={image} />
                 </div>
               )}
 
@@ -363,7 +309,7 @@ function ServiceCard({
             transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
             className="mt-6 lg:mt-0 hidden md:block"
           >
-            <span className="font-bold text-[#00A88D] uppercase tracking-[0.2em] font-['Sora',sans-serif]" style={{ fontSize: "16px" }}>
+            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "20px", lineHeight: "100%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#6E6E6E" }}>
               What We Deliver
             </span>
           </motion.div>

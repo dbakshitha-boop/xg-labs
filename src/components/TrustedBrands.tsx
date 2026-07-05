@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
 import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform, useScroll } from "motion/react";
-import imgKalki from "../assets/trustedbrands/White Logo.png";
+import imgKalki from "../assets/5.png";
 import imgSlam from "../assets/trustedbrands/slam_new.png";
-import imgArtk from "../assets/trustedbrands/artk.jpg";
-import imgGoWheels from "../assets/trustedbrands/Creen Primary Logo.png";
+import imgArtk from "../assets/6-removebg-preview.png";
+import imgGoWheels from "../assets/4.png";
 
 const TechDecorations = ({ index }: { index: number }) => {
   const suffixes = ['SYS', 'IO', 'AI', 'LAB', 'INC', 'NET'];
@@ -31,10 +31,10 @@ const TechDecorations = ({ index }: { index: number }) => {
 export function TrustedBrands() {
   const brands = [
     { name: "", image: null, logoW: 0, logoH: 0 },
-    { name: "KALKI HANDICRAFT", image: imgKalki, logoW: 220, logoH: 100 },
+    { name: "KALKI HANDICRAFT", image: imgKalki, logoW: 300, logoH: 300 },
     { name: "SLAM FITNESS", image: imgSlam, logoW: 280, logoH: 90 },
-    { name: "AR THANGA KOTTAI", image: imgArtk, logoW: 220, logoH: 100 },
-    { name: "GOWHEELS", image: imgGoWheels, logoW: 260, logoH: 260 },
+    { name: "AR THANGA KOTTAI", image: imgArtk, logoW: 140, logoH: 140 },
+    { name: "GOWHEELS", image: imgGoWheels, logoW: 320, logoH: 320 },
     { name: "", image: null, logoW: 0, logoH: 0 },
   ];
 

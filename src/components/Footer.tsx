@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import xgLogo from "../assets/2.png";
 
 const MENU_LINKS = [
   { label: "Home", path: "/" },
@@ -112,22 +113,27 @@ export function Footer() {
       <div
         className="footer-headline"
         style={{
-          padding: "32px 0 24px",
+          padding: "32px 48px 24px",
           overflow: "hidden",
         }}
       >
         <h2
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: "clamp(48px, 8vw, 130px)",
-            lineHeight: "0.71",
-            letterSpacing: "0",
+            fontWeight: 400,
+            fontStyle: "semibold",
+            fontSize:  "clamp(72px, 8vw, 160px)",
+            lineHeight: "0.88",
+            letterSpacing: "-0.01em",
             textTransform: "uppercase",
             color: "#D9D9D9",
             margin: 0,
             whiteSpace: "nowrap",
             textAlign: "center",
             width: "100%",
+            display: "block",
+            transform: "scaleX(0.92)",
+            transformOrigin: "center",
           }}
         >
           WE&rsquo;RE READY FOR OUR NEXT CHALLENGE
@@ -180,7 +186,7 @@ export function Footer() {
                 color: "#9A9A9A",
               }}
             >
-              Chennai, Tamilnadu, India.
+              Chennai, Tamil Nadu, India
             </p>
           </div>
         </div>
@@ -226,86 +232,107 @@ export function Footer() {
       <div
         className="footer-bottom-bar"
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
-          alignItems: "center",
-          padding: "20px 48px",
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          padding: "4px 48px 12px",
           gap: "24px",
         }}
       >
-        {/* Wordmark */}
-        <span
-          style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 700,
-            fontSize: "18px",
-            color: "#9A9A9A",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          Xg Labs
-        </span>
-
-        {/* Social icons */}
-        <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
-          {[
-            { icon: <IconInstagram />, href: "https://www.instagram.com/xglabs/", label: "Instagram" },
-            { icon: <IconLinkedIn />, href: "https://www.linkedin.com/company/xg-labs", label: "LinkedIn" },
-            { icon: <IconFacebook />, href: "https://www.facebook.com/people/XG-Labs/61578098947253/", label: "Facebook" },
-            { icon: <IconWhatsApp />, href: "https://wa.me/916369974530", label: "WhatsApp" },
-          ].map(({ icon, href, label }) => (
+        {/* Logo + Powered by */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
+          <div style={{ overflow: "hidden", height: "58px", width: "170px", marginBottom: "4px" }}>
+            <img
+              src={xgLogo}
+              alt="Xg Labs"
+              style={{ height: "150px", width: "150px", marginTop: "-46px", marginLeft: "-16px", display: "block" }}
+            />
+          </div>
+          <span
+            style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 400,
+              fontSize: "13px",
+              color: "rgba(255,255,255,0.3)",
+              letterSpacing: "0.04em",
+            }}
+          >
+            Powered by{" "}
             <a
-              key={label}
-              href={href}
+              href="https://thebrandopedia.in"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={label}
               style={{
-                color: "#9A9A9A",
-                display: "flex",
-                alignItems: "center",
+                color: "rgba(255,255,255,0.3)",
+                textDecoration: "none",
                 transition: "color 0.18s",
               }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#ffffff")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.5)")}
+              onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.8)")}
+              onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.3)")}
             >
-              {icon}
+              Brandopedia
             </a>
-          ))}
+          </span>
         </div>
 
-        {/* Legal */}
-        <div
-          className="footer-bottom-bar-legal"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-            gap: "4px",
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 400,
-              fontSize: "12px",
-              color: "#9A9A9A",
-              margin: 0,
-            }}
+        {/* Right side: social icons + legal */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "12px" }}>
+          {/* Social icons */}
+          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+            {[
+              { icon: <IconInstagram />, href: "https://www.instagram.com/xglabs/", label: "Instagram" },
+              { icon: <IconLinkedIn />, href: "https://www.linkedin.com/company/xg-labs", label: "LinkedIn" },
+              { icon: <IconFacebook />, href: "https://www.facebook.com/people/XG-Labs/61578098947253/", label: "Facebook" },
+              { icon: <IconWhatsApp />, href: "https://wa.me/916369974530", label: "WhatsApp" },
+            ].map(({ icon, href, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                style={{
+                  color: "#9A9A9A",
+                  display: "flex",
+                  alignItems: "center",
+                  transition: "color 0.18s",
+                }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#ffffff")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.5)")}
+              >
+                {icon}
+              </a>
+            ))}
+          </div>
+
+          {/* Legal */}
+          <div
+            className="footer-bottom-bar-legal"
+            style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}
           >
-            © 2025 XG Labs. All rights reserved.
-          </p>
-          <p
-            style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 400,
-              fontSize: "12px",
-              color: "#9A9A9A",
-              margin: 0,
-            }}
-          >
-            Privacy Policy • Terms of Use
-          </p>
+            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "12px", color: "#9A9A9A", margin: 0 }}>
+              © 2025 XG Labs. All rights reserved.
+            </p>
+            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "12px", color: "#9A9A9A", margin: 0 }}>
+              <span
+                onClick={() => navigate("/privacy-policy")}
+                style={{ cursor: "pointer" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "#ffffff")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "#9A9A9A")}
+              >
+                Privacy Policy
+              </span>
+              {" • "}
+              <span
+                onClick={() => navigate("/terms-of-use")}
+                style={{ cursor: "pointer" }}
+                onMouseEnter={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "#ffffff")}
+                onMouseLeave={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "#9A9A9A")}
+              >
+                Terms of Use
+              </span>
+            </p>
+          </div>
         </div>
       </div>
 

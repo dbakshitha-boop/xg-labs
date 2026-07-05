@@ -16,6 +16,8 @@ import { BlogPage } from "./components/BlogPage";
 import { BlogPostPage } from "./components/BlogPostPage";
 import { CaseStudyPage } from "./components/CaseStudyPage";
 import { ServicesPage } from "./components/ServicesPage";
+import { PrivacyPolicy } from "./components/PrivacyPolicy";
+import { TermsOfUse } from "./components/TermsOfUse";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ContactFormProvider } from "./components/ContactFormContext";
@@ -76,6 +78,8 @@ export default function App() {
             <Route path="/blog/post/:id" element={<BlogPostPage />} />
             <Route path="/blog/case-study/:id" element={<CaseStudyPageWrapper />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-use" element={<TermsOfUse />} />
           </Routes>
         </ContactFormProvider>
       </BrowserRouter>

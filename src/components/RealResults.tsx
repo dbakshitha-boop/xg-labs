@@ -2,9 +2,9 @@ import React, { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "motion/react";
 import imgLogo from "figma:asset/e41dee190168d7591c7b7b8c43b6c0799cb1032a.png";
 import imgRectangle from "figma:asset/192d853c9f27ed907c5b4d6ebe963ebe82df6c24.png";
-import imgLogo1 from "../assets/trustedbrands/White Logo.png";
+import imgLogo1 from "../assets/3.png";
 import imgLogo2 from "../assets/03355682553ef5be67447967b63be12b656b183b.png";
-import imgLogo3 from "../assets/trustedbrands/Creen Primary Logo.png";
+import imgLogo3 from "../assets/4.png";
 import imgLogoSlam from "../assets/trustedbrands/slam_logo.png";
 import imgLogo5 from "../assets/03f08e77f2789523074211d0a0c7a7d862b8e2bd.png";
 import { useCursor } from "./ui/CustomCursor";
@@ -96,6 +96,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             name: "Chetan Singh",
             role: "Founder, Kalki Handicraft",
             logo: imgLogo1,
+            logoSize: 110,
         },
         {
             id: "purple",
@@ -132,6 +133,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             name: "Amarnadh",
             role: "Owner, Andhra Spicy House",
             logo: imgLogo5,
+            logoSize: 110,
         },
         {
             id: "green",
@@ -144,6 +146,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             name: "Ranjith Manimaran",
             role: "CEO, SML CARS",
             logo: imgLogo2,
+            logoSize: 110,
         },
     ];
 
@@ -157,7 +160,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
                         key={card.id}
                         className="snap-start shrink-0 w-[85vw] md:w-[42vw] first:ml-0 last:mr-4"
                     >
-                         <card.component isMobile={true} quote={card.quote} name={card.name} role={card.role} logo={card.logo} />
+                         <card.component isMobile={true} quote={card.quote} name={card.name} role={card.role} logo={card.logo} logoSize={card.logoSize} />
                     </div>
                 ))}
             </div>
@@ -212,7 +215,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
                             delay: index * 0.5
                         }}
                     >
-                        <card.component isMobile={false} quote={card.quote} name={card.name} role={card.role} logo={card.logo} />
+                        <card.component isMobile={false} quote={card.quote} name={card.name} role={card.role} logo={card.logo} logoSize={card.logoSize} />
                     </motion.div>
                 </motion.div>
             ))}
@@ -228,9 +231,9 @@ const CardBase = ({ bg, children, shadow = "shadow-[0px_0px_12px_0px_rgba(0,0,0,
     </div>
 );
 
-const CardHeader = ({ name, role, logo }: { name: string; role: string; logo: string }) => (
+const CardHeader = ({ name, role, logo, logoSize = 80 }: { name: string; role: string; logo: string; logoSize?: number }) => (
     <div className="w-full flex justify-between items-start">
-         <div style={{ width: 80, height: 80, flexShrink: 0, position: 'relative' }}>
+         <div style={{ width: logoSize, height: logoSize, flexShrink: 0, position: 'relative' }}>
             <img src={logo} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'left top' }} />
          </div>
          <div className="flex flex-col items-end text-right">
@@ -248,9 +251,9 @@ const CardBody = ({ quote }: { quote: string }) => (
     </div>
 );
 
-const CardContent = ({ name, role, quote, logo }: { name: string; role: string; quote: string; logo: string }) => (
+const CardContent = ({ name, role, quote, logo, logoSize }: { name: string; role: string; quote: string; logo: string; logoSize?: number }) => (
     <>
-        <CardHeader name={name} role={role} logo={logo} />
+        <CardHeader name={name} role={role} logo={logo} logoSize={logoSize} />
         <CardBody quote={quote} />
     </>
 );
@@ -319,55 +322,56 @@ interface CardProps {
     role: string;
     quote: string;
     logo: string;
+    logoSize?: number;
 }
 
-const CardBlue = ({ isMobile = false, name, role, quote, logo }: CardProps) => (
+const CardBlue = ({ isMobile = false, name, role, quote, logo, logoSize }: CardProps) => (
     <WithHoverLogo isMobile={isMobile} logo={logo}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
             </div>
             <CardBase bg="bg-[#b3e5fc]">
-                <CardContent name={name} role={role} quote={quote} logo={logo} />
+                <CardContent name={name} role={role} quote={quote} logo={logo} logoSize={logoSize} />
             </CardBase>
         </div>
     </WithHoverLogo>
 );
 
-const CardPurple = ({ isMobile = false, name, role, quote, logo }: CardProps) => (
+const CardPurple = ({ isMobile = false, name, role, quote, logo, logoSize }: CardProps) => (
     <WithHoverLogo isMobile={isMobile} logo={logo}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
             </div>
             <CardBase bg="bg-[#d8c0ff]">
-                <CardContent name={name} role={role} quote={quote} logo={logo} />
+                <CardContent name={name} role={role} quote={quote} logo={logo} logoSize={logoSize} />
             </CardBase>
         </div>
     </WithHoverLogo>
 );
 
-const CardWhite = ({ isMobile = false, name, role, quote, logo }: CardProps) => (
+const CardWhite = ({ isMobile = false, name, role, quote, logo, logoSize }: CardProps) => (
     <WithHoverLogo isMobile={isMobile} logo={logo}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
             </div>
             <CardBase bg="bg-white">
-                <CardContent name={name} role={role} quote={quote} logo={logo} />
+                <CardContent name={name} role={role} quote={quote} logo={logo} logoSize={logoSize} />
             </CardBase>
         </div>
     </WithHoverLogo>
 );
 
-const CardGreen = ({ isMobile = false, name, role, quote, logo }: CardProps) => (
+const CardGreen = ({ isMobile = false, name, role, quote, logo, logoSize }: CardProps) => (
     <WithHoverLogo isMobile={isMobile} logo={logo}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
             </div>
             <CardBase bg="bg-[#d9fb60]">
-                <CardContent name={name} role={role} quote={quote} logo={logo} />
+                <CardContent name={name} role={role} quote={quote} logo={logo} logoSize={logoSize} />
             </CardBase>
         </div>
     </WithHoverLogo>

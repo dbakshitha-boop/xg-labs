@@ -2,10 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { motion, useScroll, useSpring, useMotionValue } from "motion/react";
 import { useNavigate } from "react-router-dom";
-import imgC4 from "figma:asset/85d6b6f33c8667ab02410e898c803bdf8b2f8acf.png";
-import imgC3 from "figma:asset/cf73ccd40dc24f9d1feec565d29fe7d28fd3690b.png";
-import imgC2 from "figma:asset/308a1ec46f49ee27f236c5b52a0022c154701558.png";
-import imgC1 from "figma:asset/c6f75c6d8668e22eaf393503de064b054afa1040.png";
 import imgC5 from "../assets/selectedwork_SLAM.jpeg";
 import imgC6 from "../assets/selectedwork_KH2.png";
 import imgC7 from "../assets/selectedwork_Gowheels.jpeg";
@@ -421,7 +417,7 @@ export function SelectedWork() {
               </div>
 
               {/* Long Description — in the middle, with gap from date */}
-              <div className="relative w-full mt-auto pt-10 xl:pt-14" style={{ minHeight: "140px" }}>
+              <div className="relative w-full mt-auto pt-4 xl:pt-6" style={{ minHeight: "140px" }}>
                 {projects.map((project, index) => (
                   <motion.div
                     key={project.id}
@@ -439,25 +435,21 @@ export function SelectedWork() {
 
               {/* ROLE + Tags — aligned with bottom of card image */}
               <div className="mt-auto flex flex-col gap-2" style={{ marginBottom: "36px" }}>
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest font-space">Role</span>
-                <div className="relative" style={{ minHeight: "18px" }}>
+                <span className="text-base font-bold text-gray-400 uppercase tracking-widest font-space">Role</span>
+                <div className="relative" style={{ minHeight: "80px" }}>
                   {projects.map((project, index) => (
                     <motion.div
                       key={project.id}
-                      className="absolute top-0 left-0 w-full flex flex-wrap items-center gap-y-2 justify-start" style={{ columnGap: "6px" }}
+                      className="absolute top-0 left-0 w-full flex flex-col"
+                      style={{ rowGap: "8px" }}
                       initial={false}
                       animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 10 }}
                       transition={transition}
                     >
                       {project.tags.map((tag, i) => (
-                        <React.Fragment key={i}>
-                          {i > 0 && (
-                            <span className="text-[#9A9A9A] select-none" style={{ fontSize: "13px", lineHeight: 1, display: "inline-flex", alignItems: "center" }}>•</span>
-                          )}
-                          <span className="font-bold text-[#6E6E6E] uppercase font-['Cal_Sans',sans-serif] whitespace-nowrap" style={{ fontSize: "13px", letterSpacing: "0.08em", lineHeight: 1, display: "inline-flex", alignItems: "center" }}>
-                            {tag}
-                          </span>
-                        </React.Fragment>
+                        <span key={i} className="font-bold text-[#6E6E6E] uppercase font-['Cal_Sans',sans-serif]" style={{ fontSize: "13px", letterSpacing: "0.08em", lineHeight: 1 }}>
+                          {tag}
+                        </span>
                       ))}
                     </motion.div>
                   ))}

@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, useScroll } from "motion/react";
 import svgPaths from "../../imports/svg-0jzj7gw8ha";
 import imgAndhraSH from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
-import imgGoWheels from "../../assets/whatmakesus/2.png";
-import imgBrandopedia from "../../assets/whatmakesus/1.png";
-import imgKalki from "../../assets/whatmakesus/4.png";
+import imgGoWheels from "../../assets/3_gowheels.png";
+import imgBrandopedia from "../../assets/2_brandopedia.png";
+import imgKalki from "../../assets/4_kalki.png";
 
 const CONTENT_DATA = [
   {
@@ -245,14 +245,14 @@ function SubheaderContainer({ title, id }: { title: string, id: string }) {
   );
 }
 
-function ContentContainer({ description, title, id }: { description: string[], title: string, id: string }) {
+function ContentContainer({ description, title, id, isInView }: { description: string[], title: string, id: string, isInView: boolean }) {
   return (
     <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full" data-name="Content Container">
       <SubheaderContainer title={title} id={id} />
       <div className="flex flex-col w-full">
         {description.map((line, idx) => (
              <div key={idx} className="relative font-['Sora',sans-serif] font-normal leading-[1.4] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(18px, 1.8vw, 26px)" }}>
-                <RevealText delay={idx * 0.1} isActive={true}>
+                <RevealText delay={idx * 0.1} isActive={isInView}>
                   {line}
                 </RevealText>
              </div>
@@ -262,34 +262,35 @@ function ContentContainer({ description, title, id }: { description: string[], t
   );
 }
 
-function RealContent({ activeIndex }: { activeIndex: number }) {
+function RealContent({ activeIndex, isInView }: { activeIndex: number; isInView: boolean }) {
   const content = CONTENT_DATA[activeIndex] || CONTENT_DATA[CONTENT_DATA.length - 1];
-  
+
   return (
     <div className="content-stretch flex flex-col gap-[60px] items-start relative shrink-0 w-full" data-name="Real content">
       <motion.div
-        key={content.id}
+        key={`${content.id}-${isInView}`}
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
         transition={{ duration: 0.3 }}
         className="w-full"
       >
-        <ContentContainer 
+        <ContentContainer
             title={content.title}
             description={content.description}
-            // id={content.id}
+            id={content.id}
+            isInView={isInView}
         />
       </motion.div>
     </div>
   );
 }
 
-function TextContainer({ activeIndex }: { activeIndex: number }) {
+function TextContainer({ activeIndex, isInView }: { activeIndex: number; isInView: boolean }) {
   return (
     <div className="content-stretch flex flex-col relative shrink-0 w-full h-full gap-[40px] lg:gap-[64px]" style={{ padding: "clamp(24px, 5vw, 80px)", paddingTop: "clamp(40px, 4vw, 64px)", justifyContent: "flex-start" }} data-name="Text Container">
       <HeaderContainer />
       <div>
-        <RealContent activeIndex={activeIndex} />
+        <RealContent activeIndex={activeIndex} isInView={isInView} />
       </div>
     </div>
   );
@@ -297,7 +298,7 @@ function TextContainer({ activeIndex }: { activeIndex: number }) {
 
 export function WhatMakesUsDifferent() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -305,26 +306,33 @@ export function WhatMakesUsDifferent() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [subProgress, setSubProgress] = useState(0);
+  const [hasSeen, setHasSeen] = useState(false);
 
-  // Map scroll progress to logic
+  // Drive activeIndex / subProgress from scroll progress
   useEffect(() => {
     return scrollYProgress.on("change", (latest) => {
-      // Total slides = 4. 
-      // Progress 0.00-0.25 -> Slide 0
-      // Progress 0.25-0.50 -> Slide 1
-      // Progress 0.50-0.75 -> Slide 2
-      // Progress 0.75-1.00 -> Slide 3
-      
-      const raw = latest * 4; 
-      // Clamp activeIndex to 3 so we don't go out of bounds at exactly 1.0 progress
+      const raw = latest * 4;
       const index = Math.min(Math.floor(raw), 3);
-      // For the last slide, we want the subProgress to reach 1 and stay there
       const sub = (index === 3 && raw >= 4) ? 1 : raw % 1;
-
       setActiveIndex(index);
       setSubProgress(sub);
     });
   }, [scrollYProgress]);
+
+  // hasSeen: true whenever the sticky container is actually covering the viewport.
+  // Uses a scroll listener so it resets when the user leaves and replays on re-entry,
+  // and also fires on smooth-scroll navigation (scrollYProgress stays 0 on arrival).
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      setHasSeen(rect.top <= 0 && rect.bottom > 0);
+    };
+    window.addEventListener("scroll", update, { passive: true });
+    update(); // run once on mount in case page already scrolled here
+    return () => window.removeEventListener("scroll", update);
+  }, []);
 
   return (
     <div ref={containerRef} id="what-makes-us-different" className="relative h-[400vh]" data-name="Scroll Container">
@@ -336,7 +344,7 @@ export function WhatMakesUsDifferent() {
           </div>
           {/* Text side - takes remaining height on mobile, 50% width on desktop */}
           <div className="w-full lg:w-1/2 overflow-hidden h-[55vh] lg:h-full flex flex-col">
-            <TextContainer activeIndex={activeIndex} />
+            <TextContainer activeIndex={activeIndex} isInView={hasSeen} />
           </div>
         </div>
       </div>
