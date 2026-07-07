@@ -1,13 +1,51 @@
-import { useRef, useState, useEffect } from "react";
-import { motion, useScroll } from "motion/react";
+import React, { useRef, useState, useEffect } from "react";
+import { ArrowRight } from "lucide-react";
+import { motion, useScroll, useSpring, useMotionValue } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import imgC5 from "../assets/selectedwork_SLAM.jpeg";
 import imgC6 from "../assets/selectedwork_KH2.png";
 import imgC7 from "../assets/selectedwork_Gowheels.jpeg";
 import { useCursor } from "./ui/CustomCursor";
-import { fetchWorks } from "../lib/api";
 
-const FALLBACK_PROJECTS = [
+// Magnetic Button Component
+const MagneticButton = ({ children, className, onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) => {
+  const ref = useRef<HTMLButtonElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const springConfig = { damping: 15, stiffness: 150, mass: 0.1 };
+  const smoothX = useSpring(x, springConfig);
+  const smoothY = useSpring(y, springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    const { left, top, width, height } = ref.current!.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    x.set((clientX - centerX) * 0.3); // Magnetic strength
+    y.set((clientY - centerY) * 0.3);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.button
+      ref={ref}
+      className={className}
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ x: smoothX, y: smoothY }}
+    >
+      {children}
+    </motion.button>
+  );
+};
+
+const projects = [
   {
     id: 1,
     title: ["High-Impact", "Social Contents"],
@@ -68,35 +106,11 @@ const FALLBACK_PROJECTS = [
   },
 ];
 
-function workToProject(work: any, index: number) {
-  const words = (work.title || '').split(' ');
-  const mid = Math.ceil(words.length / 2);
-  const tags = (work.role || '').split(',').map((t: string) => t.trim()).filter(Boolean);
-  return {
-    id: index + 1,
-    title: [words.slice(0, mid).join(' '), words.slice(mid).join(' ') || ' '],
-    client: work.heroSubtitle || work.title || '',
-    type: work.heroTags || '',
-    date: (work.timeline || '').split('•').pop()?.trim().toUpperCase() || '',
-    shortDescription: work.heroSubtitle || '',
-    longDescription: work.excerpt || '',
-    tags: tags.length > 0 ? tags : [work.heroTags].filter(Boolean),
-    image: work.heroImage || '',
-  };
-}
-
 export function SelectedWork() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [projects, setProjects] = useState<any[]>(FALLBACK_PROJECTS);
   const { setVariant, setText } = useCursor();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchWorks().then(works => {
-      if (works.length > 0) setProjects(works.map(workToProject));
-    }).catch(() => {});
-  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -129,7 +143,7 @@ export function SelectedWork() {
       setActiveIndex(index);
     });
     return () => unsubscribe();
-  }, [scrollYProgress, isDesktop, projects.length]);
+  }, [scrollYProgress, isDesktop]);
 
   // Helper for text animations
   const getTextAnimation = (index: number) => {
@@ -159,85 +173,26 @@ export function SelectedWork() {
       style={{ height: isDesktop ? `${projects.length * 100}vh` : 'auto' }}
     >
       {/* Mobile/Tablet View (< 1024px) */}
-      <div className="lg:hidden w-full px-4 md:px-8 py-8 flex flex-col gap-10">
+      <div className="lg:hidden w-full px-4 md:px-8 py-16 flex flex-col gap-24">
         {/* Mobile Header */}
-        <div className="flex justify-between items-center mb-2">
+        <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold uppercase tracking-tight text-black font-space">
             Selected Work
           </h2>
-          <motion.div
-            initial="rest"
-            whileHover="hover"
-            animate="rest"
-            style={{ position: 'relative', height: 34, display: 'inline-flex' }}
-            onClick={() => navigate('/portfolio')}
-          >
-            <button
-              aria-label="View all work"
-              style={{
-                height: 34,
-                paddingTop: 6,
-                paddingRight: 24,
-                paddingBottom: 6,
-                paddingLeft: 10,
-                display: 'inline-flex',
-                alignItems: 'center',
-                background: '#ffffff',
-                borderRadius: 42,
-                border: '1px solid #9A9A9A',
-                cursor: 'pointer',
-                boxSizing: 'border-box',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              <motion.span
-                aria-hidden
-                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
-                style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }}
-              />
-              <motion.span
-                aria-hidden
-                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
-                style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }}
-              />
-              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
-                <motion.span
-                  variants={{ rest: { y: 0 }, hover: { y: '-100%' } }}
-                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                  style={{ display: 'block', fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}
-                >
-                  View All
-                </motion.span>
-                <motion.span
-                  aria-hidden
-                  variants={{ rest: { y: '100%' }, hover: { y: 0 } }}
-                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                  style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}
-                >
-                  View All
-                </motion.span>
-              </div>
-            </button>
-            <motion.div
-              variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }}
-              transition={{ duration: 0.3 }}
-              style={{ position: 'absolute', top: 0, right: -12, width: 34, height: 34, borderRadius: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}
-            >
-              <svg width={14} height={14} viewBox="0 0 24 24" style={{ display: 'block' }} fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14" />
-                <path d="M13 5l7 7-7 7" />
-              </svg>
-            </motion.div>
-          </motion.div>
+          <button className="group flex items-center gap-2 px-4 py-2 rounded-full border border-black hover:bg-black hover:text-white transition-colors duration-300">
+            <span className="text-xs font-bold uppercase tracking-wide font-space">
+              View All
+            </span>
+            <div className="bg-black text-white rounded-full p-1 group-hover:bg-white group-hover:text-black transition-colors">
+              <ArrowRight size={12} />
+            </div>
+          </button>
         </div>
 
         {projects.map((project, i) => (
-          <div key={project.id} className="flex flex-col gap-4" style={{ paddingTop: "12px" }}>
+          <div key={project.id} className="flex flex-col gap-6">
             {/* Mobile Image */}
-            <div style={{ width: "343px", height: "343px", maxWidth: "100%", borderRadius: "8px", overflow: "hidden", flexShrink: 0, margin: "0 auto" }}>
+            <div className="w-full aspect-[4/5] rounded-[12px] overflow-hidden shadow-lg">
               <img 
                 src={project.image} 
                 alt={project.client} 
@@ -249,7 +204,7 @@ export function SelectedWork() {
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-xl font-bold text-[#414141] font-space leading-tight mb-2">
+                  <h3 className="text-3xl font-bold text-[#414141] font-space leading-tight mb-2">
                     {project.title.join(" ")}
                   </h3>
                   <div className="flex flex-col">
@@ -257,7 +212,7 @@ export function SelectedWork() {
                     <span className="text-sm text-gray-500 font-sora">{project.type}</span>
                   </div>
                 </div>
-                <span className="text-xl text-gray-400 font-sora whitespace-nowrap">{project.date}</span>
+                <span className="text-xl text-gray-400 font-sora">{project.date}</span>
               </div>
 
               <div className="h-px w-full bg-gray-200" />
@@ -269,7 +224,7 @@ export function SelectedWork() {
                 {project.longDescription}
               </p>
 
-              <div className="flex flex-col gap-2 items-start">
+              <div className="flex flex-wrap gap-2">
                 {project.tags.map((tag, idx) => (
                   <span key={idx} className="text-xs font-bold text-gray-500 uppercase tracking-wider font-space bg-white px-3 py-1 rounded-full border border-gray-100">
                     {tag}
@@ -289,71 +244,14 @@ export function SelectedWork() {
             <h2 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-black font-space">
               Selected Work
             </h2>
-            <motion.div
-              initial="rest"
-              whileHover="hover"
-              animate="rest"
-              onClick={() => navigate('/portfolio')}
-              style={{ position: "relative", height: 42, display: "inline-flex", cursor: "pointer" }}
-            >
-              <button
-                style={{
-                  height: 42,
-                  paddingTop: 10,
-                  paddingBottom: 10,
-                  paddingLeft: 20,
-                  paddingRight: 32,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  background: "#ffffff",
-                  borderRadius: 42,
-                  border: "1.5px solid #1a1a1a",
-                  cursor: "pointer",
-                  boxSizing: "border-box",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-              >
-                <motion.span
-                  aria-hidden
-                  variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                  transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
-                  style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
-                />
-                <motion.span
-                  aria-hidden
-                  variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                  transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
-                  style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
-                />
-                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: "1em" }}>
-                  <motion.span
-                    variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
-                    transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                    style={{ display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
-                  >
-                    View Work
-                  </motion.span>
-                  <motion.span
-                    aria-hidden
-                    variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
-                    transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                    style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
-                  >
-                    View Work
-                  </motion.span>
-                </div>
-              </button>
-              <motion.div
-                variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
-                transition={{ duration: 0.3 }}
-                style={{ position: "absolute", top: 0, right: -13, width: 42, height: 42, borderRadius: 42, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
-              >
-                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
-                </svg>
-              </motion.div>
-            </motion.div>
+            <MagneticButton className="group flex items-center gap-2 px-6 py-2 rounded-full border border-black hover:bg-black hover:text-white transition-colors duration-300 !cursor-none" onClick={() => navigate('/portfolio')}>
+              <span className="text-sm font-bold uppercase tracking-wide font-space">
+                View Work
+              </span>
+              <div className="bg-black text-white rounded-full p-1 group-hover:bg-white group-hover:text-black transition-colors">
+                <ArrowRight size={14} />
+              </div>
+            </MagneticButton>
           </div>
 
           {/* Main Content Grid */}

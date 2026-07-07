@@ -180,6 +180,11 @@ export interface Work {
   role: string;
   timeline: string;
   excerpt: string;
+  context: { label: string; description: string }[];
+  brandDirectionDesc: string;
+  process: { number?: string; title: string; description: string }[];
+  impactStats: { value: string; label: string }[];
+  deliverables: string[];
 }
 
 interface RawWork {
@@ -193,12 +198,24 @@ interface RawWork {
     tags?: string;
     stats?: { id: string; value: string; label: string }[];
   };
-  infoBar?: { role?: string; timeline?: string };
+  infoBar?: { role?: string; timeline?: string; deliverables?: string[] };
   quote?: { text?: string };
+  context?: { label?: string; description?: string }[];
+  brandDirection?: { description?: string; images?: string[] };
+  process?: { number?: string; title?: string; description?: string }[];
+  impact?: { stats?: { value?: string; label?: string }[] };
   [key: string]: unknown;
 }
 
 function transformWork(raw: RawWork): Work {
+  const infoBar = raw.infoBar ?? {};
+  const rawDelivs = infoBar.deliverables;
+  const deliverables = Array.isArray(rawDelivs)
+    ? rawDelivs.map(String)
+    : typeof infoBar.role === "string"
+    ? infoBar.role.split(/[,\n]/).map((s) => s.trim()).filter(Boolean)
+    : [];
+
   return {
     _id: (raw.id ?? raw._id ?? "") as string,
     title: raw.title ?? "",
@@ -207,9 +224,14 @@ function transformWork(raw: RawWork): Work {
     heroSubtitle: raw.hero?.subtitle ?? "",
     heroTags: raw.hero?.tags ?? "",
     heroStats: raw.hero?.stats ?? [],
-    role: raw.infoBar?.role ?? "",
-    timeline: raw.infoBar?.timeline ?? "",
+    role: infoBar.role ?? "",
+    timeline: infoBar.timeline ?? "",
     excerpt: raw.quote?.text ?? "",
+    context: (raw.context ?? []).map((c) => ({ label: c.label ?? "", description: c.description ?? "" })),
+    brandDirectionDesc: raw.brandDirection?.description ?? "",
+    process: (raw.process ?? []).map((p) => ({ number: p.number, title: p.title ?? "", description: p.description ?? "" })),
+    impactStats: (raw.impact?.stats ?? []).map((s) => ({ value: s.value ?? "", label: s.label ?? "" })),
+    deliverables,
   };
 }
 

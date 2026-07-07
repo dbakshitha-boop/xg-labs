@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import xgLogoWhite from "../assets/2.png";
 import { motion } from "motion/react";
-import { submitContactForm } from "../lib/api";
+import { submitContactForm, fetchWork } from "../lib/api";
+import type { Work } from "../lib/api";
 import { useNavigate } from "react-router-dom";
 import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
@@ -166,6 +167,14 @@ function EmbeddedContactForm({ px }: { px: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false
+  );
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
@@ -186,7 +195,7 @@ function EmbeddedContactForm({ px }: { px: string }) {
   const inputStyle: React.CSSProperties = {
     background: "transparent", border: "none", outline: "none",
     fontFamily: "'Poppins', sans-serif", fontWeight: 600,
-    fontSize: "clamp(20px, 2.6vw, 40px)", color: "#6F6F6F",
+    fontSize: isMobile ? "clamp(14px, 4vw, 18px)" : "clamp(20px, 2.6vw, 40px)", color: "#6F6F6F",
     lineHeight: 1, caretColor: "#2E2E2E", width: "100%",
   };
   const labelStyle: React.CSSProperties = {
@@ -203,7 +212,7 @@ function EmbeddedContactForm({ px }: { px: string }) {
     <section style={{ background: "#E8ECFF", padding: `72px ${px}` }}>
       <style>{`.ecf-input::placeholder { color: #6F6F6F; font-family: 'Poppins', sans-serif; font-weight: 600; }`}</style>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "72px", marginBottom: "64px", alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "24px" : "72px", marginBottom: "64px", alignItems: "start" }}>
         <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1.08, letterSpacing: "-0.04em", color: "#2E2E2E", margin: 0 }}>
           Let's create work that drives real growth.
         </h2>
@@ -212,7 +221,7 @@ function EmbeddedContactForm({ px }: { px: string }) {
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "72px", rowGap: "48px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "72px", rowGap: isMobile ? "32px" : "48px" }}>
         <div style={fieldStyle}>
           <p style={labelStyle}>Who you are</p>
           <input className="ecf-input" value={name} onChange={e => setName(e.target.value)} placeholder="[ Your Name ]" style={inputStyle} />
@@ -239,7 +248,7 @@ function EmbeddedContactForm({ px }: { px: string }) {
             onClick={handleSubmit}
             initial="rest"
             whileHover={!submitting && !submitted ? "hover" : "rest"}
-            style={{ background: "none", border: "none", cursor: submitting || submitted ? "default" : "pointer", padding: 0, flexShrink: 0, height: "72px", display: "flex", alignItems: "center", gap: "2px" }}
+            style={{ background: "none", border: "none", cursor: submitting || submitted ? "default" : "pointer", padding: 0, flexShrink: 0, height: "72px", display: isMobile ? "none" : "flex", alignItems: "center", gap: "2px" }}
           >
             <svg width="12" height="52" viewBox="0 0 12 52" fill="none" style={{ display: "block", flexShrink: 0 }}>
               <path d="M12 0 H0 V52 H12" stroke={btnColor} strokeWidth="2" strokeLinecap="butt" strokeLinejoin="miter" />
@@ -265,6 +274,23 @@ function EmbeddedContactForm({ px }: { px: string }) {
               <path d="M0 0 H12 V52 H0" stroke={btnColor} strokeWidth="2" strokeLinecap="butt" strokeLinejoin="miter" />
             </svg>
           </motion.button>
+          {isMobile && (
+            <motion.button
+              disabled={submitting || submitted}
+              onClick={handleSubmit}
+              style={{ background: "none", border: "none", cursor: submitting || submitted ? "default" : "pointer", padding: 0, flexShrink: 0, display: "flex", alignItems: "center", gap: "4px" }}
+            >
+              <svg width="8" height="40" viewBox="0 0 8 40" fill="none" style={{ display: "block", flexShrink: 0 }}>
+                <path d="M8 0 H0 V40 H8" stroke={btnColor} strokeWidth="2.5" strokeLinecap="butt" />
+              </svg>
+              <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "16px", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: btnColor }}>
+                {submitted ? "✓ Sent" : submitting ? "···" : "Send"}
+              </span>
+              <svg width="8" height="40" viewBox="0 0 8 40" fill="none" style={{ display: "block", flexShrink: 0 }}>
+                <path d="M0 0 H8 V40 H0" stroke={btnColor} strokeWidth="2.5" strokeLinecap="butt" />
+              </svg>
+            </motion.button>
+          )}
         </div>
         {submitError && <p style={{ gridColumn: "1 / -1", fontFamily: "'Space Grotesk',sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "4px 0 0" }}>{submitError}</p>}
       </div>
@@ -272,11 +298,37 @@ function EmbeddedContactForm({ px }: { px: string }) {
   );
 }
 
-export function CaseStudyPage({ id }: { id?: number }) {
+export function CaseStudyPage({ id }: { id?: string }) {
   const navigate = useNavigate();
   useContactForm();
-  const idx = id !== undefined ? id : 0;
-  const study = CASE_STUDIES[idx] ?? CASE_STUDIES[0];
+  const [work, setWork] = useState<Work | null>(null);
+  const [loading, setLoading] = useState(!!id);
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    fetchWork(id)
+      .then(setWork)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const fallback = CASE_STUDIES[0];
+  const study = {
+    category:    work?.heroSubtitle || fallback.category,
+    tags:        work?.heroTags     || fallback.tags,
+    title:       work?.title        || fallback.title,
+    heroImg:     work?.heroImage    || fallback.heroImg,
+    stats:       (work?.heroStats?.length ? work.heroStats : fallback.stats).map((s) => ({ value: s.value, label: s.label })),
+    challenge:   work?.context?.find((c) => /challenge/i.test(c.label))?.description ?? (fallback as any).challenge,
+    goal:        work?.context?.find((c) => /goal/i.test(c.label))?.description      ?? (fallback as any).goal,
+    solution:    work?.context?.find((c) => /solution/i.test(c.label))?.description  ?? (fallback as any).solution,
+    solutionImg: (fallback as any).solutionImg,
+    deliverables: work?.deliverables?.length ? work.deliverables : (fallback as any).deliverables,
+    timeline:    work?.timeline || (fallback as any).timeline,
+  };
+
+  if (loading) return <div style={{ minHeight: "100vh", background: "#0f0f0f" }} />;
 
   return (
     <div style={{ minHeight: "100vh", background: "#0f0f0f" }}>
@@ -284,7 +336,7 @@ export function CaseStudyPage({ id }: { id?: number }) {
         @media (max-width: 767px) {
           .cs-hero-grid { grid-template-columns: 1fr !important; }
           .cs-hero-img { display: none !important; }
-          .cs-hero-text { padding: 120px 20px 40px !important; }
+          .cs-hero-text { padding: 120px 40px 40px !important; }
           .cs-content-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
           .cs-brand-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
           .cs-steps-grid { grid-template-columns: 1fr 1fr !important; }
@@ -350,6 +402,7 @@ export function CaseStudyPage({ id }: { id?: number }) {
           >
           {/* Left — text */}
           <motion.div
+            className="cs-hero-text"
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -791,12 +844,19 @@ export function CaseStudyPage({ id }: { id?: number }) {
 
         {/* Step cards */}
         <div className="cs-steps-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
-          {[
-            { num: "01", title: "DISCOVER", body: "Research, analytics audit, user interviews, funnel review." },
-            { num: "02", title: "DEFINE",   body: "Brand pillars, UX architecture, conversion hypothesis." },
-            { num: "03", title: "DESIGN",   body: "Identity, UI, prototypes, and creative assets." },
-            { num: "04", title: "DELIVER",  body: "Handoff, campaign launch, measurement plan." },
-          ].map((step, i) => (
+          {(work?.process?.length
+            ? work.process.map((p, idx) => ({
+                num: p.number ?? String(idx + 1).padStart(2, "0"),
+                title: (p.title ?? "").toUpperCase(),
+                body: p.description,
+              }))
+            : [
+                { num: "01", title: "DISCOVER", body: "Research, analytics audit, user interviews, funnel review." },
+                { num: "02", title: "DEFINE",   body: "Brand pillars, UX architecture, conversion hypothesis." },
+                { num: "03", title: "DESIGN",   body: "Identity, UI, prototypes, and creative assets." },
+                { num: "04", title: "DELIVER",  body: "Handoff, campaign launch, measurement plan." },
+              ]
+          ).map((step, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
@@ -841,12 +901,15 @@ export function CaseStudyPage({ id }: { id?: number }) {
         </motion.div>
 
         <div className="cs-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-          {[
-            { value: "52%",  label: "Increase in sign-ups",        bold: false },
-            { value: "2.1X", label: "More onboarding completions", bold: false },
-            { value: "38%",  label: "Increase in active users",    bold: true  },
-            { value: "3",    label: "Months to rollout",           bold: false },
-          ].map((stat, i) => (
+          {(work?.impactStats?.length
+            ? work.impactStats.map((s, i) => ({ value: s.value, label: s.label, bold: i === work.impactStats.length - 2 }))
+            : [
+                { value: "52%",  label: "Increase in sign-ups",        bold: false },
+                { value: "2.1X", label: "More onboarding completions", bold: false },
+                { value: "38%",  label: "Increase in active users",    bold: true  },
+                { value: "3",    label: "Months to rollout",           bold: false },
+              ]
+          ).map((stat, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 16 }}

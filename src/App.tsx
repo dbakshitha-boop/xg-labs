@@ -63,7 +63,7 @@ import { useParams } from "react-router-dom";
 
 function CaseStudyPageWrapper() {
   const { id } = useParams<{ id: string }>();
-  return <CaseStudyPage id={id !== undefined ? parseInt(id, 10) : 0} />;
+  return <CaseStudyPage id={id} />;
 }
 
 export default function App() {

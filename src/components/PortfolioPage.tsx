@@ -4,6 +4,9 @@ import type { Transition } from "motion/react";
 import { useNavigate as useRouterNavigate } from "react-router-dom";
 import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
+import { useContactForm } from "./ContactFormContext";
+import { fetchWorks } from "../lib/api";
+import type { Work } from "../lib/api";
 import image1 from "../assets/portfolio/91b55f6c4cb04eb7c2e15c4348e7d9e02c87693d.png";
 import image5 from "../assets/portfolio/143ce4dc78b3934cc2b5dfa00d6839d1276386b9.jpg";
 import image3 from "../assets/portfolio/1248070d103a19f145ae0f832592d24f14f6062d.jpg";
@@ -24,11 +27,27 @@ const METRIC_CARDS = [
   { img: image4, metric: "3.1× Engagement Rate",   description: "Driven by targeted influencer campaigns and strategic content distribution." },
 ];
 
-const PROJECT_CARDS = [
-  { img: image1, category: "WEBSITE + VISUAL IDENTITY",    description: "A modern digital presence and clean identity system built for clarity.", tags: "BRANDING / WEB",        filters: ["BRANDING"],     caseStudyId: 0 },
-  { img: image2, category: "PRODUCT EXPERIENCE + REBRAND", description: "A bold product refresh that improved conversion and user clarity.",       tags: "MARKETING / STRATEGY",  filters: ["STRATEGY"],     caseStudyId: 1 },
-  { img: image3, category: "BRANDING FOR DIGITAL",         description: "A high-performing content system that scaled across ads & social.",       tags: "CONTENT / PERFORMANCE", filters: ["PERFORMANCE"],  caseStudyId: 2 },
+type ProjectCard = {
+  img: string;
+  category: string;
+  description: string;
+  tags: string;
+  filters: string[];
+  workId: string;
+};
+
+const FALLBACK_CARDS: ProjectCard[] = [
+  { img: image1, category: "WEBSITE + VISUAL IDENTITY",    description: "A modern digital presence and clean identity system built for clarity.", tags: "BRANDING / WEB",        filters: ["BRANDING"],    workId: "0" },
+  { img: image2, category: "PRODUCT EXPERIENCE + REBRAND", description: "A bold product refresh that improved conversion and user clarity.",       tags: "MARKETING / STRATEGY",  filters: ["STRATEGY"],    workId: "1" },
+  { img: image3, category: "BRANDING FOR DIGITAL",         description: "A high-performing content system that scaled across ads & social.",       tags: "CONTENT / PERFORMANCE", filters: ["PERFORMANCE"], workId: "2" },
 ];
+
+const FILTER_KEYWORDS = ["STRATEGY", "CREATIVE", "PERFORMANCE", "BRANDING", "PRODUCT"];
+function deriveFilters(tags: string): string[] {
+  const upper = tags.toUpperCase();
+  const found = FILTER_KEYWORDS.filter((k) => upper.includes(k));
+  return found.length ? found : ["CREATIVE"];
+}
 
 // ─── Animation constants ──────────────────────────────────────────────────────
 
@@ -64,6 +83,10 @@ const s2Variants = {
 
 export function PortfolioPage() {
   const routerNavigate = useRouterNavigate();
+  const { open: openContactForm } = useContactForm();
+  const [works, setWorks] = useState<Work[]>([]);
+  useEffect(() => { fetchWorks().then(setWorks).catch(() => {}); }, []);
+
   // Section state: 0 = intro/strip, 1 = metrics carousel, 2 = filter + cards
   const [nav, setNav] = useState({ section: 0, dir: 1 });
   const { section, dir } = nav;
@@ -79,6 +102,15 @@ export function PortfolioPage() {
   const dragStartY = useRef<number | null>(null);
   const sectionRef = useRef(section);
   const navigateRef = useRef<(to: number) => void>(() => {});
+
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false
+  );
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const maxCarouselStart = METRIC_CARDS.length - 2;
 
@@ -169,9 +201,115 @@ export function PortfolioPage() {
   };
 
   // ── Filtered cards ────────────────────────────────────────────────────────
+  const allCards: ProjectCard[] = works.length > 0
+    ? works.map((w) => ({
+        img: w.heroImage,
+        category: w.heroSubtitle,
+        description: w.title,
+        tags: w.heroTags,
+        filters: deriveFilters(w.heroTags),
+        workId: w._id,
+      }))
+    : FALLBACK_CARDS;
+
   const visibleCards = activeFilter === "ALL"
-    ? PROJECT_CARDS
-    : PROJECT_CARDS.filter(c => c.filters.includes(activeFilter));
+    ? allCards
+    : allCards.filter((c) => c.filters.includes(activeFilter));
+
+  // ─── Mobile layout (scrollable, no animated sections) ───────────────────
+  if (isMobile) {
+    return (
+      <div style={{ minHeight: "100dvh", background: "#E9F0FF", overflowY: "auto" }}>
+        {/* TopBar */}
+        <div style={{ position: "sticky", top: 0, zIndex: 100, height: "114px" }}>
+          <TopBar />
+        </div>
+
+        {/* Hero text */}
+        <div style={{ padding: "32px 40px 28px" }}>
+          <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(32px, 9vw, 48px)", lineHeight: "94%", letterSpacing: "-0.04em", textTransform: "uppercase", color: "#414141", margin: "0 0 16px" }}>
+            A curated selection of our most impactful projects.
+          </h1>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "140%", color: "#414141", margin: "0 0 24px" }}>
+            Creative, digital, and performance work built to move brands forward.
+          </p>
+          <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 50, display: "inline-flex" }}>
+            <button
+              onClick={() => openContactForm()}
+              style={{ height: 50, paddingTop: 12, paddingRight: 34, paddingBottom: 12, paddingLeft: 16, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
+            >
+              {/* Teal fill — leads left to right */}
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
+              {/* Black fill — trails */}
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
+              {/* Text slides up on hover */}
+              <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: "1em" }}>
+                <motion.span variants={{ rest: { y: 0 }, hover: { y: "-100%" } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ display: "block", fontFamily: "'Poppins', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>
+                  Become Client
+                </motion.span>
+                <motion.span aria-hidden variants={{ rest: { y: "100%" }, hover: { y: 0 } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Poppins', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>
+                  Become Client
+                </motion.span>
+              </div>
+            </button>
+            {/* Circle arrow — black → teal on hover */}
+            <motion.div variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }} transition={{ duration: 0.3 }} style={{ position: "absolute", top: 0, right: -16, width: 50, height: 50, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+              <svg width={22} height={22} viewBox="0 0 24 24" style={{ display: "block" }} fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+              </svg>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Metric cards */}
+        {METRIC_CARDS.map((card, i) => (
+          <div key={i}>
+            <div style={{ overflow: "hidden", height: "240px", margin: "0 40px", borderRadius: "12px" }}>
+              <img src={card.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            </div>
+            <div style={{ padding: "20px 40px 32px" }}>
+              <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "clamp(20px, 5.5vw, 28px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#060606", margin: "0 0 8px" }}>
+                {card.metric}
+              </h3>
+              <p style={{ fontFamily: "'Sora', sans-serif", fontSize: "13px", lineHeight: "1.6", color: "#555555", margin: 0 }}>
+                {card.description}
+              </p>
+            </div>
+          </div>
+        ))}
+
+        {/* Project cards */}
+        <div style={{ padding: "40px 40px 80px" }}>
+          {/* Filter pills — horizontal scroll */}
+          <div style={{ display: "flex", gap: "8px", overflowX: "auto", marginBottom: "32px", paddingBottom: "4px", scrollbarWidth: "none" as any }}>
+            {FILTERS.map(f => {
+              const active = activeFilter === f;
+              return (
+                <button key={f} onClick={() => setActiveFilter(f)} style={{ flexShrink: 0, padding: "8px 18px", borderRadius: "100px", border: active ? "none" : "1.5px solid #414141", background: active ? "#060606" : "transparent", color: active ? "#ffffff" : "#414141", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase" as const, cursor: "pointer" }}>
+                  {f}
+                </button>
+              );
+            })}
+          </div>
+          {/* Cards list */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+            {visibleCards.map((card, i) => (
+              <div key={card.workId} onClick={() => routerNavigate(`/blog/case-study/${card.workId}`)} style={{ display: "flex", flexDirection: "column", gap: "12px", cursor: "pointer" }}>
+                <div style={{ width: "100%", aspectRatio: "400 / 237", borderRadius: "9.47px", overflow: "hidden", position: "relative", background: "#d5d5d5" }}>
+                  <img src={card.img} alt={card.category} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+                <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#888888", margin: 0 }}>{card.category}</p>
+                <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(16px, 4vw, 22px)", lineHeight: "130%", letterSpacing: "-0.01em", color: "#060606", margin: 0 }}>{card.description}</p>
+                <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#414141", margin: 0 }}>{card.tags}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Footer />
+      </div>
+    );
+  }
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
@@ -203,15 +341,15 @@ export function PortfolioPage() {
               transition={T}
               style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" }}
             >
-              {/* Text — takes remaining space, text centered vertically in that space */}
-              <div style={{ flex: 1, padding: "32px 60px 24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px" }}>
+              {/* Text — takes remaining space */}
+              <div style={{ flex: 1, padding: isMobile ? "32px 40px 24px" : "32px 60px 24px", display: "flex", flexDirection: "column", alignItems: isMobile ? "flex-start" : "center", justifyContent: "center", gap: isMobile ? "20px" : "16px" }}>
                 <h1 style={{
                   fontFamily: "'Space Grotesk', sans-serif",
                   fontWeight: 600,
-                  fontSize: "clamp(24px, 4.5vw, 60px)",
+                  fontSize: isMobile ? "clamp(32px, 9vw, 52px)" : "clamp(24px, 4.5vw, 60px)",
                   lineHeight: "94%",
                   letterSpacing: "-0.04em",
-                  textAlign: "center",
+                  textAlign: isMobile ? "left" : "center",
                   textTransform: "uppercase",
                   color: "#414141",
                   margin: 0,
@@ -221,45 +359,51 @@ export function PortfolioPage() {
                 <p style={{
                   fontFamily: "'Sora', sans-serif",
                   fontWeight: 400,
-                  fontSize: "clamp(13px, 1.4vw, 18px)",
+                  fontSize: isMobile ? "14px" : "clamp(13px, 1.4vw, 18px)",
                   lineHeight: "140%",
-                  textAlign: "center",
+                  textAlign: isMobile ? "left" : "center",
                   color: "#414141",
-                  maxWidth: "600px",
+                  maxWidth: isMobile ? "none" : "600px",
                   margin: 0,
                 }}>
                   Creative, digital, and performance work built to move brands forward.
                 </p>
               </div>
 
-              {/* Image strip — fixed at 48% of section height */}
-              <div style={{ height: "48%", flexShrink: 0, overflow: "hidden" }}>
-                <div style={{ display: "flex", gap: "3px", height: "100%", transform: "translateX(-12.5vw)" }}>
-                  {STRIP_CARDS.map((card, i) => {
-                    const lid = i === 1 ? "pf-img-0" : i === 2 ? "pf-img-1" : undefined;
-                    return lid ? (
-                      <motion.div
-                        key={i}
-                        layoutId={lid}
-                        transition={{ layout: T }}
-                        style={{
+              {/* Image — strip on desktop, single full-bleed on mobile */}
+              {isMobile ? (
+                <div style={{ height: "48%", flexShrink: 0, overflow: "hidden" }}>
+                  <img src={STRIP_CARDS[0].img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                </div>
+              ) : (
+                <div style={{ height: "48%", flexShrink: 0, overflow: "hidden" }}>
+                  <div style={{ display: "flex", gap: "3px", height: "100%", transform: "translateX(-12.5vw)" }}>
+                    {STRIP_CARDS.map((card, i) => {
+                      const lid = i === 1 ? "pf-img-0" : i === 2 ? "pf-img-1" : undefined;
+                      return lid ? (
+                        <motion.div
+                          key={i}
+                          layoutId={lid}
+                          transition={{ layout: T }}
+                          style={{
+                            width: "25vw", flexShrink: 0, height: "100%",
+                            overflow: "hidden", background: "#d0d0d0", position: "relative",
+                          }}
+                        >
+                          <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                        </motion.div>
+                      ) : (
+                        <div key={i} style={{
                           width: "25vw", flexShrink: 0, height: "100%",
                           overflow: "hidden", background: "#d0d0d0", position: "relative",
-                        }}
-                      >
-                        <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                      </motion.div>
-                    ) : (
-                      <div key={i} style={{
-                        width: "25vw", flexShrink: 0, height: "100%",
-                        overflow: "hidden", background: "#d0d0d0", position: "relative",
-                      }}>
-                        <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                      </div>
-                    );
-                  })}
+                        }}>
+                          <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
             </motion.div>
           )}
 
@@ -273,7 +417,7 @@ export function PortfolioPage() {
               animate="animate"
               exit="exit"
               transition={T}
-              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", padding: "40px 60px 24px", gap: "24px" }}
+              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", padding: isMobile ? "40px 40px 24px" : "40px 60px 24px", gap: "24px" }}
             >
               
               {/* Carousel track — zero gap so no background bleeds between cards */}
@@ -337,7 +481,7 @@ export function PortfolioPage() {
             >
               <div ref={section2Ref} style={{ height: "100%", overflowY: "auto" }}>
                 {/* Padded content area */}
-                <div style={{ padding: "40px 60px 80px" }}>
+                <div style={{ padding: isMobile ? "40px 40px 80px" : "40px 60px 80px" }}>
                   {/* Filter pills */}
                   <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "36px" }}>
                     {FILTERS.map(f => {
@@ -364,17 +508,17 @@ export function PortfolioPage() {
                   </div>
 
                   {/* Cards grid */}
-                  <motion.div layout style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "40px 24px" }}>
+                  <motion.div layout style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: isMobile ? "40px" : "40px 24px" }}>
                     <AnimatePresence mode="popLayout">
                       {visibleCards.map((card, i) => (
                         <motion.div
-                          key={card.category + i}
+                          key={card.workId}
                           layout
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: 12 }}
                           transition={{ delay: (i % 3) * 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                          onClick={() => routerNavigate(`/blog/case-study/${card.caseStudyId}`)}
+                          onClick={() => routerNavigate(`/blog/case-study/${card.workId}`)}
                           style={{ display: "flex", flexDirection: "column", gap: "12px", cursor: "pointer" }}
                         >
                           <div style={{ width: "100%", aspectRatio: "400 / 237", borderRadius: "9.47px", overflow: "hidden", position: "relative", background: "#d5d5d5" }}>
