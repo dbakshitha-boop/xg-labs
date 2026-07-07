@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { TopBar } from "./landing/FinalLayout";
-import { fetchArticle, type Article } from "../lib/api";
+import { fetchArticle, subscribeEmail, type Article } from "../lib/api";
 import { Footer } from "./Footer";
 
 // Social share icons
@@ -55,7 +55,18 @@ export function BlogPostPage() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [subscribeEmail_, setSubscribeEmail_] = useState("");
+  const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -116,6 +127,24 @@ export function BlogPostPage() {
   const shareUrl = encodeURIComponent(window.location.href);
   const shareTitle = encodeURIComponent(article.title);
 
+  const shareLinks: Record<string, string> = {
+    twitter: `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`,
+    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${shareTitle}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
+  };
+
+  async function handleShare(platform: "twitter" | "linkedin" | "facebook") {
+    if (isMobile && navigator.share) {
+      try {
+        await navigator.share({ title: article.title, url: window.location.href });
+        return;
+      } catch {
+        // user cancelled or API unavailable — fall through
+      }
+    }
+    window.open(shareLinks[platform], "_blank", "noopener,noreferrer,width=600,height=500");
+  }
+
   return (
     <div style={{ minHeight: "100vh", background: "#ffffff" }}>
       {/* Sticky TopBar */}
@@ -126,7 +155,7 @@ export function BlogPostPage() {
       </div>
 
       {/* Back button */}
-      <div style={{ padding: "24px 80px 0", maxWidth: "1200px", margin: "0 auto" }}>
+      <div style={{ padding: isMobile ? "20px 20px 0" : "24px 80px 0", maxWidth: "1200px", margin: "0 auto" }}>
         <button
           onClick={() => navigate("/blog")}
           style={{
@@ -157,7 +186,7 @@ export function BlogPostPage() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        style={{ padding: "48px 80px 56px", maxWidth: "1200px", margin: "0 auto" }}
+        style={{ padding: isMobile ? "28px 20px 32px" : "48px 80px 56px", maxWidth: "1200px", margin: "0 auto" }}
       >
         {/* Date + Author row */}
         <div
@@ -212,11 +241,11 @@ export function BlogPostPage() {
           style={{
             fontFamily: "'Playfair Display', Georgia, serif",
             fontWeight: 700,
-            fontSize: "clamp(42px, 6vw, 88px)",
-            lineHeight: "1.05",
+            fontSize: isMobile ? "clamp(28px, 8vw, 40px)" : "clamp(42px, 6vw, 88px)",
+            lineHeight: "1.1",
             letterSpacing: "-0.02em",
             color: "#1a1a1a",
-            margin: "0 0 32px",
+            margin: "0 0 24px",
             maxWidth: "820px",
           }}
         >
@@ -248,27 +277,28 @@ export function BlogPostPage() {
       </motion.header>
 
       {/* Divider */}
-      <div style={{ height: "1px", background: "#e8e8e8", margin: "0 80px" }} />
+      <div style={{ height: "1px", background: "#e8e8e8", margin: isMobile ? "0 20px" : "0 80px" }} />
 
       {/* Content area: sidebar + article body */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "200px 1fr",
+          gridTemplateColumns: isMobile ? "1fr" : "200px 1fr",
           gap: "0",
           maxWidth: "1200px",
           margin: "0 auto",
-          padding: "0 80px",
+          padding: isMobile ? "0 20px" : "0 80px",
           alignItems: "flex-start",
         }}
       >
-        {/* Left sticky sidebar */}
+        {/* Left sidebar — sticky on desktop, inline on mobile */}
         <aside
           style={{
-            position: "sticky",
+            position: isMobile ? "static" : "sticky",
             top: "130px",
-            paddingTop: "56px",
-            paddingRight: "40px",
+            paddingTop: isMobile ? "24px" : "56px",
+            paddingRight: isMobile ? "0" : "40px",
+            paddingBottom: isMobile ? "0" : "0",
           }}
         >
           {/* CONTENTS */}
@@ -316,7 +346,7 @@ export function BlogPostPage() {
           </div>
 
           {/* SHARE */}
-          <div>
+          <div style={{ marginTop: isMobile ? "20px" : "0" }}>
             <p
               style={{
                 fontFamily: "'Space Grotesk', sans-serif",
@@ -332,71 +362,32 @@ export function BlogPostPage() {
             </p>
             <div style={{ display: "flex", gap: "10px" }}>
               {/* Twitter */}
-              <a
-                href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  border: "1.5px solid #d0d0d0",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#555555",
-                  textDecoration: "none",
-                  transition: "border-color 0.15s, color 0.15s",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLAnchorElement).style.color = "#1a1a1a"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLAnchorElement).style.color = "#555555"; }}
+              <button
+                onClick={() => handleShare("twitter")}
+                style={{ width: "36px", height: "36px", borderRadius: "50%", border: "1.5px solid #d0d0d0", background: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#555555", cursor: "pointer", transition: "border-color 0.15s, color 0.15s" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLButtonElement).style.color = "#1a1a1a"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLButtonElement).style.color = "#555555"; }}
               >
                 <TwitterIcon />
-              </a>
+              </button>
               {/* LinkedIn */}
-              <a
-                href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${shareTitle}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  border: "1.5px solid #d0d0d0",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#555555",
-                  textDecoration: "none",
-                  transition: "border-color 0.15s, color 0.15s",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLAnchorElement).style.color = "#1a1a1a"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLAnchorElement).style.color = "#555555"; }}
+              <button
+                onClick={() => handleShare("linkedin")}
+                style={{ width: "36px", height: "36px", borderRadius: "50%", border: "1.5px solid #d0d0d0", background: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#555555", cursor: "pointer", transition: "border-color 0.15s, color 0.15s" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLButtonElement).style.color = "#1a1a1a"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLButtonElement).style.color = "#555555"; }}
               >
                 <LinkedInIcon />
-              </a>
+              </button>
               {/* Facebook */}
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  border: "1.5px solid #d0d0d0",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#555555",
-                  textDecoration: "none",
-                  transition: "border-color 0.15s, color 0.15s",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLAnchorElement).style.color = "#1a1a1a"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLAnchorElement).style.color = "#555555"; }}
+              <button
+                onClick={() => handleShare("facebook")}
+                style={{ width: "36px", height: "36px", borderRadius: "50%", border: "1.5px solid #d0d0d0", background: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#555555", cursor: "pointer", transition: "border-color 0.15s, color 0.15s" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLButtonElement).style.color = "#1a1a1a"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLButtonElement).style.color = "#555555"; }}
               >
                 <FacebookIcon />
-              </a>
+              </button>
               {/* Copy link */}
               <button
                 onClick={handleCopyLink}
@@ -426,7 +417,7 @@ export function BlogPostPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{ paddingTop: "56px", paddingBottom: "80px", maxWidth: "640px" }}
+          style={{ paddingTop: isMobile ? "28px" : "56px", paddingBottom: isMobile ? "48px" : "80px", maxWidth: "640px" }}
         >
           {sections?.map((sec, i) => (
             <section
@@ -535,7 +526,7 @@ export function BlogPostPage() {
             style={{
               background: "#f5f5f5",
               borderRadius: "16px",
-              padding: "48px 40px",
+              padding: isMobile ? "32px 20px" : "48px 40px",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -596,6 +587,8 @@ export function BlogPostPage() {
               <input
                 type="email"
                 placeholder="your@email.com"
+                value={subscribeEmail_}
+                onChange={(e) => setSubscribeEmail_(e.target.value)}
                 style={{
                   flex: 1,
                   padding: "12px 16px",
@@ -609,21 +602,33 @@ export function BlogPostPage() {
                 }}
               />
               <button
+                onClick={async () => {
+                  if (!subscribeEmail_ || subscribeStatus === "loading" || subscribeStatus === "done") return;
+                  setSubscribeStatus("loading");
+                  try {
+                    await subscribeEmail(subscribeEmail_);
+                    setSubscribeStatus("done");
+                    setSubscribeEmail_("");
+                  } catch {
+                    setSubscribeStatus("error");
+                  }
+                }}
                 style={{
                   padding: "12px 22px",
                   border: "none",
                   borderRadius: "8px",
-                  background: "#1a1a1a",
+                  background: subscribeStatus === "done" ? "#02A884" : "#1a1a1a",
                   color: "#ffffff",
                   fontFamily: "'Space Grotesk', sans-serif",
                   fontWeight: 700,
                   fontSize: "13px",
                   letterSpacing: "0.02em",
-                  cursor: "pointer",
+                  cursor: subscribeStatus === "loading" || subscribeStatus === "done" ? "default" : "pointer",
                   flexShrink: 0,
+                  transition: "background 0.2s",
                 }}
               >
-                Subscribe
+                {subscribeStatus === "loading" ? "..." : subscribeStatus === "done" ? "✓ Subscribed" : subscribeStatus === "error" ? "Try again" : "Subscribe"}
               </button>
             </div>
           </div>
@@ -631,7 +636,7 @@ export function BlogPostPage() {
       </div>
 
       {/* Divider */}
-      <div style={{ height: "1px", background: "#e8e8e8", margin: "0 80px" }} />
+      <div style={{ height: "1px", background: "#e8e8e8", margin: isMobile ? "0 20px" : "0 80px" }} />
 
       {/* Author section */}
       <motion.section
@@ -639,7 +644,7 @@ export function BlogPostPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          padding: "80px 80px 100px",
+          padding: isMobile ? "48px 20px 64px" : "80px 80px 100px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",

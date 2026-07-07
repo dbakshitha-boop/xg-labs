@@ -62,7 +62,7 @@ function TextContainer() {
       data-name="Text Container"
     >
       <p className="font-['Sora:Regular'] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
-      <p className="font-['Cal_Sans'] font-semibold leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center mt-[-12px]">From Vision<br />To Velocity</p>
+      <p className="font-['Cal_Sans'] font-[400] leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center mt-[-12px]">From Vision<br />To Velocity</p>
       <p className="font-['Sora:Regular'] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full text-center">
         We align strategy, creative, and performance
         <br />
@@ -135,7 +135,7 @@ function Frame4() {
 
 function Frame5() {
   return (
-    <div className="absolute flex flex-col gap-[28px] items-center left-1/2 text-center top-1/2 -translate-x-1/2 -translate-y-1/2 z-10" style={{ width: "min(900px, calc(100% - 20px))" }}>
+    <div className="absolute flex flex-col gap-[28px] items-center left-1/2 text-center -translate-x-1/2 -translate-y-1/2 z-10" style={{ top: 'calc(50% - 48px)', width: "min(900px, calc(100% - 20px))" }}>
       <Frame4 />
       <p className="font-['Sora',sans-serif] font-normal text-center relative shrink-0 text-[#6e6e6e] mx-auto" style={{ fontSize: '20px', lineHeight: '1.5', letterSpacing: '0', maxWidth: '650px' }}>We turn ideas into visuals that move people — and move brands forward. Every piece we create is intentional, expressive, and designed to hit with purpose.</p>
     </div>
@@ -566,8 +566,8 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                   <motion.span
                     variants={{ rest: { color: dark ? "#9A9A9A" : "#000000" }, hover: { color: "#ffffff" } }}
                     transition={{ duration: 0.15, ease: "easeOut", delay: 0.2 }}
-                    style={{ position: "relative", zIndex: 3 }}
-                    className="font-space text-sm font-medium uppercase"
+                    style={{ position: "relative", zIndex: 3, fontFamily: "'Poppins', sans-serif" }}
+                    className="text-sm font-semibold uppercase"
                   >
                     {item}
                   </motion.span>
@@ -658,86 +658,100 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
             initial="rest"
             whileHover="hover"
             animate="rest"
-            style={{ position: 'relative', width: 138, height: 50 }}
+            style={{ position: 'relative', height: 50, display: 'inline-flex' }}
           >
-            {/* Black fill that pans out from left on hover */}
-            <motion.span
-              aria-hidden
-              variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              style={{
-                position: 'absolute',
-                top: 0, left: 0, bottom: 0,
-                width: 138,
-                background: '#000000',
-                borderRadius: 42,
-                transformOrigin: 'left center',
-                zIndex: 1,
-                pointerEvents: 'none',
-              }}
-            />
-
             <button
               aria-label="Let's talk"
               onClick={() => openContactForm()}
               style={{
-                width: 138,
                 height: 50,
                 paddingTop: 12,
-                paddingRight: 20,
+                paddingRight: 34,
                 paddingBottom: 12,
-                paddingLeft: 20,
-                display: 'flex',
+                paddingLeft: 16,
+                display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                background: dark ? '#3a3a3a' : '#ffffff',
+                background: dark ? '#2a2a2a' : '#ffffff',
                 borderRadius: 42,
                 border: dark ? '1px solid rgba(255,255,255,0.25)' : '1px solid #9A9A9A',
                 cursor: 'pointer',
-                textTransform: 'uppercase',
-                fontFamily: 'Space Grotesk, Sora, sans-serif',
-                fontWeight: 700,
-                fontSize: 14,
-                lineHeight: '14px',
                 boxSizing: 'border-box',
                 position: 'relative',
                 overflow: 'hidden',
               }}
             >
+              {/* Teal fill — leads left to right */}
               <motion.span
-                variants={{ rest: { color: dark ? '#9A9A9A' : '#000000' }, hover: { color: '#ffffff' } }}
-                transition={{ duration: 0.3 }}
-                style={{ display: 'block', lineHeight: '14px', position: 'relative', zIndex: 2 }}
-              >
-                LET'S TALK
-              </motion.span>
+                aria-hidden
+                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: '#02A884',
+                  transformOrigin: 'left center',
+                  zIndex: 1, pointerEvents: 'none',
+                }}
+              />
+              {/* Black fill — trails left to right */}
+              <motion.span
+                aria-hidden
+                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: '#0a0a0a',
+                  transformOrigin: 'left center',
+                  zIndex: 2, pointerEvents: 'none',
+                }}
+              />
+              {/* Text — slides up from bottom on hover */}
+              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
+                <motion.span
+                  variants={{ rest: { y: 0 }, hover: { y: '-100%' } }}
+                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                  style={{
+                    display: 'block',
+                    fontFamily: "'Poppins', sans-serif",
+                    fontSize: 14, fontWeight: 600,
+                    letterSpacing: '0.08em', textTransform: 'uppercase',
+                    whiteSpace: 'nowrap', color: '#414141',
+                  }}
+                >
+                  Let's Talk
+                </motion.span>
+                <motion.span
+                  aria-hidden
+                  variants={{ rest: { y: '100%' }, hover: { y: 0 } }}
+                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                  style={{
+                    position: 'absolute', top: 0, left: 0,
+                    display: 'block',
+                    fontFamily: "'Poppins', sans-serif",
+                    fontSize: 14, fontWeight: 600,
+                    letterSpacing: '0.08em', textTransform: 'uppercase',
+                    whiteSpace: 'nowrap', color: '#ffffff',
+                  }}
+                >
+                  Let's Talk
+                </motion.span>
+              </div>
             </button>
-
-            {/* Overlapping arrow circle — same height as button, half-overlapping right edge */}
+            {/* Circle — overlays oval's right edge */}
             <motion.div
               variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }}
               transition={{ duration: 0.3 }}
               style={{
-                position: 'absolute',
-                top: 0,
-                right: -25,
-                width: 50,
-                height: 50,
-                borderRadius: 50,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 2,
+                position: 'absolute', top: 0, right: -16,
+                width: 50, height: 50, borderRadius: 50,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                zIndex: 4,
               }}
             >
-              <motion.svg
-                width={18} height={18} viewBox="0 0 24 24"
-                style={{ display: 'block' }}
-                fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
-              >
-                <motion.path d="M5 12h14" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.3 }} />
-                <motion.path d="M13 5l7 7-7 7" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.3 }} />
-              </motion.svg>
+              <svg width={22} height={22} viewBox="0 0 24 24" style={{ display: 'block' }}
+                fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" />
+                <path d="M13 5l7 7-7 7" />
+              </svg>
             </motion.div>
           </motion.div>
         </div>

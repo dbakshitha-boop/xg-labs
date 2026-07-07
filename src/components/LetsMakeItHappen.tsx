@@ -12,14 +12,14 @@ import img7 from "../assets/letsmakeithappenscroll/df49a56c44261f37bec84fd5b5ee7
 import img8 from "../assets/letsmakeithappenscroll/e9d9e8c4ee32a3e2a198e44198854aecafe6f134.jpg";
 
 // ─── GridLines ───────────────────────────────────────────────────────────────
-function GridLines({ dark = false }: { dark?: boolean }) {
+function GridLines({ dark = false, cols = 7 }: { dark?: boolean; cols?: number }) {
   const color = dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)";
   return (
     <div
       aria-hidden="true"
       style={{ position: "absolute", inset: 0, display: "flex", pointerEvents: "none", zIndex: 0 }}
     >
-      {Array.from({ length: 7 }).map((_, i) => (
+      {Array.from({ length: cols }).map((_, i) => (
         <div key={i} style={{ flex: 1, height: "100%", borderLeft: i === 0 ? "none" : `1px solid ${color}` }} />
       ))}
     </div>
@@ -52,6 +52,13 @@ const IMAGE_CONFIGS: ImageConfig[] = [
   { src: img7, colIndex: 6, scrollStart: 0.28, scrollEnd: 1.00 }, // very slow — last out
 ];
 
+// 3-panel layout for mobile — remapped to colIndex 0–2
+const MOBILE_IMAGE_CONFIGS: ImageConfig[] = [
+  { src: img1, colIndex: 0, scrollStart: 0.02, scrollEnd: 0.34 },
+  { src: img4, colIndex: 1, scrollStart: 0.12, scrollEnd: 0.58 },
+  { src: img7, colIndex: 2, scrollStart: 0.28, scrollEnd: 1.00 },
+];
+
 // ─── Traveling image ──────────────────────────────────────────────────────────
 // The motion.div starts below the viewport and translates to above it.
 // The gradient mask on the parent section fades it in at the bottom edge
@@ -59,9 +66,11 @@ const IMAGE_CONFIGS: ImageConfig[] = [
 function ScrollImage({
   config,
   scrollYProgress,
+  totalCols = 7,
 }: {
   config: ImageConfig;
   scrollYProgress: MotionValue<number>;
+  totalCols?: number;
 }) {
   const { src, colIndex, scrollStart, scrollEnd } = config;
 
@@ -75,8 +84,8 @@ function ScrollImage({
     <motion.div
       style={{
         position: "absolute",
-        left: `calc(${colIndex} * (100% / 7) + 10px)`,
-        width: "calc(100% / 7 - 20px)",
+        left: `calc(${colIndex} * (100% / ${totalCols}) + 10px)`,
+        width: `calc(100% / ${totalCols} - 20px)`,
         top: 0,
         height: "260px",
         zIndex: 5,
@@ -134,10 +143,10 @@ export function LetsMakeItHappen() {
             WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
           }}
         >
-          <GridLines />
+          <GridLines cols={isMobile ? 3 : 7} />
 
-          {IMAGE_CONFIGS.map((config, i) => (
-            <ScrollImage key={i} config={config} scrollYProgress={scrollYProgress} />
+          {(isMobile ? MOBILE_IMAGE_CONFIGS : IMAGE_CONFIGS).map((config, i) => (
+            <ScrollImage key={i} config={config} scrollYProgress={scrollYProgress} totalCols={isMobile ? 3 : 7} />
           ))}
 
           {/* Headline — z-index keeps it above the images */}
@@ -199,10 +208,9 @@ export function LetsMakeItHappen() {
           background: "#0e0e0e",
           padding: isMobile ? "32px 24px" : "44px 72px",
           display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          alignItems: isMobile ? "flex-start" : "center",
+          flexDirection: "row",
+          alignItems: "center",
           justifyContent: "space-between",
-          gap: isMobile ? "20px" : undefined,
           cursor: "pointer",
           overflow: "hidden",
         }}

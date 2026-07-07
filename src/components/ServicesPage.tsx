@@ -5,12 +5,6 @@ import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
 import { useContactForm } from "./ContactFormContext";
 
-import img1 from "../assets/portfolio/91b55f6c4cb04eb7c2e15c4348e7d9e02c87693d.png";
-import img2 from "../assets/portfolio/b38d05db3e088fb9946a699913465921149256a5.png";
-import img3 from "../assets/portfolio/1248070d103a19f145ae0f832592d24f14f6062d.jpg";
-import img4 from "../assets/portfolio/b02af7d4fc1674218c1fad477c943436f1779a18.jpg";
-import img5 from "../assets/portfolio/143ce4dc78b3934cc2b5dfa00d6839d1276386b9.jpg";
-
 import svcPerformanceMarketing from "../assets/service section - xg web/Performance Marketing.png";
 import svcSEO from "../assets/service section - xg web/SEO.png";
 import svcWebDevelopment from "../assets/service section - xg web/Web Development.png";
@@ -18,6 +12,14 @@ import svcSocialMedia from "../assets/service section - xg web/Social Media Mana
 import svcContentCreation from "../assets/service section - xg web/Content Creation & VP.png";
 import svcInfluencer from "../assets/service section - xg web/Influencer Marketing.png";
 import svcBranding from "../assets/service section - xg web/Branding.png";
+
+import mobilePerformanceMarketing from "../assets/service section - xg web (311 x 250 px)/Performance Marketing.png";
+import mobileSEO from "../assets/service section - xg web (311 x 250 px)/SEO.png";
+import mobileWebDevelopment from "../assets/service section - xg web (311 x 250 px)/Web Development.png";
+import mobileSocialMedia from "../assets/service section - xg web (311 x 250 px)/Social Media Management.png";
+import mobileContentCreation from "../assets/service section - xg web (311 x 250 px)/Content Creation & VP.png";
+import mobileInfluencer from "../assets/service section - xg web (311 x 250 px)/Influencer Marketing.png";
+import mobileBranding from "../assets/service section - xg web (311 x 250 px)/Branding.png";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 interface ServiceItem {
@@ -29,6 +31,7 @@ interface ServiceData {
   title: string;
   description: string;
   images: string[];
+  mobileImage: string;
   items: ServiceItem[];
 }
 
@@ -37,7 +40,8 @@ const SERVICES: ServiceData[] = [
     title: "PERFORMANCE MARKETING",
     description:
       "We build paid growth systems focused on conversions, efficiency, and measurable ROI — not vanity metrics. Every campaign is structured, optimized, and scaled using real data.",
-    images: [svcPerformanceMarketing, img1, img3, img2, img5],
+    mobileImage: mobilePerformanceMarketing,
+    images: [svcPerformanceMarketing],
     items: [
       { label: "Growth Strategy & Funnel Audit", description: "Identifies audience gaps, conversion bottlenecks, and revenue opportunities." },
       { label: "Paid Media Planning", description: "Selects the right platforms, budgets, and audience segments for maximum ROI." },
@@ -50,7 +54,8 @@ const SERVICES: ServiceData[] = [
     title: "SEO",
     description:
       "We build sustainable search visibility through technical precision and content strategy — converting organic traffic into consistent, compounding business growth.",
-    images: [svcSEO, img4, img2, img1, img3],
+    mobileImage: mobileSEO,
+    images: [svcSEO],
     items: [
       { label: "SEO Audit & Roadmap", description: "Evaluates website performance and defines a long-term growth strategy." },
       { label: "Keyword Research & Intent Mapping", description: "Aligns search intent with high-value keywords across key pages." },
@@ -63,7 +68,8 @@ const SERVICES: ServiceData[] = [
     title: "WEB DEVELOPMENT",
     description:
       "We design and build performance-focused landing pages, funnels, and web experiences optimised for conversion — every pixel earns its place.",
-    images: [svcWebDevelopment, img2, img5, img4, img1],
+    mobileImage: mobileWebDevelopment,
+    images: [svcWebDevelopment],
     items: [
       { label: "UI/UX Design", description: "Creates intuitive experiences focused on usability and conversions." },
       { label: "Website & Landing Page Development", description: "Builds responsive websites and campaign-specific landing pages." },
@@ -76,7 +82,8 @@ const SERVICES: ServiceData[] = [
     title: "SOCIAL MEDIA MANAGEMENT",
     description:
       "We manage your brand presence across platforms with consistent, strategic content — building community and protecting reputation at scale.",
-    images: [svcSocialMedia, img3, img1, img5, img2],
+    mobileImage: mobileSocialMedia,
+    images: [svcSocialMedia],
     items: [
       { label: "Content Planning & Publishing", description: "Organises and schedules content across platforms consistently." },
       { label: "Community Management", description: "Engages audiences and manages interactions in real time." },
@@ -89,7 +96,8 @@ const SERVICES: ServiceData[] = [
     title: "CONTENT CREATION & VIDEO PRODUCTION",
     description:
       "We produce content and videos built to capture attention and drive action — from short-form reels to long-form brand films.",
-    images: [svcContentCreation, img5, img4, img3, img1],
+    mobileImage: mobileContentCreation,
+    images: [svcContentCreation],
     items: [
       { label: "Content Strategy & Scripting", description: "Develops content themes, messaging, and creative direction." },
       { label: "Short-Form Content & Reels", description: "Produces platform-native content designed for engagement." },
@@ -102,7 +110,8 @@ const SERVICES: ServiceData[] = [
     title: "INFLUENCER MARKETING",
     description:
       "We run influencer campaigns with 1,000+ creators — micro to macro — built around strategy, relevance, and measurable reach.",
-    images: [svcInfluencer, img2, img3, img1, img4],
+    mobileImage: mobileInfluencer,
+    images: [svcInfluencer],
     items: [
       { label: "Influencer Strategy & Planning", description: "Defines creator profiles, objectives, and campaign direction." },
       { label: "Creator Discovery & Vetting", description: "Identifies relevant influencers based on audience quality and fit." },
@@ -115,7 +124,8 @@ const SERVICES: ServiceData[] = [
     title: "BRANDING",
     description:
       "We build brand identities that are distinct, strategic, and built to scale — from logos and systems to full brand guidelines.",
-    images: [svcBranding, img4, img1, img2, img5],
+    mobileImage: mobileBranding,
+    images: [svcBranding],
     items: [
       { label: "Brand Strategy & Positioning", description: "Defines purpose, audience, and market differentiation." },
       { label: "Logo & Visual Identity Design", description: "Creates memorable and scalable brand identities." },
@@ -133,12 +143,14 @@ function AccordionRow({
   open,
   onToggle,
   isLast,
+  labelSize = "16px",
 }: {
   label: string;
   description: string;
   open: boolean;
   onToggle: () => void;
   isLast: boolean;
+  labelSize?: string;
 }) {
   return (
     <div style={{ borderBottom: isLast ? "none" : "1px solid rgba(0,0,0,0.1)" }}>
@@ -159,8 +171,8 @@ function AccordionRow({
         <span
           style={{
             fontFamily: "'Cal Sans', sans-serif",
-            fontWeight: 700,
-            fontSize: "16px",
+            fontWeight: 500,
+            fontSize: labelSize,
             lineHeight: "1",
             letterSpacing: "0",
             color: "#5F5F5F",
@@ -222,6 +234,220 @@ function AccordionRow({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Mobile service card (vertical scroll layout) ────────────────────────────
+function MobileServiceCard({ service }: { service: ServiceData }) {
+  const navigate = useNavigate();
+  const { open: openContactForm } = useContactForm();
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  function toggle(i: number) {
+    setOpenIdx((prev) => (prev === i ? null : i));
+  }
+
+  return (
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: 16,
+        overflow: "hidden",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Padded top section: title + description + buttons */}
+      <div style={{ padding: "24px 20px 20px" }}>
+      {/* Title */}
+      <h2
+        style={{
+          fontFamily: "'Cal Sans', sans-serif",
+          fontWeight: 400,
+          fontSize: 28,
+          letterSpacing: "-0.02em",
+          textTransform: "uppercase",
+          color: "#414141",
+          margin: "0 0 10px",
+          lineHeight: "1",
+        }}
+      >
+        {service.title}
+      </h2>
+
+      {/* Description */}
+      <p
+        style={{
+          fontFamily: "'Sora', sans-serif",
+          fontWeight: 400,
+          fontSize: 14,
+          color: "#6E6E6E",
+          lineHeight: "1",
+          letterSpacing: "-0.04em",
+          margin: "0 0 18px",
+        }}
+      >
+        {service.description}
+      </p>
+
+      {/* Buttons */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {/* View Cases */}
+        <motion.div
+          initial="rest"
+          whileHover="hover"
+          animate="rest"
+          onClick={() => navigate("/blog/case-study/0")}
+          style={{ position: "relative", height: 32, display: "inline-flex", cursor: "pointer" }}
+        >
+          <button
+            style={{
+              height: 32,
+              paddingLeft: 8,
+              paddingRight: 28,
+              display: "inline-flex",
+              alignItems: "center",
+              background: "#ffffff",
+              borderRadius: 32,
+              border: "1.5px solid #1a1a1a",
+              cursor: "pointer",
+              boxSizing: "border-box",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <motion.span
+              aria-hidden
+              variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+              transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+              style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
+            />
+            <motion.span
+              aria-hidden
+              variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+              transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+              style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
+            />
+            <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 11 }}>
+              <motion.span
+                variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
+                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                style={{ display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+              >
+                View Cases
+              </motion.span>
+              <motion.span
+                aria-hidden
+                variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
+                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+              >
+                View Cases
+              </motion.span>
+            </div>
+          </button>
+          <motion.div
+            variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
+            transition={{ duration: 0.3 }}
+            style={{ position: "absolute", top: 0, right: -9, width: 32, height: 32, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+          >
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+            </svg>
+          </motion.div>
+        </motion.div>
+
+        {/* Let's Talk */}
+        <motion.div
+          initial="rest"
+          whileHover="hover"
+          animate="rest"
+          onClick={() => openContactForm()}
+          style={{ position: "relative", height: 32, display: "inline-flex", cursor: "pointer" }}
+        >
+          <button
+            style={{
+              height: 32,
+              paddingLeft: 8,
+              paddingRight: 28,
+              display: "inline-flex",
+              alignItems: "center",
+              background: "#0a0a0a",
+              borderRadius: 32,
+              border: "1.5px solid #0a0a0a",
+              cursor: "pointer",
+              boxSizing: "border-box",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <motion.span
+              aria-hidden
+              variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+              transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+              style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
+            />
+            <motion.span
+              aria-hidden
+              variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+              transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+              style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
+            />
+            <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 11 }}>
+              <motion.span
+                variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
+                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                style={{ display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+              >
+                {"Let's Talk"}
+              </motion.span>
+              <motion.span
+                aria-hidden
+                variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
+                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
+              >
+                {"Let's Talk"}
+              </motion.span>
+            </div>
+          </button>
+          <motion.div
+            variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }}
+            transition={{ duration: 0.3 }}
+            style={{ position: "absolute", top: 0, right: -9, width: 32, height: 32, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+          >
+            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.3 }} d="M5 12h14" />
+              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.3 }} d="M13 5l7 7-7 7" />
+            </svg>
+          </motion.div>
+        </motion.div>
+      </div>
+      </div>{/* end padded top section */}
+
+      {/* Service image — 311×250 mobile-specific asset, inset with card corner radius */}
+      <div style={{ padding: "0 16px" }}>
+        <img
+          src={service.mobileImage}
+          alt={service.title}
+          style={{ width: "100%", height: 250, objectFit: "cover", display: "block", borderRadius: 16 }}
+        />
+      </div>
+
+      {/* Accordion */}
+      <div style={{ padding: "4px 20px 28px" }}>
+        {service.items.map((item, i) => (
+          <AccordionRow
+            key={i}
+            label={item.label}
+            description={item.description}
+            open={openIdx === i}
+            onToggle={() => toggle(i)}
+            isLast={i === service.items.length - 1}
+            labelSize="16px"
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -335,108 +561,137 @@ function CardSlide({
               {service.description}
             </p>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
               {/* View Cases */}
-              <button
+              <motion.div
+                initial="rest"
+                whileHover="hover"
+                animate="rest"
                 onClick={() => navigate("/blog/case-study/0")}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  border: "1.5px solid #1a1a1a",
-                  borderRadius: "100px",
-                  background: "#ffffff",
-                  padding: "12px 14px 12px 22px",
-                  cursor: "pointer",
-                  fontFamily: "’Space Grotesk’, sans-serif",
-                  fontWeight: 700,
-                  fontSize: "11px",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "#1a1a1a",
-                  transition: "background 0.2s, color 0.2s",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  const b = e.currentTarget as HTMLButtonElement;
-                  b.style.background = "#1a1a1a";
-                  b.style.color = "#ffffff";
-                  (b.querySelector(".vc-circle") as HTMLElement).style.background = "#ffffff";
-                }}
-                onMouseLeave={(e) => {
-                  const b = e.currentTarget as HTMLButtonElement;
-                  b.style.background = "#ffffff";
-                  b.style.color = "#1a1a1a";
-                  (b.querySelector(".vc-circle") as HTMLElement).style.background = "#1a1a1a";
-                }}
+                style={{ position: "relative", height: 36, display: "inline-flex", cursor: "pointer" }}
               >
-                View Cases
-                <div
-                  className="vc-circle"
+                <button
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    background: "#1a1a1a",
-                    display: "flex",
+                    height: 36,
+                    paddingLeft: 12,
+                    paddingRight: 38,
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                    transition: "background 0.2s",
+                    background: "#ffffff",
+                    borderRadius: 36,
+                    border: "1.5px solid #1a1a1a",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <motion.span
+                    aria-hidden
+                    variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                    transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                    style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
+                  />
+                  <motion.span
+                    aria-hidden
+                    variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                    transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+                    style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
+                  />
+                  <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 13 }}>
+                    <motion.span
+                      variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
+                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                      style={{ display: "block", fontFamily: "’Space Grotesk’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+                    >
+                      View Cases
+                    </motion.span>
+                    <motion.span
+                      aria-hidden
+                      variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
+                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "’Space Grotesk’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                    >
+                      View Cases
+                    </motion.span>
+                  </div>
+                </button>
+                <motion.div
+                  variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
+                  transition={{ duration: 0.3 }}
+                  style={{ position: "absolute", top: 0, right: -11, width: 36, height: 36, borderRadius: 36, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+                >
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
                   </svg>
-                </div>
-              </button>
+                </motion.div>
+              </motion.div>
 
-              {/* Let’s Talk */}
-              <button
+              {/* Let’s Talk — black oval, white text, teal circle, black arrow → hover: white bg, grey text, black circle, white arrow */}
+              <motion.div
+                initial="rest"
+                whileHover="hover"
+                animate="rest"
                 onClick={() => openContactForm()}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  border: "none",
-                  borderRadius: "100px",
-                  background: "#1a1a1a",
-                  padding: "12px 14px 12px 22px",
-                  cursor: "pointer",
-                  fontFamily: "’Space Grotesk’, sans-serif",
-                  fontWeight: 700,
-                  fontSize: "11px",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "#ffffff",
-                  transition: "background 0.2s",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLButtonElement).style.background = "#333333")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLButtonElement).style.background = "#1a1a1a")
-                }
+                style={{ position: "relative", height: 36, display: "inline-flex", cursor: "pointer" }}
               >
-                {"Let’s Talk"}
-                <div
+                <button
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    background: "#02A884",
-                    display: "flex",
+                    height: 36,
+                    paddingLeft: 12,
+                    paddingRight: 38,
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
+                    background: "#0a0a0a",
+                    borderRadius: 36,
+                    border: "1.5px solid #0a0a0a",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <motion.span
+                    aria-hidden
+                    variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                    transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                    style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
+                  />
+                  <motion.span
+                    aria-hidden
+                    variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                    transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+                    style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
+                  />
+                  <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 13 }}>
+                    <motion.span
+                      variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
+                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                      style={{ display: "block", fontFamily: "’Space Grotesk’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                    >
+                      {"Let’s Talk"}
+                    </motion.span>
+                    <motion.span
+                      aria-hidden
+                      variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
+                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "’Space Grotesk’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
+                    >
+                      {"Let’s Talk"}
+                    </motion.span>
+                  </div>
+                </button>
+                <motion.div
+                  variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }}
+                  transition={{ duration: 0.3 }}
+                  style={{ position: "absolute", top: 0, right: -11, width: 36, height: 36, borderRadius: 36, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+                >
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.3 }} d="M5 12h14" />
+                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.3 }} d="M13 5l7 7-7 7" />
                   </svg>
-                </div>
-              </button>
+                </motion.div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -555,9 +810,18 @@ export function ServicesPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { open: openContactForm } = useContactForm();
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false
+  );
 
   const [isGrid, setIsGrid] = useState(false);
   const gridThreshold = (total - 1) / total;
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     setActiveIndex(Math.min(Math.floor(v * total), total - 1));
@@ -571,10 +835,42 @@ export function ServicesPage() {
   useEffect(() => {
     const idx = (location.state as { serviceIndex?: number } | null)?.serviceIndex;
     if (idx == null) return;
+    if (isMobile) {
+      const sectionId = SERVICES[idx]?.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      if (sectionId) document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
     const vh = window.innerHeight;
     const top = 114 + (idx / total) * (total - 1) * vh;
     requestAnimationFrame(() => window.scrollTo({ top, behavior: "smooth" }));
-  }, [location, total]);
+  }, [location, total, isMobile]);
+
+  if (isMobile) {
+    return (
+      <div style={{ background: "#060606" }}>
+        {/* Sticky nav */}
+        <div style={{ position: "sticky", top: 0, zIndex: 200, height: "114px", pointerEvents: "none" }}>
+          <div style={{ position: "relative", width: "100%", height: "100%", pointerEvents: "auto" }}>
+            <TopBar />
+          </div>
+        </div>
+
+        {/* Mobile service cards */}
+        <div style={{ padding: "20px 40px 0", display: "flex", flexDirection: "column", gap: 12 }}>
+          {SERVICES.map((svc) => {
+            const sectionId = svc.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+            return (
+              <div key={svc.title} id={sectionId}>
+                <MobileServiceCard service={svc} />
+              </div>
+            );
+          })}
+        </div>
+
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div style={{ background: "#060606" }}>

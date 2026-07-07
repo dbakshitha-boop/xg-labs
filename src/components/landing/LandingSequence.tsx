@@ -5,18 +5,24 @@ import { LogoGroup } from "./LandingLogos";
 import Rectangle from "../../imports/Rectangle21";
 import { WhatMakesUsDifferent } from "./WhatMakesUsDifferent";
 import { FinalGrid, FinalCircle, FinalOverlay, WorkSection, AboutSection, VerticalContent, ScrollContainer, TopBar, ContactSection } from "./FinalLayout";
+import { useContactForm } from "../ContactFormContext";
+import { ContactFormContent } from "../ContactFormOverlay";
+import CardImages from "../../imports/CardImages";
 import mobileLogo from "../../assets/logo.jpeg";
 
-// Portfolio images for mobile hero scattered layout
-import mImg_cup      from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png"; // Andhra Spicy House cup
-import mImg_pamph    from "figma:asset/e65084b764b6b3a23611cf721764131dce2753ec.png"; // Pamphlets on olive
-import mImg_goCards  from "figma:asset/fad7be819dbbdd4aa88e7779ed4b7c2a87bf23e6.png"; // Go Wheels cards
-import mImg_billboard from "figma:asset/b178cfc933d6e839b8ae373df90d9a43d32a3ba3.png"; // XG Labs billboard
-import mImg_disc     from "figma:asset/d1e53c97c1810297d3642b6fa789643c8fe962af.png"; // Green Go! disc
-import mImg_maha     from "figma:asset/8f9e45e34b390cad65d224cd4228fa1ab5977543.png"; // Mahaspeakss sign
+// Portfolio images for mobile hero
+import mImg_cup      from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
+import mImg_billboard from "figma:asset/b178cfc933d6e839b8ae373df90d9a43d32a3ba3.png";
+import mImg_disc     from "figma:asset/d1e53c97c1810297d3642b6fa789643c8fe962af.png";
+import mImg_maha     from "figma:asset/8f9e45e34b390cad65d224cd4228fa1ab5977543.png";
+import mImg_pamph    from "figma:asset/e65084b764b6b3a23611cf721764131dce2753ec.png";
+import mImg_extra1   from "figma:asset/06355012afb0087b8c9bfc9843e66981c1b4fc10.png";
+import mImg_extra2   from "figma:asset/3928f5a725db8937d4474329e22213a3e4710bec.png";
+import mImg_extra3   from "figma:asset/83d4a69b3e9c8f0a9728fcee74adb0198bf260f8.png";
 
 export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     const navigate = useNavigate();
+    const { open: openContactForm } = useContactForm();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [containerExpanded, setContainerExpanded] = useState(false);
     const [showLogos, setShowLogos] = useState(false);
@@ -42,10 +48,14 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     // Viewport width — drives all horizontal scroll math
     const [viewWidth, setViewWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1440);
     const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 1024 : false);
+    const [isTablet, setIsTablet] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 768 && window.innerWidth < 1024 : false);
+    const whatMakesUsRef = useRef<HTMLDivElement>(null);
+    const mobileFormPrevRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const onResize = () => {
             setViewWidth(window.innerWidth);
             setIsMobile(window.innerWidth < 1024);
+            setIsTablet(window.innerWidth >= 768 && window.innerWidth < 1024);
         };
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
@@ -308,7 +318,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                             {/* Let's Talk CTA */}
                             <div style={{ padding: "16px 24px 48px" }}>
                                 <button
-                                    onClick={() => { setMobileMenuOpen(false); navigate("/", { state: { skipLoading: true, scrollToFooter: true } }); }}
+                                    onClick={() => { setMobileMenuOpen(false); openContactForm(); }}
                                     style={{ width: "100%", padding: "16px", background: "#fff", color: "#000", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
                                 >
                                     Let's Talk
@@ -318,18 +328,46 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                     )}
                 </AnimatePresence>
 
-                {/* ── Fixed mobile navbar ── */}
-                <div style={{ position: "fixed", top: 24, left: "50%", transform: "translateX(-50%)", width: "calc(100% - 48px)", maxWidth: 600, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 0 15px rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 16px 6px 8px", height: 64 }}>
-                    <img alt="XG Labs" src={mobileLogo} style={{ height: 52, width: "auto", display: "block", cursor: "pointer" }} onClick={() => navigate("/", { state: { skipLoading: true } })} />
-                    <button
-                        onClick={() => setMobileMenuOpen(true)}
-                        aria-label="Open menu"
-                        style={{ width: 44, height: 44, borderRadius: "50%", background: "#0a0a0a", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, flexShrink: 0 }}
-                    >
-                        <span style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
-                        <span style={{ display: "block", width: 14, height: 2, borderRadius: 99, background: "#fff" }} />
-                        <span style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
-                    </button>
+                {/* ── Fixed mobile/tablet navbar ── */}
+                <div style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", width: "calc(100% - 40px)", maxWidth: isTablet ? 880 : 600, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 0 15px rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 12px 4px 6px", height: 52 }}>
+                    <img alt="XG Labs" src={mobileLogo} style={{ height: 42, width: "auto", display: "block", cursor: "pointer" }} onClick={() => navigate("/", { state: { skipLoading: true } })} />
+                    <div style={{ display: "flex", alignItems: "center", gap: isTablet ? 22 : 10 }}>
+                        {/* Let's Talk button — tablet only */}
+                        {isTablet && (
+                            <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: 'relative', height: 36, display: 'inline-flex' }}>
+                                <button
+                                    aria-label="Let's talk"
+                                    onClick={() => openContactForm()}
+                                    style={{ height: 36, paddingTop: 8, paddingRight: 26, paddingBottom: 8, paddingLeft: 12, display: 'inline-flex', alignItems: 'center', background: '#ffffff', borderRadius: 36, border: '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}
+                                >
+                                    <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
+                                    <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
+                                    <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
+                                        <motion.span variants={{ rest: { y: 0 }, hover: { y: '-100%' } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ display: 'block', fontFamily: "'Poppins', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
+                                            Let's Talk
+                                        </motion.span>
+                                        <motion.span aria-hidden variants={{ rest: { y: '100%' }, hover: { y: 0 } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Poppins', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
+                                            Let's Talk
+                                        </motion.span>
+                                    </div>
+                                </button>
+                                <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.3 }} style={{ position: 'absolute', top: 0, right: -11, width: 36, height: 36, borderRadius: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
+                                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+                                    </svg>
+                                </motion.div>
+                            </motion.div>
+                        )}
+                        <button
+                            onClick={() => setMobileMenuOpen(true)}
+                            aria-label="Open menu"
+                            style={{ width: 36, height: 36, borderRadius: "50%", background: "#0a0a0a", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}
+                        >
+                            <span style={{ display: "block", width: 16, height: 2, borderRadius: 99, background: "#fff" }} />
+                            <span style={{ display: "block", width: 11, height: 2, borderRadius: 99, background: "#fff" }} />
+                            <span style={{ display: "block", width: 16, height: 2, borderRadius: 99, background: "#fff" }} />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Hero */}
@@ -339,55 +377,131 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                     flexDirection: "column",
                     alignItems: "center",
                     textAlign: "center",
-                    paddingTop: "110px",
+                    paddingTop: "90px",
                     overflow: "hidden",
                     background: "#f7f8fa",
                 }}>
-                    <FinalCircle />
+                    {/* Background grid lines */}
+                    <FinalGrid />
 
-                    {/* Text block — matches desktop TextContainer */}
-                    <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", padding: "0 28px 44px" }}>
-                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "-0.96px", color: "#414141", margin: 0 }}>
+                    {/* Circle — sits behind the text block */}
+                    <div style={{
+                        position: "absolute",
+                        left: "50%", top: isTablet ? "210px" : "175px",
+                        transform: "translate(-50%, -50%)",
+                        width: isTablet ? "min(80vw, 640px)" : "min(90vw, 440px)",
+                        height: isTablet ? "min(80vw, 640px)" : "min(90vw, 440px)",
+                        borderRadius: "50%",
+                        background: "#ffffff",
+                        pointerEvents: "none",
+                        zIndex: 0,
+                    }} />
+
+                    {/* Text block */}
+                    <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "0 20px 52px", width: "100%", boxSizing: "border-box" }}>
+                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.04em", color: "#414141", margin: 0, textTransform: "uppercase" }}>
                             STRATEGY FIRST
                         </p>
-                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(40px, 13vw, 72px)", lineHeight: "1.04", letterSpacing: "-0.02em", color: "#060606", margin: 0, textTransform: "uppercase" }}>
+                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "min(12.5vw, 60px)", lineHeight: "1.0", letterSpacing: "-0.02em", color: "#060606", margin: 0, textTransform: "uppercase", width: "100%", textAlign: "center", whiteSpace: "nowrap" }}>
                             From Vision<br />To Velocity
                         </h1>
-                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 3.8vw, 17px)", lineHeight: "1.4", letterSpacing: "-0.04em", color: "#414141", margin: 0, maxWidth: "300px" }}>
+                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 3.8vw, 17px)", lineHeight: "1.5", letterSpacing: "-0.01em", color: "#414141", margin: "4px 0 0", maxWidth: "300px" }}>
                             We align strategy, creative, and performance to accelerate growth.
                         </p>
                     </div>
 
-                    {/* Scattered portfolio images */}
-                    <div style={{ position: "relative", width: "100%", height: "420px", zIndex: 1 }}>
-                        {/* Cup — top centre-right */}
-                        <div style={{ position: "absolute", top: "0%", left: "38%", width: "42%", transform: "rotate(-6deg)", zIndex: 5 }}>
-                            <img src={mImg_cup} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
+                    {/* Portfolio images — 3 rows, uniform height per row, varying widths */}
+                    <div style={{ width: "100%", zIndex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                        {/* Row 1: 3 equal-width images */}
+                        <div style={{ display: "flex", gap: "4px", height: "120px" }}>
+                            <div style={{ flex: 1, overflow: "hidden" }}>
+                                <img src={mImg_billboard} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                            </div>
+                            <div style={{ flex: 1, overflow: "hidden" }}>
+                                <img src={mImg_disc} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                            </div>
+                            <div style={{ flex: 1, overflow: "hidden" }}>
+                                <img src={mImg_extra1} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                            </div>
                         </div>
-                        {/* Go Wheels cards — top right */}
-                        <div style={{ position: "absolute", top: "0%", left: "62%", width: "44%", transform: "rotate(9deg)", zIndex: 4 }}>
-                            <img src={mImg_goCards} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
+                        {/* Row 2: 2 images — narrower left, wider right */}
+                        <div style={{ display: "flex", gap: "4px", height: "148px" }}>
+                            <div style={{ flex: 4, overflow: "hidden" }}>
+                                <img src={mImg_maha} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                            </div>
+                            <div style={{ flex: 6, overflow: "hidden" }}>
+                                <img src={mImg_extra3} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                            </div>
                         </div>
-                        {/* Pamphlets — left, slightly rotated */}
-                        <div style={{ position: "absolute", top: "10%", left: "-6%", width: "50%", transform: "rotate(-13deg)", zIndex: 3 }}>
-                            <img src={mImg_pamph} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
-                        </div>
-                        {/* XG Billboard — bottom left */}
-                        <div style={{ position: "absolute", bottom: "0%", left: "-6%", width: "58%", transform: "rotate(-4deg)", zIndex: 6 }}>
-                            <img src={mImg_billboard} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
-                        </div>
-                        {/* Green Go! disc — bottom centre */}
-                        <div style={{ position: "absolute", bottom: "4%", left: "28%", width: "36%", transform: "rotate(6deg)", zIndex: 7 }}>
-                            <img src={mImg_disc} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
-                        </div>
-                        {/* Mahaspeakss sign — bottom right */}
-                        <div style={{ position: "absolute", bottom: "2%", left: "57%", width: "46%", transform: "rotate(-9deg)", zIndex: 8 }}>
-                            <img src={mImg_maha} alt="" style={{ width: "100%", borderRadius: "6px", display: "block", objectFit: "cover" }} />
+                        {/* Row 3: 3 images — thin strip left, medium middle, wider right */}
+                        <div style={{ display: "flex", gap: "4px", height: "120px" }}>
+                            <div style={{ flex: 1, overflow: "hidden" }}>
+                                <img src={mImg_extra2} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                            </div>
+                            <div style={{ flex: 4, overflow: "hidden" }}>
+                                <img src={mImg_pamph} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                            </div>
+                            <div style={{ flex: 5, overflow: "hidden" }}>
+                                <img src={mImg_cup} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <WhatMakesUsDifferent />
+                {/* ── WE'RE XG LABS section ── */}
+                <div ref={mobileFormPrevRef} style={{ position: "relative", background: "#f7f8fa", height: isTablet ? 730 : 560, overflow: "hidden" }}>
+                    <FinalGrid />
+                    {/* Circle — sized so text fits inside it */}
+                    <div style={{
+                        position: "absolute", left: "50%",
+                        top: isTablet ? "290px" : "250px",
+                        transform: "translate(-50%, -50%)",
+                        width: isTablet ? "min(78vw, 600px)" : "min(88vw, 460px)",
+                        height: isTablet ? "min(78vw, 600px)" : "min(88vw, 460px)",
+                        borderRadius: "50%", background: "#ffffff", pointerEvents: "none", zIndex: 0,
+                    }} />
+                    {/* Text block — centered on the circle's center point */}
+                    <div style={{
+                        position: "absolute", left: "50%",
+                        top: isTablet ? "290px" : "250px",
+                        transform: "translate(-50%, -50%)",
+                        zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+                        gap: isTablet ? "14px" : "10px", textAlign: "center",
+                        width: isTablet ? "min(62vw, 480px)" : "min(68vw, 300px)",
+                    }}>
+                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: isTablet ? "16px" : "13px", letterSpacing: "0.12em", color: "#5f5f5f", margin: 0, textTransform: "uppercase" }}>WE'RE XG LABS</p>
+                        <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: isTablet ? "clamp(30px, 4.2vw, 46px)" : "clamp(19px, 5vw, 26px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#414141", margin: 0 }}>
+                            A creative partner for brands who refuse to be{" "}
+                            <span style={{ position: "relative", display: "inline-block", padding: "0 8px", margin: "0 2px" }}>
+                                <span style={{ position: "relative", zIndex: 1, color: "#ffffff" }}>ordinary.</span>
+                                <motion.span
+                                    initial={{ scaleX: 0 }}
+                                    whileInView={{ scaleX: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.8, delay: 0.4, ease: [0.76, 0, 0.24, 1] }}
+                                    style={{ position: "absolute", inset: 0, background: "#00A88D", transformOrigin: "left center", zIndex: 0 }}
+                                />
+                            </span>
+                        </p>
+                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isTablet ? "15px" : "11px", lineHeight: 1.5, color: "#6e6e6e", margin: "2px 0 0" }}>
+                            We turn ideas into visuals that move people — and move brands forward. Every piece we create is intentional, expressive, and designed to hit with purpose.
+                        </p>
+                    </div>
+                    {/* Cards — slightly smaller on mobile via scale wrapper */}
+                    <div style={{ position: "absolute", left: 0, right: 0, top: isTablet ? -170 : -240, height: "1080px", transform: isTablet ? undefined : "scale(0.82)", transformOrigin: "top center" }}>
+                        <CardImages isVisible={true} />
+                    </div>
+                </div>
+
+                {/* ── Contact form section (mobile/tablet) ── */}
+                <div style={{ background: "#0e0e0e", display: "flex", flexDirection: "column", minHeight: "100svh", position: "relative", overflow: "hidden" }}>
+                    <ContactFormContent
+                        embedded
+                        onClose={() => mobileFormPrevRef.current?.scrollIntoView({ behavior: "smooth" })}
+                    />
+                </div>
+
+                <div ref={whatMakesUsRef}><WhatMakesUsDifferent /></div>
                 <VerticalContent />
             </div>
         );
@@ -502,27 +616,28 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                             </div>
                         </motion.div>
 
-                        {/* Previous button — only visible on contact section */}
-                        {scrollStep === 3 && (
-                            <motion.button
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={handlePrevScroll}
-                                className="absolute bottom-[40px] z-[200] pointer-events-auto cursor-pointer"
-                                style={{ left: "24px" }}
-                            >
-                                <div className="relative size-[40px]">
-                                    <svg className="block size-full" fill="none" viewBox="0 0 40 40">
-                                        <rect height="39" rx="19.5" stroke="rgba(255,255,255,0.6)" width="39" x="0.5" y="0.5" />
-                                        <path d="M22 13L15 20L22 27" stroke="rgba(255,255,255,0.6)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
-                                    </svg>
-                                </div>
-                            </motion.button>
-                        )}
                     </>
                 )}
             </div>
+
+            {/* Previous button — outside sticky container to avoid fixed-inside-sticky pointer-events bug in WebKit */}
+            {showContent && scrollStep === 3 && (
+                <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={handlePrevScroll}
+                    className="fixed bottom-[40px] z-[500] pointer-events-auto cursor-pointer"
+                    style={{ left: "24px" }}
+                >
+                    <div className="relative size-[40px]">
+                        <svg className="block size-full" fill="none" viewBox="0 0 40 40">
+                            <rect height="39" rx="19.5" stroke="rgba(255,255,255,0.6)" width="39" x="0.5" y="0.5" />
+                            <path d="M22 13L15 20L22 27" stroke="rgba(255,255,255,0.6)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                        </svg>
+                    </div>
+                </motion.button>
+            )}
 
             {/* Spacer to drive the scroll transition */}
             <div className="h-[24px] w-full pointer-events-none" />

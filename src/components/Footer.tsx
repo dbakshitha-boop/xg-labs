@@ -99,10 +99,15 @@ export function Footer() {
     <footer id="footer" style={{ background: "#0a0a0a", overflow: "hidden" }}>
       <style>{`
         @media (max-width: 767px) {
-          .footer-grid { grid-template-columns: 1fr !important; padding: 24px 20px !important; }
-          .footer-bottom { flex-direction: column !important; gap: 12px !important; padding: 16px 20px !important; }
-          .footer-bottom-bar { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 20px !important; padding: 24px 20px !important; text-align: center !important; }
-          .footer-bottom-bar-legal { align-items: center !important; }
+          .footer-headline { padding: 32px 20px 20px !important; overflow: hidden !important; }
+          .footer-headline-text { font-size: 8vw !important; white-space: nowrap !important; transform: none !important; text-align: left !important; }
+          .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 32px 20px !important; }
+          .footer-grid > div:first-child { grid-column: 1 / -1 !important; padding-bottom: 24px !important; margin-bottom: 8px !important; }
+          .footer-bottom-bar { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; padding: 24px 20px !important; }
+          .footer-social-block { align-items: flex-start !important; width: 100% !important; }
+          .footer-social-icons { width: 100% !important; justify-content: space-between !important; gap: 0 !important; }
+          .footer-bottom-bar-legal { align-items: center !important; width: 100% !important; text-align: center !important; }
+          .footer-connect-details a, .footer-connect-details p { font-size: 18px !important; line-height: 1.4 !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
           .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 24px 32px !important; }
@@ -118,6 +123,7 @@ export function Footer() {
         }}
       >
         <h2
+          className="footer-headline-text"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
             fontWeight: 400,
@@ -154,7 +160,7 @@ export function Footer() {
         {/* Connect with */}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <p style={colHeadStyle}>Connect With</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div className="footer-connect-details" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <a
               href="mailto:xglabs@thebrandopedia.in"
               style={{
@@ -276,9 +282,9 @@ export function Footer() {
         </div>
 
         {/* Right side: social icons + legal */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "12px" }}>
+        <div className="footer-social-block" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "12px" }}>
           {/* Social icons */}
-          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+          <div className="footer-social-icons" style={{ display: "flex", alignItems: "center", gap: "24px" }}>
             {[
               { icon: <IconInstagram />, href: "https://www.instagram.com/xglabs/", label: "Instagram" },
               { icon: <IconLinkedIn />, href: "https://www.linkedin.com/company/xg-labs", label: "LinkedIn" },

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useVelocity } from "motion/react";
 import { cn } from "./ui/utils";
 import { useCursor } from "./ui/CustomCursor";
@@ -100,12 +101,50 @@ const services: ServiceItemProps[] = [
 export function ServicesList() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { setVariant } = useCursor();
+  const navigate = useNavigate();
 
   return (
     <div
       onMouseEnter={() => setVariant('default')}
       className="w-full max-w-[1920px] mx-auto px-4 lg:px-0 py-20 flex flex-col font-sans bg-[#F7F8FA]"
     >
+      {/* Mobile/tablet header — lg:hidden so desktop is untouched */}
+      <div className="lg:hidden px-6 pt-10 pb-8 flex flex-col gap-4">
+        <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "18px", lineHeight: "120%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#060606" }}>
+          Everything your brand needs to grow built into one system
+        </p>
+        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "24px", lineHeight: "100%", letterSpacing: "0%", color: "#5F5F5F" }}>
+          Every service works together as one system, built to create clarity, momentum, and results.
+        </p>
+        <div className="flex items-start justify-between gap-4">
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "100%", letterSpacing: "0%", color: "#6E6E6E" }}>
+            No noise. No guesswork.<br />Just structured creative and strategic execution.
+          </p>
+          <motion.div
+            initial="rest" whileHover="hover" animate="rest"
+            style={{ position: 'relative', height: 40, display: 'inline-flex', flexShrink: 0, cursor: 'pointer' }}
+          >
+            <button onClick={() => navigate("/services")} style={{ height: 40, paddingTop: 8, paddingRight: 28, paddingBottom: 8, paddingLeft: 14, display: 'inline-flex', alignItems: 'center', background: '#ffffff', borderRadius: 42, border: '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
+              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
+                <motion.span variants={{ rest: { y: 0 }, hover: { y: '-100%' } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ display: 'block', fontFamily: "'Poppins', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
+                  View More
+                </motion.span>
+                <motion.span aria-hidden variants={{ rest: { y: '100%' }, hover: { y: 0 } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Poppins', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
+                  View More
+                </motion.span>
+              </div>
+            </button>
+            <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.3 }} style={{ position: 'absolute', top: 0, right: -13, width: 40, height: 40, borderRadius: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
+              <svg width={16} height={16} viewBox="0 0 24 24" style={{ display: 'block' }} fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+              </svg>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+
       {services.map((service, index) => (
         <motion.div
           key={index}
@@ -170,11 +209,13 @@ function ServiceCard({
           if (entry.isIntersecting) {
             setTimeout(() => {
               setAutoReveal(true);
+            }, 300);
+            setTimeout(() => {
               setHasBeenRevealed(true);
-            }, 400); // Slight delay for premium feel
+            }, 300 + 1400); // mark done after curtain + highlight fully finish
           }
         },
-        { threshold: 0.2 }
+        { threshold: 0.15 }
       );
 
       if (cardRef.current) {
@@ -211,9 +252,9 @@ function ServiceCard({
         }
       }}
     >
-      {/* Highlight Image */}
+      {/* Highlight Image — desktop only */}
       <AnimatePresence>
-        {active && (
+        {!isMobile && active && (
           <motion.div
             className="absolute pointer-events-none z-0 overflow-hidden"
             style={{
@@ -289,7 +330,78 @@ function ServiceCard({
           )}
         </AnimatePresence>
 
-      <div className="flex flex-col lg:flex-row bg-[#F7F8FA] transition-colors duration-500 px-6 lg:pl-[100px] lg:pr-[70px] gap-6 lg:gap-[80px]">
+      {/* ── Mobile / tablet card layout ── */}
+      <div className="lg:hidden bg-[#F7F8FA]" style={{ borderBottom: "1px solid #6E6E6E" }}>
+        {/* gap between divider line above and this image */}
+        <div className="flex justify-center" style={{ paddingTop: "24px", paddingLeft: "24px", paddingRight: "24px" }}>
+          <div style={{ width: "300px", height: "300px", maxWidth: "100%", borderRadius: "16px", overflow: "hidden", flexShrink: 0 }}>
+            <img src={image} alt={title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          </div>
+        </div>
+        <div className="flex flex-col gap-4" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "20px", paddingBottom: "28px" }}>
+          <div>
+            <h3 className="font-['Sora',sans-serif] font-bold text-[14px] tracking-tight text-[#414141] uppercase mb-1">{title}</h3>
+            <p className="font-['Sora',sans-serif] text-[12px] text-gray-500 leading-relaxed">{subtitle}</p>
+          </div>
+          {/* content lines — simple whileInView animation */}
+          <div className="flex flex-col gap-0">
+            {contentLines.map((line, idx) => {
+              const highlightText =
+                index === 0 && idx === 1 ? "no waste, no guesswork." :
+                index === 1 && idx === 1 ? "demand over time." :
+                index === 2 && idx === 1 ? "convert traffic into action." :
+                index === 3 && idx === 1 ? "clarity and control." :
+                index === 4 && idx === 1 ? "attention and drive engagement." :
+                index === 5 && idx === 1 ? "relevance, reach, and structure." :
+                index === 6 && idx === 1 ? "scale consistently." : undefined;
+
+              const hasHighlight = highlightText && line.toLowerCase().includes(highlightText.toLowerCase());
+              const splitIdx = hasHighlight ? line.toLowerCase().indexOf(highlightText!.toLowerCase()) : -1;
+              const before = hasHighlight ? line.substring(0, splitIdx) : line;
+              const target = hasHighlight ? line.substring(splitIdx, splitIdx + highlightText!.length) : "";
+              const after  = hasHighlight ? line.substring(splitIdx + highlightText!.length) : "";
+
+              return (
+                <div key={idx} style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(17px, 4.5vw, 22px)", lineHeight: 1.25, letterSpacing: "-0.02em", color: "#6E6E6E" }}>
+                  {hasHighlight ? (
+                    <>
+                      {before}
+                      <span style={{ position: "relative", display: "inline-flex", alignItems: "center", padding: "0 4px", margin: "0 2px" }}>
+                        <motion.span
+                          initial={{ scaleX: 0, originX: 0 }}
+                          whileInView={{ scaleX: 1 }}
+                          viewport={{ once: true, amount: 0.8 }}
+                          transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
+                          style={{ position: "absolute", inset: 0, background: "#00A88D", transformOrigin: "left center", zIndex: 1 }}
+                        />
+                        <span style={{ position: "relative", zIndex: 2, color: "#ffffff" }}>{target}</span>
+                      </span>
+                      {after}
+                    </>
+                  ) : line}
+                </div>
+              );
+            })}
+          </div>
+          {/* deliverables — one per line */}
+          <div>
+            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#6E6E6E", marginBottom: "8px" }}>
+              What We Deliver
+            </p>
+            <div className="flex flex-col gap-2">
+              {deliverables.map((item, i) => (
+                <div key={i} className="font-['Sora',sans-serif] font-medium text-[13px] text-[#414141] flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#00A88D] shrink-0" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Desktop card layout (unchanged) ── */}
+      <div className="hidden lg:flex flex-row bg-[#F7F8FA] transition-colors duration-500" style={{ paddingLeft: "100px", paddingRight: "70px", gap: "80px" }}>
 
         {/* Left Column */}
         <div className="w-full lg:w-[350px] shrink-0 flex flex-col justify-between z-10 py-10 lg:py-[60px]">

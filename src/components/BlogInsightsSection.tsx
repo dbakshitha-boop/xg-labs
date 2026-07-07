@@ -128,69 +128,71 @@ export function BlogInsightsSection() {
             Actionable ideas backed by real results.
           </p>
 
-          <button
+          <motion.div
+            initial="rest"
+            whileHover="hover"
+            animate="rest"
             onClick={() => navigate("/blog")}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              border: "1.5px solid #1a1a1a",
-              borderRadius: "100px",
-              background: "#ffffff",
-              padding: "10px 14px 10px 20px",
-              cursor: "pointer",
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 700,
-              fontSize: "11px",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-              color: "#1a1a1a",
-              transition: "background 0.2s, color 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "#1a1a1a";
-              (e.currentTarget as HTMLButtonElement).style.color = "#ffffff";
-              const circle = (e.currentTarget as HTMLButtonElement).querySelector(".btn-circle") as HTMLElement;
-              if (circle) { circle.style.background = "#ffffff"; }
-              const arrow = (e.currentTarget as HTMLButtonElement).querySelector(".btn-arrow") as HTMLElement;
-              if (arrow) { arrow.style.stroke = "#1a1a1a"; }
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "#ffffff";
-              (e.currentTarget as HTMLButtonElement).style.color = "#1a1a1a";
-              const circle = (e.currentTarget as HTMLButtonElement).querySelector(".btn-circle") as HTMLElement;
-              if (circle) { circle.style.background = "#1a1a1a"; }
-              const arrow = (e.currentTarget as HTMLButtonElement).querySelector(".btn-arrow") as HTMLElement;
-              if (arrow) { arrow.style.stroke = "#ffffff"; }
-            }}
+            style={{ position: "relative", height: 42, display: "inline-flex", cursor: "pointer" }}
           >
-            View Blogs
-            <div
-              className="btn-circle"
+            <button
               style={{
-                width: "30px",
-                height: "30px",
-                borderRadius: "50%",
-                background: "#1a1a1a",
-                display: "flex",
+                height: 42,
+                paddingTop: 10,
+                paddingBottom: 10,
+                paddingLeft: 16,
+                paddingRight: 30,
+                display: "inline-flex",
                 alignItems: "center",
-                justifyContent: "center",
-                transition: "background 0.2s",
+                background: "#ffffff",
+                borderRadius: 42,
+                border: "1.5px solid #1a1a1a",
+                cursor: "pointer",
+                boxSizing: "border-box",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                <path
-                  className="btn-arrow"
-                  d="M2 7H12M12 7L7 2M12 7L7 12"
-                  stroke="white"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ transition: "stroke 0.2s" }}
-                />
+              <motion.span
+                aria-hidden
+                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
+              />
+              <motion.span
+                aria-hidden
+                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+                style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
+              />
+              <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: "1em" }}>
+                <motion.span
+                  variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
+                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                  style={{ display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+                >
+                  View Blogs
+                </motion.span>
+                <motion.span
+                  aria-hidden
+                  variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
+                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+                  style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                >
+                  View Blogs
+                </motion.span>
+              </div>
+            </button>
+            <motion.div
+              variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
+              transition={{ duration: 0.3 }}
+              style={{ position: "absolute", top: 0, right: -13, width: 42, height: 42, borderRadius: 42, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+            >
+              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
               </svg>
-            </div>
-          </button>
+            </motion.div>
+          </motion.div>
         </motion.div>
       </div>
 

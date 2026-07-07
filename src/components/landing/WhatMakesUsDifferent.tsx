@@ -167,20 +167,20 @@ function CardStack({ activeIndex }: { activeIndex: number }) {
   );
 }
 
-function RoundForImage({ activeIndex }: { activeIndex: number }) {
+function RoundForImage({ activeIndex, circleSize }: { activeIndex: number; circleSize: string }) {
   return (
-    <div className="absolute bg-[#f7f8fa] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full" style={{ width: "min(620px, 56vw)", height: "min(620px, 56vw)" }} data-name="Round for image">
+    <div className="absolute bg-[#f7f8fa] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full" style={{ width: circleSize, height: circleSize }} data-name="Round for image">
         <CardStack activeIndex={activeIndex} />
     </div>
   );
 }
 
-function ImageContainer({ progress, activeIndex }: { progress: number, activeIndex: number }) {
+function ImageContainer({ progress, activeIndex, circleSize }: { progress: number, activeIndex: number, circleSize: string }) {
   return (
     <div className="h-full w-full overflow-hidden relative" data-name="Image Container">
       <div className="bg-[#e9f0ff] relative size-full" data-name="Right side">
         <RectangleGrid progress={progress} />
-        <RoundForImage activeIndex={activeIndex} />
+        <RoundForImage activeIndex={activeIndex} circleSize={circleSize} />
       </div>
     </div>
   );
@@ -189,16 +189,16 @@ function ImageContainer({ progress, activeIndex }: { progress: number, activeInd
 function HeaderTextContainer() {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0" data-name="Header Text Container">
-      <p className="font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic relative shrink-0 text-[#414141] text-[24px] lg:text-[32px] text-nowrap uppercase">What makes us Different</p>
+      <p className="font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic relative shrink-0 text-[#414141] uppercase whitespace-normal" style={{ fontSize: "clamp(20px, 2.2vw, 32px)" }}>What makes us Different</p>
     </div>
   );
 }
 
 function HeaderContainer() {
   return (
-    <div className="content-stretch flex flex-col gap-[16px] lg:gap-[32px] items-start relative shrink-0 w-full" data-name="Header Container">
+    <div className="content-stretch flex flex-col gap-[12px] lg:gap-[20px] items-start relative shrink-0 w-full" data-name="Header Container">
       <HeaderTextContainer />
-      <p className="font-['Sora',sans-serif] font-normal leading-[1.4] relative text-[#5f5f5f] text-[18px] lg:text-[26px] tracking-normal w-full max-w-none" style={{ marginBottom: "52px" }}>
+      <p className="font-['Sora',sans-serif] font-normal leading-[1.4] relative text-[#5f5f5f] tracking-normal w-full max-w-none line-clamp-3 lg:line-clamp-none" style={{ fontSize: "clamp(13px, 2vw, 28px)" }}>
         We blend strategy, design, and storytelling into work that feels modern, intentional, and built to move brands forward. Every idea is crafted with clarity and purpose — no noise, no filler, just high-impact creative that works.
       </p>
     </div>
@@ -251,7 +251,7 @@ function ContentContainer({ description, title, id, isInView }: { description: s
       <SubheaderContainer title={title} id={id} />
       <div className="flex flex-col w-full">
         {description.map((line, idx) => (
-             <div key={idx} className="relative font-['Sora',sans-serif] font-normal leading-[1.4] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(18px, 1.8vw, 26px)" }}>
+             <div key={idx} className="relative font-['Sora',sans-serif] font-normal leading-[1.4] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(20px, 2.2vw, 28px)" }}>
                 <RevealText delay={idx * 0.1} isActive={isInView}>
                   {line}
                 </RevealText>
@@ -287,7 +287,7 @@ function RealContent({ activeIndex, isInView }: { activeIndex: number; isInView:
 
 function TextContainer({ activeIndex, isInView }: { activeIndex: number; isInView: boolean }) {
   return (
-    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full gap-[40px] lg:gap-[64px]" style={{ padding: "clamp(24px, 5vw, 80px)", paddingTop: "clamp(40px, 4vw, 64px)", justifyContent: "flex-start" }} data-name="Text Container">
+    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full gap-[24px] lg:gap-[36px]" style={{ padding: "clamp(24px, 4vw, 64px)", paddingTop: "clamp(32px, 4vw, 56px)", justifyContent: "flex-start" }} data-name="Text Container">
       <HeaderContainer />
       <div>
         <RealContent activeIndex={activeIndex} isInView={isInView} />
@@ -307,6 +307,14 @@ export function WhatMakesUsDifferent() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [subProgress, setSubProgress] = useState(0);
   const [hasSeen, setHasSeen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // Drive activeIndex / subProgress from scroll progress
   useEffect(() => {
@@ -338,12 +346,22 @@ export function WhatMakesUsDifferent() {
     <div ref={containerRef} id="what-makes-us-different" className="relative h-[400vh]" data-name="Scroll Container">
       <div className="sticky top-0 h-screen overflow-hidden bg-white">
         <div className="content-stretch flex flex-col lg:flex-row items-stretch relative w-full h-full">
-          {/* Image side - takes 40% height on mobile, 50% width on desktop */}
-          <div className="w-full lg:w-1/2 flex items-center justify-center overflow-hidden h-[45vh] lg:h-full shrink-0">
-             <ImageContainer progress={subProgress} activeIndex={activeIndex} />
+          {/* Image side */}
+          <div
+            className="w-full lg:w-1/2 relative overflow-hidden shrink-0"
+            style={{ height: isMobile ? "48vh" : "100%" }}
+          >
+             <ImageContainer
+               progress={subProgress}
+               activeIndex={activeIndex}
+               circleSize={isMobile ? "min(42vh, 76vw)" : "min(620px, 56vw)"}
+             />
           </div>
-          {/* Text side - takes remaining height on mobile, 50% width on desktop */}
-          <div className="w-full lg:w-1/2 overflow-hidden h-[55vh] lg:h-full flex flex-col">
+          {/* Text side */}
+          <div
+            className="w-full lg:w-1/2 overflow-hidden flex flex-col shrink-0"
+            style={{ height: isMobile ? "52vh" : "100%" }}
+          >
             <TextContainer activeIndex={activeIndex} isInView={hasSeen} />
           </div>
         </div>

@@ -1,32 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { submitContactForm } from "../lib/api";
 
-function GridLines({ dark = false }: { dark?: boolean }) {
-  return (
-    <div
-      aria-hidden="true"
-      style={{
-        position: "absolute",
-        inset: 0,
-        display: "grid",
-        gridTemplateColumns: "repeat(7, 1fr)",
-        pointerEvents: "none",
-        zIndex: 0,
-      }}
-    >
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div
-          key={i}
-          style={{
-            borderLeft: `1px solid ${dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.07)"}`,
-            height: "100%",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 function LeftBracket({ height = 52, arm = 12, stroke = 2, color = "rgba(255,255,255,0.75)" }: { height?: number; arm?: number; stroke?: number; color?: string }) {
   return (
@@ -53,17 +28,23 @@ function CloseXIcon({ size = 22, color = "rgba(255,255,255,0.75)" }: { size?: nu
   );
 }
 
-function PickaxeIcon({ size = 36, color = "rgba(255,255,255,0.75)" }: { size?: number; color?: string }) {
+function PixelArrowIcon({ size = 36, color = "rgba(255,255,255,0.75)" }: { size?: number; color?: string }) {
+  // Diagonal shaft running all the way to the top-right arrowhead corner
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64">
-      <g fill={color} transform="rotate(-30 32 32)">
-        <rect x="29" y="18" width="6" height="34" />
-        <rect x="18" y="14" width="28" height="6" />
-        <rect x="14" y="18" width="6" height="6" />
-        <rect x="10" y="24" width="6" height="6" />
-        <rect x="46" y="18" width="6" height="6" />
-        <rect x="52" y="24" width="6" height="6" />
-      </g>
+    <svg width={size} height={size} viewBox="0 0 22 22" style={{ display: "block" }}>
+      {/* Shaft: bottom-left corner → centre of arrowhead corner pixel */}
+      <line x1={1} y1={21} x2={14.5} y2={4.5} stroke={color} strokeWidth={1.5} strokeLinecap="square" />
+      {/* Pixelated L-corner arrowhead at top-right */}
+      {/* Horizontal arm ← */}
+      <rect x={4}  y={3} width={3} height={3} fill={color} />
+      <rect x={7}  y={3} width={3} height={3} fill={color} />
+      <rect x={10} y={3} width={3} height={3} fill={color} />
+      <rect x={13} y={3} width={3} height={3} fill={color} />
+      {/* Vertical arm ↓ */}
+      <rect x={13} y={6}  width={3} height={3} fill={color} />
+      <rect x={13} y={9}  width={3} height={3} fill={color} />
+      <rect x={13} y={12} width={3} height={3} fill={color} />
+      <rect x={13} y={15} width={3} height={3} fill={color} />
     </svg>
   );
 }
@@ -87,6 +68,15 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [mobileValidationError, setMobileValidationError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false
+  );
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const emailError = emailTouched && email.length > 0 && !isValidEmail(email);
 
@@ -133,11 +123,16 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
   const fieldStyle: React.CSSProperties = {
     borderBottom: "1px solid #F7F8FA",
     paddingBottom: "10px",
-    marginBottom: "72px",
+    marginBottom: isMobile ? "28px" : "72px",
   };
 
   const handleSubmit = async () => {
-    if (!email || !isValidEmail(email)) { setEmailTouched(true); return; }
+    if (!email || !isValidEmail(email)) {
+      setEmailTouched(true);
+      setMobileValidationError("Please enter a valid email.");
+      return;
+    }
+    setMobileValidationError(null);
     setSubmitting(true);
     setSubmitError(null);
     try {
@@ -155,18 +150,26 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
     <>
       <style>{`
         .cf-input::placeholder { color: #414141; font-family: 'Sora', sans-serif; }
-        @media (max-width: 767px) {
+        @media (max-width: 1023px) {
           .cf-fields-grid { grid-template-columns: 1fr !important; }
-          .cf-title { font-size: 40px !important; }
+          .cf-fields-grid > div { margin-bottom: 28px !important; }
+          .cf-title { font-size: 48px !important; white-space: nowrap !important; }
+          .cf-header { grid-template-columns: 1fr !important; gap: 8px !important; }
+          .cf-header-right { padding-top: 0 !important; }
+          .cf-header-right > p { font-size: 15px !important; max-width: 100% !important; }
+          .cf-close-btn { display: none !important; }
+          .cf-last-field { flex-direction: column !important; align-items: stretch !important; }
+          .cf-inline-submit { display: none !important; }
+          .cf-mobile-actions { display: flex !important; }
+          .cf-last-field .cf-input { font-size: 14px !important; }
         }
       `}</style>
-      <GridLines dark />
 
       {/* Full layout */}
       <div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column", justifyContent: embedded ? "center" : "flex-start", gap: embedded ? "40px" : "0", padding: embedded ? "40px max(40px, calc((100% - 1224px) / 2)) 100px" : "60px max(40px, calc((100% - 1224px) / 2)) 72px" }}>
 
         {/* Header */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "72px", marginBottom: embedded ? "0" : "80px" }}>
+        <div className="cf-header" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "72px", marginBottom: embedded ? "0" : "80px" }}>
           <h2
             className="cf-title"
             style={{ fontFamily: "’Cal Sans’, sans-serif", fontWeight: 400, fontStyle: "normal", fontSize: "80px", color: "#6E6E6E", margin: 0, letterSpacing: "-0.04em", lineHeight: "120%" }}
@@ -174,14 +177,15 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
             {"Let’s Talk"}
           </h2>
 
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "24px", paddingTop: "20px" }}>
+          <div className="cf-header-right" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "24px", paddingTop: "20px" }}>
             <p style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 400, fontSize: "18px", color: "rgba(255,255,255,0.4)", margin: 0, lineHeight: 1.6, maxWidth: "240px" }}>
-              {"We’d love to hear what you’re doing."}
+              {"We’d love to hear what you’re building."}
             </p>
             <motion.button
               onClick={() => onClose?.()}
               initial="rest"
               whileHover="hover"
+              className="cf-close-btn"
               style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, height: "72px", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}
             >
               <LeftBracket />
@@ -213,7 +217,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
         {/* Fields grid */}
         <div
           className="cf-fields-grid"
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "72px" }}
+          style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "72px" }}
         >
           {/* Row 1: Name | Email */}
           <div style={fieldStyle}>
@@ -260,70 +264,69 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
           </div>
 
           {/* Row 3: Message full width + submit */}
-          <div style={{ ...fieldStyle, gridColumn: "1 / -1", display: "flex", alignItems: "flex-end", gap: "24px", marginBottom: 0 }}>
+          <div className="cf-last-field" style={{ ...fieldStyle, gridColumn: "1 / -1", display: "flex", alignItems: "flex-end", gap: "24px", marginBottom: 0 }}>
             <div style={{ flex: 1 }}>
               <div style={{ marginBottom: "8px" }}>
                 <span style={labelStyle}>How can we help?</span>
                 <span style={optionalStyle}>(optional)</span>
               </div>
-              <input
+              <textarea
                 className="cf-input"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="[ Tell us briefly what you need — project, problem, or idea. ]"
-                style={inputStyle}
+                rows={2}
+                style={{ ...inputStyle, resize: "none", lineHeight: 1.5, display: "block", overflow: "hidden" }}
               />
             </div>
 
-            {/* Submit button */}
+            {/* Submit button — hidden on mobile, shown in cf-mobile-actions instead */}
             <motion.button
+              className="cf-inline-submit"
               disabled={submitting || submitted}
               onClick={handleSubmit}
               initial="rest"
               whileHover={!submitting && !submitted ? "hover" : "rest"}
               style={{
-                background: "none",
-                border: "none",
+                background: "none", border: "none",
                 cursor: submitting || submitted ? "default" : "pointer",
-                padding: "0",
-                flexShrink: 0,
-                height: "72px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "2px",
+                padding: "0", flexShrink: 0, height: "72px",
+                display: isMobile ? "none" : "flex", alignItems: "center", justifyContent: "center", gap: "2px",
               }}
             >
               <LeftBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.75)"} />
-              <motion.div
-                variants={{ rest: { width: 36 }, hover: { width: 116 } }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}
-              >
-                <motion.span
-                  variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }}
-                  transition={{ duration: 0.15 }}
-                  style={{ position: "absolute", display: "flex", alignItems: "center", justifyContent: "center" }}
-                >
-                  {submitted || submitting ? (
-                    <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "’Space Grotesk’, sans-serif", lineHeight: 1, color: submitted ? "#02A884" : "rgba(255,255,255,0.3)" }}>
-                      {submitted ? "✓" : "·"}
-                    </span>
-                  ) : (
-                    <PickaxeIcon color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.75)"} />
-                  )}
+              <motion.div variants={{ rest: { width: 36 }, hover: { width: 116 } }} transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }} style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}>
+                <motion.span variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }} transition={{ duration: 0.15 }} style={{ position: "absolute", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  {submitted || submitting ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "’Space Grotesk’, sans-serif", lineHeight: 1, color: submitted ? "#02A884" : "rgba(255,255,255,0.3)" }}>{submitted ? "✓" : "·"}</span> : <PixelArrowIcon color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.75)"} />}
                 </motion.span>
                 {!submitting && !submitted && (
-                  <motion.span
-                    variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }}
-                    transition={{ duration: 0.2, delay: 0.18 }}
-                    style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase" as const, color: "#ffffff", whiteSpace: "nowrap" as const, position: "absolute" as const }}
-                  >
-                    ENTER
-                  </motion.span>
+                  <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }} style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase" as const, color: "#ffffff", whiteSpace: "nowrap" as const, position: "absolute" as const }}>ENTER</motion.span>
                 )}
               </motion.div>
               <RightBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.75)"} />
+            </motion.button>
+          </div>
+
+          {/* Mobile-only bottom actions row: [×] left, [SEND] right */}
+          {mobileValidationError && (
+            <p className="cf-mobile-actions" style={{ display: isMobile ? "block" : "none", gridColumn: "1 / -1", fontFamily: "'Space Grotesk', sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "8px 0 0", letterSpacing: "0.04em" }}>
+              {mobileValidationError}
+            </p>
+          )}
+          <div className="cf-mobile-actions" style={{ display: isMobile ? "flex" : "none", gridColumn: "1 / -1", justifyContent: "space-between", alignItems: "center", paddingTop: "16px" }}>
+            {/* Close/Next button */}
+            <motion.button onClick={() => onClose?.()} initial="rest" whileHover="hover" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, height: "52px", display: "flex", alignItems: "center", gap: "4px" }}>
+              <LeftBracket height={40} arm={8} />
+              <CloseXIcon size={20} />
+              <RightBracket height={40} arm={8} />
+            </motion.button>
+            {/* Submit */}
+            <motion.button disabled={submitting || submitted} onClick={handleSubmit} initial="rest" whileHover={!submitting && !submitted ? "hover" : "rest"} style={{ background: "none", border: "none", cursor: submitting || submitted ? "default" : "pointer", padding: 0, height: "52px", display: "flex", alignItems: "center", gap: "4px" }}>
+              <LeftBracket height={40} arm={8} color={submitted ? "#02A884" : "rgba(255,255,255,0.75)"} />
+              <span style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 600, fontSize: "20px", letterSpacing: "0.1em", textTransform: "uppercase", color: submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#ffffff" }}>
+                {submitted ? "✓ Sent" : submitting ? "···" : "Send"}
+              </span>
+              <RightBracket height={40} arm={8} color={submitted ? "#02A884" : "rgba(255,255,255,0.75)"} />
             </motion.button>
           </div>
 
