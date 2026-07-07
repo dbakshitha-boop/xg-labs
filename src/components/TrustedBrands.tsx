@@ -1,17 +1,14 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { fetchBrands } from "../lib/api";
 import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform, useScroll } from "motion/react";
 import imgKalki from "../assets/5.png";
 import imgSlam from "../assets/trustedbrands/slam_new.png";
 import imgArtk from "../assets/6-removebg-preview.png";
 import imgGoWheels from "../assets/4.png";
 
-const TechDecorations = ({ index }: { index: number }) => {
-  const suffixes = ['SYS', 'IO', 'AI', 'LAB', 'INC', 'NET'];
+const TechDecorations = () => {
   return (
     <>
-      <div className="absolute top-3 left-3 text-[9px] font-mono text-white/30 tracking-widest opacity-0 group-hover/item:opacity-100 transition-opacity duration-500 select-none">
-        0{index + 1} <span className="text-white/10 mx-1">/</span> {suffixes[index]}
-      </div>
       <div className="absolute bottom-3 right-3 opacity-0 group-hover/item:opacity-100 transition-opacity duration-500">
         <div className="flex gap-1">
             <div className="w-0.5 h-0.5 bg-blue-500/50 rounded-full" />
@@ -28,15 +25,35 @@ const TechDecorations = ({ index }: { index: number }) => {
   );
 };
 
+const FALLBACK_BRANDS = [
+  { name: "", image: null as any, logoW: 0, logoH: 0 },
+  { name: "KALKI HANDICRAFT", image: imgKalki, logoW: 300, logoH: 300 },
+  { name: "SLAM FITNESS", image: imgSlam, logoW: 280, logoH: 90 },
+  { name: "AR THANGA KOTTAI", image: imgArtk, logoW: 140, logoH: 140 },
+  { name: "GOWHEELS", image: imgGoWheels, logoW: 320, logoH: 320 },
+  { name: "", image: null as any, logoW: 0, logoH: 0 },
+];
+
 export function TrustedBrands() {
-  const brands = [
-    { name: "", image: null, logoW: 0, logoH: 0 },
-    { name: "KALKI HANDICRAFT", image: imgKalki, logoW: 300, logoH: 300 },
-    { name: "SLAM FITNESS", image: imgSlam, logoW: 280, logoH: 90 },
-    { name: "AR THANGA KOTTAI", image: imgArtk, logoW: 140, logoH: 140 },
-    { name: "GOWHEELS", image: imgGoWheels, logoW: 320, logoH: 320 },
-    { name: "", image: null, logoW: 0, logoH: 0 },
-  ];
+  const [brands, setBrands] = useState(FALLBACK_BRANDS);
+
+  useEffect(() => {
+    fetchBrands().then(apiBrands => {
+      if (apiBrands.length === 0) return;
+      const filled = apiBrands.slice(0, 4).map(b => ({
+        name: b.name.toUpperCase(),
+        image: b.logo || null,
+        logoW: 220,
+        logoH: 120,
+      }));
+      while (filled.length < 4) filled.push({ name: "", image: null, logoW: 0, logoH: 0 });
+      setBrands([
+        { name: "", image: null, logoW: 0, logoH: 0 },
+        ...filled,
+        { name: "", image: null, logoW: 0, logoH: 0 },
+      ]);
+    }).catch(() => {});
+  }, []);
 
   // Parallax Scroll Logic
   const sectionRef = useRef<HTMLElement>(null);
@@ -178,7 +195,7 @@ export function TrustedBrands() {
                                     className="relative z-40 w-full h-full flex items-center justify-center"
                                 >
                                     {/* Tech Decorations (Hover) */}
-                                    <TechDecorations index={index} />
+                                    <TechDecorations />
 
                                     {/* Logo */}
                                     <div className="absolute transition-all duration-500 ease-out group-hover/item:opacity-0 group-hover/item:scale-75 group-hover/item:blur-sm" style={{ width: brand.logoW, height: brand.logoH, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 1 }}>

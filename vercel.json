@@ -9,6 +9,18 @@
       "destination": "https://xg-labs-admin.vercel.app/api/articles"
     },
     {
+      "source": "/api/works/:id",
+      "destination": "https://xg-labs-admin.vercel.app/api/works/:id"
+    },
+    {
+      "source": "/api/works",
+      "destination": "https://xg-labs-admin.vercel.app/api/works"
+    },
+    {
+      "source": "/api/brands",
+      "destination": "https://xg-labs-admin.vercel.app/api/brands"
+    },
+    {
       "source": "/api/contact",
       "destination": "https://xg-labs-admin.vercel.app/api/contact"
     },

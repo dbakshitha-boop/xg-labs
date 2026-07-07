@@ -142,7 +142,7 @@ export async function subscribeEmail(email: string): Promise<void> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
   });
-  if (!res.ok) {
+  if (!res.ok && res.status !== 409) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || `Error ${res.status}`);
   }
@@ -165,4 +165,88 @@ export async function fetchArticle(id: string): Promise<Article> {
   if (!res.ok) throw new Error(`Error ${res.status}`);
   const raw: RawArticle = await res.json();
   return transformArticle(raw);
+}
+
+// ── Works (Case Studies / Portfolios) ────────────────────────────────────────
+
+export interface Work {
+  _id: string;
+  title: string;
+  slug: string;
+  heroImage: string;
+  heroSubtitle: string;
+  heroTags: string;
+  heroStats: { id: string; value: string; label: string }[];
+  role: string;
+  timeline: string;
+  excerpt: string;
+}
+
+interface RawWork {
+  id?: string;
+  _id?: string;
+  title?: string;
+  slug?: string;
+  hero?: {
+    image?: string;
+    subtitle?: string;
+    tags?: string;
+    stats?: { id: string; value: string; label: string }[];
+  };
+  infoBar?: { role?: string; timeline?: string };
+  quote?: { text?: string };
+  [key: string]: unknown;
+}
+
+function transformWork(raw: RawWork): Work {
+  return {
+    _id: (raw.id ?? raw._id ?? "") as string,
+    title: raw.title ?? "",
+    slug: raw.slug ?? "",
+    heroImage: raw.hero?.image ?? "",
+    heroSubtitle: raw.hero?.subtitle ?? "",
+    heroTags: raw.hero?.tags ?? "",
+    heroStats: raw.hero?.stats ?? [],
+    role: raw.infoBar?.role ?? "",
+    timeline: raw.infoBar?.timeline ?? "",
+    excerpt: raw.quote?.text ?? "",
+  };
+}
+
+export async function fetchWorks(): Promise<Work[]> {
+  const res = await fetch(`${API_URL}/api/works`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  const raw: RawWork[] = Array.isArray(json) ? json : [];
+  return raw.map(transformWork);
+}
+
+export async function fetchWork(id: string): Promise<Work> {
+  const res = await fetch(`${API_URL}/api/works/${id}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const raw: RawWork = await res.json();
+  return transformWork(raw);
+}
+
+// ── Brands ────────────────────────────────────────────────────────────────────
+
+export interface Brand {
+  _id: string;
+  name: string;
+  logo: string;
+  website: string;
+  isFeatured: boolean;
+}
+
+export async function fetchBrands(): Promise<Brand[]> {
+  const res = await fetch(`${API_URL}/api/brands`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  return (Array.isArray(json) ? json : []).map((b: any) => ({
+    _id: b.id ?? b._id ?? "",
+    name: b.name ?? "",
+    logo: b.logo ?? "",
+    website: b.website ?? "",
+    isFeatured: b.isFeatured ?? false,
+  }));
 }
