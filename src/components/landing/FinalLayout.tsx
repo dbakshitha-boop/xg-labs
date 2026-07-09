@@ -705,9 +705,9 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                 }}
               />
               {/* Text — slides up from bottom on hover */}
-              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
+              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: 18 }}>
                 <motion.span
-                  variants={{ rest: { y: 0 }, hover: { y: '-100%' } }}
+                  variants={{ rest: { y: 0 }, hover: { y: -18 } }}
                   transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
                   style={{
                     display: 'block',
@@ -721,7 +721,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                 </motion.span>
                 <motion.span
                   aria-hidden
-                  variants={{ rest: { y: '100%' }, hover: { y: 0 } }}
+                  variants={{ rest: { y: 18 }, hover: { y: 0 } }}
                   transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
                   style={{
                     position: 'absolute', top: 0, left: 0,

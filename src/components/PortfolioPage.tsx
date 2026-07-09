@@ -54,6 +54,10 @@ function deriveFilters(tags: string): string[] {
 const T: Transition = { duration: 1.0, ease: [0.16, 1, 0.3, 1] };
 const CAROUSEL_TRANSITION: Transition = { duration: 1.4, ease: [0.16, 1, 0.3, 1] };
 
+// Matches TopBar's horizontal inset exactly (FinalLayout.tsx: min(1224px, 100vw - 80px), centered)
+// so page content lines up with the nav bar's left/right edges instead of using a fixed padding.
+const NAV_MARGIN = "max(20px, calc((100vw - min(1224px, calc(100vw - 80px))) / 2))";
+
 // Section 0: fades out; the 2 middle images animate via layoutId — that IS the expansion
 const s0Variants = {
   initial: (dir: number) => ({ opacity: 0 }),
@@ -342,7 +346,7 @@ export function PortfolioPage() {
               style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" }}
             >
               {/* Text — takes remaining space */}
-              <div style={{ flex: 1, padding: isMobile ? "32px 40px 24px" : "32px 60px 24px", display: "flex", flexDirection: "column", alignItems: isMobile ? "flex-start" : "center", justifyContent: "center", gap: isMobile ? "20px" : "16px" }}>
+              <div style={{ flex: 1, paddingTop: isMobile ? "32px" : "32px", paddingBottom: "24px", paddingLeft: isMobile ? "40px" : NAV_MARGIN, paddingRight: isMobile ? "40px" : NAV_MARGIN, display: "flex", flexDirection: "column", alignItems: isMobile ? "flex-start" : "center", justifyContent: "center", gap: isMobile ? "20px" : "16px" }}>
                 <h1 style={{
                   fontFamily: "'Space Grotesk', sans-serif",
                   fontWeight: 600,
@@ -417,7 +421,7 @@ export function PortfolioPage() {
               animate="animate"
               exit="exit"
               transition={T}
-              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", padding: isMobile ? "40px 40px 24px" : "40px 60px 24px", gap: "24px" }}
+              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", paddingTop: "40px", paddingBottom: "24px", paddingLeft: isMobile ? "40px" : NAV_MARGIN, paddingRight: isMobile ? "40px" : NAV_MARGIN, gap: "24px" }}
             >
               
               {/* Carousel track — zero gap so no background bleeds between cards */}
@@ -481,7 +485,7 @@ export function PortfolioPage() {
             >
               <div ref={section2Ref} style={{ height: "100%", overflowY: "auto" }}>
                 {/* Padded content area */}
-                <div style={{ padding: isMobile ? "40px 40px 80px" : "40px 60px 80px" }}>
+                <div style={{ paddingTop: "40px", paddingBottom: "80px", paddingLeft: isMobile ? "40px" : NAV_MARGIN, paddingRight: isMobile ? "40px" : NAV_MARGIN }}>
                   {/* Filter pills */}
                   <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "36px" }}>
                     {FILTERS.map(f => {

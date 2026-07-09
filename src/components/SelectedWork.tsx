@@ -45,6 +45,109 @@ const MagneticButton = ({ children, className, onClick }: { children: React.Reac
   );
 };
 
+// "Let's Talk" style animated pill button (teal + black sweep fill, sliding text, arrow badge)
+const AnimatedViewButton = ({ label, onClick }: { label: string; onClick?: () => void }) => {
+  return (
+    <motion.div
+      initial="rest"
+      whileHover="hover"
+      whileTap="hover"
+      animate="rest"
+      style={{ position: "relative", height: 40, display: "inline-flex" }}
+    >
+      <button
+        aria-label={label}
+        onClick={onClick}
+        style={{
+          height: 40,
+          paddingTop: 10,
+          paddingRight: 28,
+          paddingBottom: 10,
+          paddingLeft: 14,
+          display: "inline-flex",
+          alignItems: "center",
+          background: "#ffffff",
+          borderRadius: 42,
+          border: "1px solid #9A9A9A",
+          cursor: "pointer",
+          boxSizing: "border-box",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Teal fill — leads left to right */}
+        <motion.span
+          aria-hidden
+          variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+          transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+          style={{
+            position: "absolute", inset: 0,
+            background: "#02A884",
+            transformOrigin: "left center",
+            zIndex: 1, pointerEvents: "none",
+          }}
+        />
+        {/* Black fill — trails left to right */}
+        <motion.span
+          aria-hidden
+          variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+          transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+          style={{
+            position: "absolute", inset: 0,
+            background: "#0a0a0a",
+            transformOrigin: "left center",
+            zIndex: 2, pointerEvents: "none",
+          }}
+        />
+        {/* Text — slides up from bottom on hover */}
+        <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: "1em" }}>
+          <motion.span
+            variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            style={{
+              display: "block",
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: 11, fontWeight: 600,
+              letterSpacing: "0.08em", textTransform: "uppercase",
+              whiteSpace: "nowrap", color: "#414141",
+            }}
+          >
+            {label}
+          </motion.span>
+          <motion.span
+            aria-hidden
+            variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            style={{
+              position: "absolute", top: 0, left: 0,
+              display: "block",
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: 11, fontWeight: 600,
+              letterSpacing: "0.08em", textTransform: "uppercase",
+              whiteSpace: "nowrap", color: "#ffffff",
+            }}
+          >
+            {label}
+          </motion.span>
+        </div>
+      </button>
+      {/* Circle — overlays oval's right edge */}
+      <motion.div
+        variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }}
+        transition={{ duration: 0.3 }}
+        style={{
+          position: "absolute", top: 0, right: -14,
+          width: 40, height: 40, borderRadius: 40,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 4,
+        }}
+      >
+        <ArrowRight size={16} color="#ffffff" />
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const projects = [
   {
     id: 1,
@@ -179,14 +282,7 @@ export function SelectedWork() {
           <h2 className="text-2xl font-bold uppercase tracking-tight text-black font-space">
             Selected Work
           </h2>
-          <button className="group flex items-center gap-2 px-4 py-2 rounded-full border border-black hover:bg-black hover:text-white transition-colors duration-300">
-            <span className="text-xs font-bold uppercase tracking-wide font-space">
-              View All
-            </span>
-            <div className="bg-black text-white rounded-full p-1 group-hover:bg-white group-hover:text-black transition-colors">
-              <ArrowRight size={12} />
-            </div>
-          </button>
+          <AnimatedViewButton label="View All" onClick={() => navigate('/portfolio')} />
         </div>
 
         {projects.map((project, i) => (
@@ -204,7 +300,7 @@ export function SelectedWork() {
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-3xl font-bold text-[#414141] font-space leading-tight mb-2">
+                  <h3 className="text-3xl font-bold text-[#414141] font-space leading-tight mb-2 uppercase">
                     {project.title.join(" ")}
                   </h3>
                   <div className="flex flex-col">

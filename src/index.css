@@ -1,6 +1,90 @@
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;800&family=Sora:wght@100..800&family=Space+Grotesk:wght@300..700&family=Playfair+Display:wght@400;600;700;900&display=swap");
-@import url("https://fonts.cdnfonts.com/css/cal-sans");
-@import url("https://api.fontshare.com/v2/css?f[]=humane@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;800&family=Space+Grotesk:wght@300..700&family=Playfair+Display:wght@400;600;700;900&display=swap");
+
+@font-face {
+  font-family: 'Sora';
+  src: url('./assets/fonts/Sora/Sora-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Cal Sans';
+  src: url('./assets/fonts/Cal_Sans/CalSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Humane';
+  src: url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Thin.woff2') format('woff2'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Thin.woff') format('woff'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Humane';
+  src: url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-ExtraLight.woff2') format('woff2'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-ExtraLight.woff') format('woff'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Humane';
+  src: url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Light.woff2') format('woff2'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Light.woff') format('woff'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Humane';
+  src: url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Regular.woff2') format('woff2'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Regular.woff') format('woff'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Humane';
+  src: url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Medium.woff2') format('woff2'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Medium.woff') format('woff'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Humane';
+  src: url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-SemiBold.woff2') format('woff2'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-SemiBold.woff') format('woff'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Humane';
+  src: url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Bold.woff2') format('woff2'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Bold.woff') format('woff'),
+       url('./assets/fonts/HUMANE Typeface/Web-TT/Humane-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 /*! tailwindcss v4.1.3 | MIT License | https://tailwindcss.com */
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {

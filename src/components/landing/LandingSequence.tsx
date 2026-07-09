@@ -9,6 +9,7 @@ import { useContactForm } from "../ContactFormContext";
 import { ContactFormContent } from "../ContactFormOverlay";
 import CardImages from "../../imports/CardImages";
 import mobileLogo from "../../assets/logo.jpeg";
+import mobileMenuLogo from "../../assets/2-cropped.png";
 
 // Portfolio images for mobile hero
 import mImg_cup      from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
@@ -126,14 +127,14 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
     // Lock Body Scroll when in Horizontal Mode
     useEffect(() => {
-        if (isMobile) {
-            document.body.style.overflow = "auto";
-            return;
-        }
-
         if (!showContent) {
             document.body.style.overflow = "hidden";
             return () => { document.body.style.overflow = "auto"; };
+        }
+
+        if (isMobile) {
+            document.body.style.overflow = "auto";
+            return;
         }
 
         if (scrollStep < 3) {
@@ -253,6 +254,29 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
         };
     };
 
+    // Simplified container animation for the mobile intro overlay — mobile has no
+    // horizontal-scroll destination to shift toward, so layoutShift/logoExiting just
+    // collapse into the same "fill the screen" terminal state as fullScreen.
+    const getMobileIntroContainerAnimate = () => {
+        const easeOut: [number, number, number, number] = [0.76, 0, 0.24, 1];
+        if (fullScreen || layoutShift || logoExiting) {
+            return {
+                height: "100dvh", width: "100vw", left: "50%", top: "50%", x: "-50%", y: "-50%",
+                transition: { duration: 1, ease: easeOut }
+            };
+        }
+        if (containerExpanded) {
+            return {
+                height: isTablet ? 260 : 200, width: "100%", left: "50%", top: "50%", x: "-50%", y: "-50%",
+                transition: { duration: 0.6, ease: easeOut }
+            };
+        }
+        return { height: 0, width: "100%", left: "50%", top: "50%", x: "-50%", y: "-50%" };
+    };
+
+    // Clamp so the 600px-wide logo mark fits ~78% of the viewport width.
+    const logoScale = Math.min(0.85, Math.max(0.4, (viewWidth * 0.78) / 600));
+
     // ── Mobile layout — completely bypasses the JS horizontal scroll animation ──
     if (isMobile) {
         const NAV_ITEMS = ["Our Edge", "Services", "Portfolio", "Blog", "Contact"] as const;
@@ -275,6 +299,28 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
         return (
             <div style={{ background: "#f7f8fa", position: "relative" }}>
 
+                {/* ── XG Labs logo-formation intro (mobile-scaled version of the desktop intro) ── */}
+                <AnimatePresence>
+                    {!showContent && (
+                        <motion.div
+                            key="mobile-intro"
+                            initial={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                            style={{ position: "fixed", inset: 0, zIndex: 500, background: "#060606", overflow: "hidden" }}
+                        >
+                            <motion.div
+                                initial={{ height: 0, width: "100%", left: "50%", top: "50%", x: "-50%", y: "-50%" }}
+                                animate={getMobileIntroContainerAnimate()}
+                                className="absolute bg-[#f7f8fa]"
+                                style={{ overflow: "hidden" }}
+                            >
+                                <LogoGroup animateState={getLogoState()} scale={logoScale} />
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 {/* ── Slide-in sidebar menu ── */}
                 <AnimatePresence>
                     {mobileMenuOpen && (
@@ -287,15 +333,13 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                         >
                             {/* Sidebar header */}
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-                                <img alt="XG Labs" style={{ height: "48px", width: "auto", display: "block" }} src={mobileLogo} />
+                                <img alt="XG Labs" style={{ height: "42px", width: "auto", display: "block" }} src={mobileMenuLogo} />
                                 <button
                                     onClick={() => setMobileMenuOpen(false)}
                                     aria-label="Close menu"
-                                    style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.08)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}
+                                    style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", padding: 0, color: "#fff", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "26px", letterSpacing: "0.02em" }}
                                 >
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                    </svg>
+                                    [X]
                                 </button>
                             </div>
 

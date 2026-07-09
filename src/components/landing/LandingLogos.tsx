@@ -254,21 +254,26 @@ export function Logo() {
     );
 }
 
-export function LogoGroup({ animateState }: { animateState?: string }) {
+export function LogoGroup({ animateState, scale = 1 }: { animateState?: string; scale?: number }) {
   return (
-    <motion.div 
-        className="absolute inset-0" 
-        variants={containerVariants}
-        initial="hidden"
-        animate={animateState}
+    <div
+        className="absolute inset-0"
+        style={scale !== 1 ? { transform: `scale(${scale})`, transformOrigin: "center center" } : undefined}
     >
-      <Logo />
-      <Logo1 />
-      <Logo2 />
-      <Logo3 />
-      <Logo4 />
-      <Logo5 />
-      <Logo6 />
-    </motion.div>
+      <motion.div
+          className="absolute inset-0"
+          variants={containerVariants}
+          initial="hidden"
+          animate={animateState}
+      >
+        <Logo />
+        <Logo1 />
+        <Logo2 />
+        <Logo3 />
+        <Logo4 />
+        <Logo5 />
+        <Logo6 />
+      </motion.div>
+    </div>
   );
 }
