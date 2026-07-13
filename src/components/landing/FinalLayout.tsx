@@ -419,7 +419,7 @@ const SERVICE_IMG_MAP: Record<string, string> = {
   influencer,
 };
 
-export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk = false }: { dark?: boolean; containerWidth?: string; logoSrc?: string; refinedLetsTalk?: boolean }) {
+export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk = false, barHeight = 74 }: { dark?: boolean; containerWidth?: string; logoSrc?: string; refinedLetsTalk?: boolean; barHeight?: number }) {
   const navigate = useNavigate();
   const [serviceOpen, setServiceOpen] = useState(false);
   const [hoveredSlug, setHoveredSlug] = useState<string>("performance-marketing");
@@ -532,7 +532,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
       })()}
     >
       {/* Main bar row */}
-      <div className="flex items-center justify-between px-[24px] py-[8px] h-[74px]">
+      <div className="flex items-center justify-between px-[24px] py-[8px]" style={{ height: barHeight }}>
         <div className="shrink-0 cursor-pointer" onClick={() => navigate("/", { state: { skipLoading: true } })} onMouseEnter={() => setServiceOpen(false)}>
           {logoSrc ? (
             <img alt="Xg Labs" src={logoSrc} style={{ height: "44px", width: "auto", display: "block" }} />
