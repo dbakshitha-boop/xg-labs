@@ -1,49 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
-import { motion, useScroll, useSpring, useMotionValue } from "motion/react";
+import { motion, useScroll } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import imgC5 from "../assets/selectedwork_SLAM.jpeg";
 import imgC6 from "../assets/selectedwork_KH2.png";
 import imgC7 from "../assets/selectedwork_Gowheels.jpeg";
 import { useCursor } from "./ui/CustomCursor";
-
-// Magnetic Button Component
-const MagneticButton = ({ children, className, onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) => {
-  const ref = useRef<HTMLButtonElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const springConfig = { damping: 15, stiffness: 150, mass: 0.1 };
-  const smoothX = useSpring(x, springConfig);
-  const smoothY = useSpring(y, springConfig);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e;
-    const { left, top, width, height } = ref.current!.getBoundingClientRect();
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
-    x.set((clientX - centerX) * 0.3); // Magnetic strength
-    y.set((clientY - centerY) * 0.3);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.button
-      ref={ref}
-      className={className}
-      onClick={onClick}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ x: smoothX, y: smoothY }}
-    >
-      {children}
-    </motion.button>
-  );
-};
 
 // "Let's Talk" style animated pill button (teal + black sweep fill, sliding text, arrow badge)
 const AnimatedViewButton = ({ label, onClick }: { label: string; onClick?: () => void }) => {
@@ -53,16 +15,16 @@ const AnimatedViewButton = ({ label, onClick }: { label: string; onClick?: () =>
       whileHover="hover"
       whileTap="hover"
       animate="rest"
-      style={{ position: "relative", height: 40, display: "inline-flex" }}
+      style={{ position: "relative", height: 36, display: "inline-flex" }}
     >
       <button
         aria-label={label}
         onClick={onClick}
         style={{
-          height: 40,
-          paddingTop: 10,
-          paddingRight: 28,
-          paddingBottom: 10,
+          height: 36,
+          paddingTop: 9,
+          paddingRight: 26,
+          paddingBottom: 9,
           paddingLeft: 14,
           display: "inline-flex",
           alignItems: "center",
@@ -79,7 +41,7 @@ const AnimatedViewButton = ({ label, onClick }: { label: string; onClick?: () =>
         <motion.span
           aria-hidden
           variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-          transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+          transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
           style={{
             position: "absolute", inset: 0,
             background: "#02A884",
@@ -91,7 +53,7 @@ const AnimatedViewButton = ({ label, onClick }: { label: string; onClick?: () =>
         <motion.span
           aria-hidden
           variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-          transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
           style={{
             position: "absolute", inset: 0,
             background: "#0a0a0a",
@@ -102,12 +64,11 @@ const AnimatedViewButton = ({ label, onClick }: { label: string; onClick?: () =>
         {/* Text — slides up from bottom on hover */}
         <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: "1em" }}>
           <motion.span
-            variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
-            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
             style={{
               display: "block",
-              fontFamily: "'Poppins', sans-serif",
-              fontSize: 11, fontWeight: 600,
+              fontFamily: "'Cal Sans', sans-serif",
+              fontSize: 14, fontWeight: 600,
               letterSpacing: "0.08em", textTransform: "uppercase",
               whiteSpace: "nowrap", color: "#414141",
             }}
@@ -116,13 +77,12 @@ const AnimatedViewButton = ({ label, onClick }: { label: string; onClick?: () =>
           </motion.span>
           <motion.span
             aria-hidden
-            variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
-            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
             style={{
               position: "absolute", top: 0, left: 0,
               display: "block",
-              fontFamily: "'Poppins', sans-serif",
-              fontSize: 11, fontWeight: 600,
+              fontFamily: "'Cal Sans', sans-serif",
+              fontSize: 14, fontWeight: 600,
               letterSpacing: "0.08em", textTransform: "uppercase",
               whiteSpace: "nowrap", color: "#ffffff",
             }}
@@ -134,15 +94,17 @@ const AnimatedViewButton = ({ label, onClick }: { label: string; onClick?: () =>
       {/* Circle — overlays oval's right edge */}
       <motion.div
         variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.18 }}
         style={{
-          position: "absolute", top: 0, right: -14,
-          width: 40, height: 40, borderRadius: 40,
+          position: "absolute", top: 2, right: -10,
+          width: 32, height: 32, borderRadius: 32,
           display: "flex", alignItems: "center", justifyContent: "center",
           zIndex: 4,
         }}
       >
-        <ArrowRight size={16} color="#ffffff" />
+        <motion.div variants={{ rest: { color: "#ffffff" }, hover: { color: "#000000" } }} transition={{ duration: 0.18 }} style={{ display: "flex" }}>
+          <ArrowRight size={20} />
+        </motion.div>
       </motion.div>
     </motion.div>
   );
@@ -286,7 +248,7 @@ export function SelectedWork() {
         </div>
 
         {projects.map((project, i) => (
-          <div key={project.id} className="flex flex-col gap-6">
+          <div key={project.id} className="flex flex-col gap-6 cursor-pointer" onClick={() => navigate('/portfolio')}>
             {/* Mobile Image */}
             <div className="w-full aspect-[4/5] rounded-[12px] overflow-hidden shadow-lg">
               <img 
@@ -340,14 +302,7 @@ export function SelectedWork() {
             <h2 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-black font-space">
               Selected Work
             </h2>
-            <MagneticButton className="group flex items-center gap-2 px-6 py-2 rounded-full border border-black hover:bg-black hover:text-white transition-colors duration-300 !cursor-none" onClick={() => navigate('/portfolio')}>
-              <span className="text-sm font-bold uppercase tracking-wide font-space">
-                View Work
-              </span>
-              <div className="bg-black text-white rounded-full p-1 group-hover:bg-white group-hover:text-black transition-colors">
-                <ArrowRight size={14} />
-              </div>
-            </MagneticButton>
+            <AnimatedViewButton label="View Work" onClick={() => navigate('/portfolio')} />
           </div>
 
           {/* Main Content Grid */}
@@ -418,8 +373,9 @@ export function SelectedWork() {
             </div>
 
             {/* Center Column: Image Stack */}
-            <div 
-                className="lg:flex-1 lg:min-w-[280px] lg:max-w-[400px] xl:max-w-[480px] flex justify-center items-center order-2 h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px]"
+            <div
+                className="lg:flex-1 lg:min-w-[280px] lg:max-w-[400px] xl:max-w-[480px] flex justify-center items-center order-2 h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] cursor-pointer"
+                onClick={() => navigate('/portfolio')}
                 onMouseEnter={() => {
                     setVariant('button');
                     setText('VIEW');

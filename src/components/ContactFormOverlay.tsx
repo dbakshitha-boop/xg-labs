@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { submitContactForm } from "../lib/api";
+import arrowIcon from "../assets/arrow-icon.png";
+import closeIcon from "../assets/close-icon.png";
 
 
 function LeftBracket({ height = 52, arm = 12, stroke = 2, color = "rgba(255,255,255,0.75)" }: { height?: number; arm?: number; stroke?: number; color?: string }) {
@@ -19,33 +21,15 @@ function RightBracket({ height = 52, arm = 12, stroke = 2, color = "rgba(255,255
   );
 }
 
-function CloseXIcon({ size = 22, color = "rgba(255,255,255,0.75)" }: { size?: number; color?: string }) {
+function CloseXIcon({ size = 30 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
-      <line x1="20" y1="20" x2="80" y2="80" stroke={color} strokeWidth={14} strokeLinecap="square" />
-      <line x1="80" y1="20" x2="20" y2="80" stroke={color} strokeWidth={14} strokeLinecap="square" />
-    </svg>
-  );
-}
-
-function PixelArrowIcon({ size = 36, color = "rgba(255,255,255,0.75)" }: { size?: number; color?: string }) {
-  // Diagonal shaft running all the way to the top-right arrowhead corner
-  return (
-    <svg width={size} height={size} viewBox="0 0 22 22" style={{ display: "block" }}>
-      {/* Shaft: bottom-left corner → centre of arrowhead corner pixel */}
-      <line x1={1} y1={21} x2={14.5} y2={4.5} stroke={color} strokeWidth={1.5} strokeLinecap="square" />
-      {/* Pixelated L-corner arrowhead at top-right */}
-      {/* Horizontal arm ← */}
-      <rect x={4}  y={3} width={3} height={3} fill={color} />
-      <rect x={7}  y={3} width={3} height={3} fill={color} />
-      <rect x={10} y={3} width={3} height={3} fill={color} />
-      <rect x={13} y={3} width={3} height={3} fill={color} />
-      {/* Vertical arm ↓ */}
-      <rect x={13} y={6}  width={3} height={3} fill={color} />
-      <rect x={13} y={9}  width={3} height={3} fill={color} />
-      <rect x={13} y={12} width={3} height={3} fill={color} />
-      <rect x={13} y={15} width={3} height={3} fill={color} />
-    </svg>
+    <img
+      src={closeIcon}
+      alt=""
+      width={size}
+      height={size}
+      style={{ display: "block", filter: "brightness(0) invert(1)", opacity: 0.75 }}
+    />
   );
 }
 
@@ -93,15 +77,17 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
     fontFamily: "’Space Grotesk’, sans-serif",
     fontWeight: 300,
     fontSize: "clamp(18px, 2.2vw, 32px)",
+    lineHeight: 1,
     color: "#ffffff",
     letterSpacing: "-0.01em",
     caretColor: "#ffffff",
     width: "100%",
+    display: "block",
   };
 
   const labelStyle: React.CSSProperties = {
     fontFamily: "’Cal Sans’, sans-serif",
-    fontWeight: 700,
+    fontWeight: 400,
     fontSize: "11px",
     letterSpacing: "0.14em",
     textTransform: "uppercase",
@@ -122,7 +108,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
 
   const fieldStyle: React.CSSProperties = {
     borderBottom: "1px solid #F7F8FA",
-    paddingBottom: "10px",
+    paddingBottom: "4px",
     marginBottom: isMobile ? "28px" : "72px",
   };
 
@@ -149,7 +135,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
   return (
     <>
       <style>{`
-        .cf-input::placeholder { color: #414141; font-family: 'Sora', sans-serif; }
+        .cf-input::placeholder { color: #414141; font-family: 'Sora', sans-serif; font-weight: 400; }
         @media (max-width: 1023px) {
           .cf-fields-grid { grid-template-columns: 1fr !important; }
           .cf-fields-grid > div { margin-bottom: 28px !important; }
@@ -178,7 +164,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
           </h2>
 
           <div className="cf-header-right" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "24px", paddingTop: "20px" }}>
-            <p style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 400, fontSize: "18px", color: "rgba(255,255,255,0.4)", margin: 0, lineHeight: 1.6, maxWidth: "240px" }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "18px", color: "#6E6E6E", margin: 0, lineHeight: 1.6, maxWidth: "240px" }}>
               {"We’d love to hear what you’re building."}
             </p>
             <motion.button
@@ -188,9 +174,9 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
               className="cf-close-btn"
               style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, height: "72px", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}
             >
-              <LeftBracket />
+              <LeftBracket color="#A3A3A3" />
               <motion.div
-                variants={{ rest: { width: 22 }, hover: { width: 102 } }}
+                variants={{ rest: { width: 30 }, hover: { width: 102 } }}
                 transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}
               >
@@ -209,7 +195,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
                   CLOSE
                 </motion.span>
               </motion.div>
-              <RightBracket />
+              <RightBracket color="#A3A3A3" />
             </motion.button>
           </div>
         </div>
@@ -264,7 +250,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
           </div>
 
           {/* Row 3: Message full width + submit */}
-          <div className="cf-last-field" style={{ ...fieldStyle, gridColumn: "1 / -1", display: "flex", alignItems: "flex-end", gap: "24px", marginBottom: 0 }}>
+          <div className="cf-last-field" style={{ ...fieldStyle, gridColumn: "1 / -1", display: "flex", alignItems: "center", gap: "24px", marginBottom: 0 }}>
             <div style={{ flex: 1 }}>
               <div style={{ marginBottom: "8px" }}>
                 <span style={labelStyle}>How can we help?</span>
@@ -275,8 +261,8 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="[ Tell us briefly what you need — project, problem, or idea. ]"
-                rows={2}
-                style={{ ...inputStyle, resize: "none", lineHeight: 1.5, display: "block", overflow: "hidden" }}
+                rows={1}
+                style={{ ...inputStyle, resize: "none", display: "block", overflow: "hidden" }}
               />
             </div>
 
@@ -294,16 +280,16 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
                 display: isMobile ? "none" : "flex", alignItems: "center", justifyContent: "center", gap: "2px",
               }}
             >
-              <LeftBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.75)"} />
-              <motion.div variants={{ rest: { width: 36 }, hover: { width: 116 } }} transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }} style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}>
+              <LeftBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#F7F8FA"} />
+              <motion.div variants={{ rest: { width: 46 }, hover: { width: 116 } }} transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }} style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}>
                 <motion.span variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }} transition={{ duration: 0.15 }} style={{ position: "absolute", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {submitted || submitting ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "’Space Grotesk’, sans-serif", lineHeight: 1, color: submitted ? "#02A884" : "rgba(255,255,255,0.3)" }}>{submitted ? "✓" : "·"}</span> : <PixelArrowIcon color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.75)"} />}
+                  {submitted || submitting ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "’Space Grotesk’, sans-serif", lineHeight: 1, color: submitted ? "#02A884" : "rgba(255,255,255,0.3)" }}>{submitted ? "✓" : "·"}</span> : <img src={arrowIcon} alt="" width={46} height={46} style={{ display: "block", filter: "brightness(0) invert(1)", opacity: 0.75 }} />}
                 </motion.span>
                 {!submitting && !submitted && (
-                  <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }} style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase" as const, color: "#ffffff", whiteSpace: "nowrap" as const, position: "absolute" as const }}>ENTER</motion.span>
+                  <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }} style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase" as const, color: "#02A884", whiteSpace: "nowrap" as const, position: "absolute" as const }}>ENTER</motion.span>
                 )}
               </motion.div>
-              <RightBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.75)"} />
+              <RightBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#F7F8FA"} />
             </motion.button>
           </div>
 
@@ -316,17 +302,17 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
           <div className="cf-mobile-actions" style={{ display: isMobile ? "flex" : "none", gridColumn: "1 / -1", justifyContent: "space-between", alignItems: "center", paddingTop: "16px" }}>
             {/* Close/Next button */}
             <motion.button onClick={() => onClose?.()} initial="rest" whileHover="hover" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, height: "52px", display: "flex", alignItems: "center", gap: "4px" }}>
-              <LeftBracket height={40} arm={8} />
-              <CloseXIcon size={20} />
-              <RightBracket height={40} arm={8} />
+              <LeftBracket height={40} arm={8} color="#A3A3A3" />
+              <CloseXIcon size={26} />
+              <RightBracket height={40} arm={8} color="#A3A3A3" />
             </motion.button>
             {/* Submit */}
             <motion.button disabled={submitting || submitted} onClick={handleSubmit} initial="rest" whileHover={!submitting && !submitted ? "hover" : "rest"} style={{ background: "none", border: "none", cursor: submitting || submitted ? "default" : "pointer", padding: 0, height: "52px", display: "flex", alignItems: "center", gap: "4px" }}>
-              <LeftBracket height={40} arm={8} color={submitted ? "#02A884" : "rgba(255,255,255,0.75)"} />
+              <LeftBracket height={40} arm={8} color={submitted ? "#02A884" : "#F7F8FA"} />
               <span style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 600, fontSize: "20px", letterSpacing: "0.1em", textTransform: "uppercase", color: submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#ffffff" }}>
                 {submitted ? "✓ Sent" : submitting ? "···" : "Send"}
               </span>
-              <RightBracket height={40} arm={8} color={submitted ? "#02A884" : "rgba(255,255,255,0.75)"} />
+              <RightBracket height={40} arm={8} color={submitted ? "#02A884" : "#F7F8FA"} />
             </motion.button>
           </div>
 

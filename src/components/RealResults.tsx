@@ -112,9 +112,9 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             logoSize: 180,
             logoMobileMarginTop: -80,
             logoMobileMarginLeft: -50,
-            logoDesktopSize: 110,
-            logoDesktopMarginTop: -15,
-            logoDesktopMarginLeft: -10,
+            logoDesktopSize: 200,
+            logoDesktopMarginTop: -68,
+            logoDesktopMarginLeft: -40,
 
         },
         {
@@ -154,7 +154,8 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             role: "CEO, SML CARS",
             logo: imgLogo2,
             logoSize: 110,
-            logoDesktopMarginTop: -15,
+            logoDesktopSize: 130,
+            logoDesktopMarginTop: -35,
 
         },
     ];
@@ -224,7 +225,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
                             delay: index * 0.5
                         }}
                     >
-                        <card.component isMobile={false} quote={card.quote} name={card.name} role={card.role} logo={card.logo} logoSize={card.logoSize} />
+                        <card.component isMobile={false} quote={card.quote} name={card.name} role={card.role} logo={card.logo} logoSize={card.logoSize} logoDesktopSize={card.logoDesktopSize} logoDesktopMarginTop={card.logoDesktopMarginTop} logoDesktopMarginLeft={card.logoDesktopMarginLeft} />
                     </motion.div>
                 </motion.div>
             ))}
@@ -267,7 +268,7 @@ const CardContent = ({ name, role, quote, logo, logoSize, isMobile, logoMobileMa
     </>
 );
 
-const WithHoverLogo = ({ children, isMobile, logo }: { children: React.ReactNode; isMobile: boolean; logo: string }) => {
+const WithHoverLogo = ({ children, isMobile, logo, logoScale = 1 }: { children: React.ReactNode; isMobile: boolean; logo: string; logoScale?: number }) => {
     if (isMobile) {
         return (
             <div className="relative w-full h-[400px] md:h-[450px]">
@@ -314,7 +315,7 @@ const WithHoverLogo = ({ children, isMobile, logo }: { children: React.ReactNode
                     }
                 }}
             >
-                <img src={logo} alt="Logo" className="w-full h-full object-cover" />
+                <img src={logo} alt="Logo" className="w-full h-full object-cover" style={{ transform: `scale(${logoScale})` }} />
             </motion.div>
 
             {/* Main Card Content */}
@@ -340,7 +341,7 @@ interface CardProps {
 }
 
 const CardBlue = ({ isMobile = false, name, role, quote, logo, logoSize, logoMobileMarginTop, logoMobileMarginLeft, logoDesktopSize, logoDesktopMarginTop, logoDesktopMarginLeft }: CardProps) => (
-    <WithHoverLogo isMobile={isMobile} logo={logo}>
+    <WithHoverLogo isMobile={isMobile} logo={logo} logoScale={0.75}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
@@ -353,7 +354,7 @@ const CardBlue = ({ isMobile = false, name, role, quote, logo, logoSize, logoMob
 );
 
 const CardPurple = ({ isMobile = false, name, role, quote, logo, logoSize, logoMobileMarginTop, logoMobileMarginLeft, logoDesktopSize, logoDesktopMarginTop, logoDesktopMarginLeft }: CardProps) => (
-    <WithHoverLogo isMobile={isMobile} logo={logo}>
+    <WithHoverLogo isMobile={isMobile} logo={logo} logoScale={1.6}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
@@ -366,7 +367,7 @@ const CardPurple = ({ isMobile = false, name, role, quote, logo, logoSize, logoM
 );
 
 const CardWhite = ({ isMobile = false, name, role, quote, logo, logoSize, logoMobileMarginTop, logoMobileMarginLeft, logoDesktopSize, logoDesktopMarginTop, logoDesktopMarginLeft }: CardProps) => (
-    <WithHoverLogo isMobile={isMobile} logo={logo}>
+    <WithHoverLogo isMobile={isMobile} logo={logo} logoScale={0.75}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />
@@ -379,7 +380,7 @@ const CardWhite = ({ isMobile = false, name, role, quote, logo, logoSize, logoMo
 );
 
 const CardGreen = ({ isMobile = false, name, role, quote, logo, logoSize, logoMobileMarginTop, logoMobileMarginLeft, logoDesktopSize, logoDesktopMarginTop, logoDesktopMarginLeft }: CardProps) => (
-    <WithHoverLogo isMobile={isMobile} logo={logo}>
+    <WithHoverLogo isMobile={isMobile} logo={logo} logoScale={0.95}>
         <div className="w-full h-full relative">
             <div className="absolute inset-[22%] opacity-10 pointer-events-none rounded-[12px] overflow-hidden">
                 <img src={imgLogo} alt="" className="w-full h-full object-cover" />

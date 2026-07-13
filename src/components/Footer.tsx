@@ -25,7 +25,7 @@ const SERVICES: { label: string; index: number }[] = [
 ];
 
 const linkStyle: React.CSSProperties = {
-  fontFamily: "'Space Grotesk', sans-serif",
+  fontFamily: "'Sora', sans-serif",
   fontWeight: 400,
   fontSize: "clamp(14px, 1.1vw, 16px)",
   color: "rgba(255,255,255,0.55)",
@@ -104,7 +104,7 @@ export function Footer() {
           .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 32px 20px !important; }
           .footer-grid > div:first-child { grid-column: 1 / -1 !important; padding-bottom: 24px !important; margin-bottom: 8px !important; }
           .footer-bottom-bar { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; padding: 24px 20px !important; }
-          .footer-social-block { align-items: flex-start !important; width: 100% !important; }
+          .footer-center-block { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; width: 100% !important; margin-left: 0 !important; text-align: left !important; }
           .footer-social-icons { width: 100% !important; justify-content: space-between !important; gap: 0 !important; }
           .footer-bottom-bar-legal { align-items: center !important; width: 100% !important; text-align: center !important; }
           .footer-connect-details a, .footer-connect-details p { font-size: 18px !important; line-height: 1.4 !important; }
@@ -238,29 +238,33 @@ export function Footer() {
       <div
         className="footer-bottom-bar"
         style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
+          alignItems: "center",
           padding: "4px 48px 12px",
           gap: "24px",
         }}
       >
-        {/* Logo + Powered by */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
-          <div style={{ overflow: "hidden", height: "58px", width: "170px", marginBottom: "4px" }}>
-            <img
-              src={xgLogo}
-              alt="Xg Labs"
-              style={{ height: "150px", width: "150px", marginTop: "-46px", marginLeft: "-16px", display: "block" }}
-            />
-          </div>
+        {/* Logo */}
+        <div style={{ overflow: "hidden", height: "58px", width: "170px", justifySelf: "start" }}>
+          <img
+            src={xgLogo}
+            alt="Xg Labs"
+            style={{ height: "150px", width: "150px", marginTop: "-46px", marginLeft: "-16px", display: "block" }}
+          />
+        </div>
+
+        {/* Center: Powered by + social icons */}
+        <div className="footer-center-block" style={{ display: "flex", alignItems: "center", gap: "24px", justifySelf: "center", marginLeft: "40px" }}>
           <span
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 400,
-              fontSize: "13px",
+              fontFamily: "'Sora', sans-serif",
+              fontWeight: 200,
+              fontSize: "16px",
               color: "rgba(255,255,255,0.3)",
               letterSpacing: "0.04em",
+              whiteSpace: "nowrap",
+              textAlign: "left",
             }}
           >
             Powered by{" "}
@@ -279,12 +283,9 @@ export function Footer() {
               Brandopedia
             </a>
           </span>
-        </div>
 
-        {/* Right side: social icons + legal */}
-        <div className="footer-social-block" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "12px" }}>
           {/* Social icons */}
-          <div className="footer-social-icons" style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+          <div className="footer-social-icons" style={{ display: "flex", alignItems: "center", gap: "20px" }}>
             {[
               { icon: <IconInstagram />, href: "https://www.instagram.com/xglabs/", label: "Instagram" },
               { icon: <IconLinkedIn />, href: "https://www.linkedin.com/company/xg-labs", label: "LinkedIn" },
@@ -310,12 +311,13 @@ export function Footer() {
               </a>
             ))}
           </div>
+        </div>
 
-          {/* Legal */}
-          <div
-            className="footer-bottom-bar-legal"
-            style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px" }}
-          >
+        {/* Right side: legal */}
+        <div
+          className="footer-bottom-bar-legal"
+          style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "4px", justifySelf: "end" }}
+        >
             <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "12px", color: "#9A9A9A", margin: 0 }}>
               © 2025 XG Labs. All rights reserved.
             </p>
@@ -338,7 +340,6 @@ export function Footer() {
                 Terms of Use
               </span>
             </p>
-          </div>
         </div>
       </div>
 

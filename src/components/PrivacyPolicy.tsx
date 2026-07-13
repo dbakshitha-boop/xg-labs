@@ -79,7 +79,7 @@ export function PrivacyPolicy() {
         }}
       >
         <button
-          onClick={() => navigate("/", { state: { skipLoading: true } })}
+          onClick={() => navigate(-1)}
           style={{
             display: "flex",
             alignItems: "center",

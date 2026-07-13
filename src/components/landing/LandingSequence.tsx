@@ -50,6 +50,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     const [viewWidth, setViewWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1440);
     const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 1024 : false);
     const [isTablet, setIsTablet] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 768 && window.innerWidth < 1024 : false);
+    const [talkHovered, setTalkHovered] = useState(false);
     const whatMakesUsRef = useRef<HTMLDivElement>(null);
     const mobileFormPrevRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -189,6 +190,21 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     const handlePrevScroll = () => {
         setScrollStep(prev => Math.max(prev - 1, 0));
     };
+
+    // Once scrollStep reaches 3, normal document scrolling takes over — track whether
+    // the user has scrolled past the hero sequence so the "previous" button (meant only
+    // for the embedded contact panel at the top) doesn't stay pinned over the rest of the page.
+    const [scrolledPastHero, setScrolledPastHero] = useState(false);
+    useEffect(() => {
+        if (!(showContent && scrollStep === 3)) {
+            setScrolledPastHero(false);
+            return;
+        }
+        const onScroll = () => setScrolledPastHero(window.scrollY > 10);
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, [showContent, scrollStep]);
 
     const getLogoState = () => {
         if (logoExiting) return "exit";
@@ -363,7 +379,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                             <div style={{ padding: "16px 24px 48px" }}>
                                 <button
                                     onClick={() => { setMobileMenuOpen(false); openContactForm(); }}
-                                    style={{ width: "100%", padding: "16px", background: "#fff", color: "#000", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
+                                    style={{ width: "100%", padding: "16px", background: "#fff", color: "#414141", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
                                 >
                                     Let's Talk
                                 </button>
@@ -378,29 +394,31 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                     <div style={{ display: "flex", alignItems: "center", gap: isTablet ? 22 : 10 }}>
                         {/* Let's Talk button — tablet only */}
                         {isTablet && (
-                            <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: 'relative', height: 36, display: 'inline-flex' }}>
-                                <button
-                                    aria-label="Let's talk"
-                                    onClick={() => openContactForm()}
-                                    style={{ height: 36, paddingTop: 8, paddingRight: 26, paddingBottom: 8, paddingLeft: 12, display: 'inline-flex', alignItems: 'center', background: '#ffffff', borderRadius: 36, border: '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}
+                            <motion.button
+                                aria-label="Let's talk"
+                                onClick={() => openContactForm()}
+                                onHoverStart={() => setTalkHovered(true)}
+                                onHoverEnd={() => setTalkHovered(false)}
+                                style={{ height: 36, display: 'inline-flex', alignItems: 'center', background: '#ffffff', borderRadius: 36, border: '1px solid #9A9A9A', cursor: 'pointer', padding: 0, overflow: 'hidden' }}
+                            >
+                                <motion.span
+                                    animate={{ backgroundColor: talkHovered ? '#0a0a0a' : 'transparent', color: talkHovered ? '#ffffff' : '#414141' }}
+                                    transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                                    style={{ height: '100%', display: 'flex', alignItems: 'center', padding: '0 14px', fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}
                                 >
-                                    <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
-                                    <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
-                                    <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
-                                        <motion.span variants={{ rest: { y: 0 }, hover: { y: '-100%' } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ display: 'block', fontFamily: "'Poppins', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
-                                            Let's Talk
-                                        </motion.span>
-                                        <motion.span aria-hidden variants={{ rest: { y: '100%' }, hover: { y: 0 } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Poppins', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
-                                            Let's Talk
-                                        </motion.span>
-                                    </div>
-                                </button>
-                                <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.3 }} style={{ position: 'absolute', top: 0, right: -11, width: 36, height: 36, borderRadius: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
-                                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+                                    Let's Talk
+                                </motion.span>
+                                <motion.span
+                                    animate={{ backgroundColor: talkHovered ? '#02A884' : '#000000', x: talkHovered ? 3 : 0 }}
+                                    transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                                    style={{ width: 36, height: 36, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                        <motion.path animate={{ stroke: talkHovered ? '#000000' : '#ffffff' }} transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }} d="M5 12h14" />
+                                        <motion.path animate={{ stroke: talkHovered ? '#000000' : '#ffffff' }} transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }} d="M13 5l7 7-7 7" />
                                     </svg>
-                                </motion.div>
-                            </motion.div>
+                                </motion.span>
+                            </motion.button>
                         )}
                         <button
                             onClick={() => setMobileMenuOpen(true)}
@@ -665,7 +683,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
             </div>
 
             {/* Previous button — outside sticky container to avoid fixed-inside-sticky pointer-events bug in WebKit */}
-            {showContent && scrollStep === 3 && (
+            {showContent && scrollStep === 3 && !scrolledPastHero && (
                 <motion.button
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

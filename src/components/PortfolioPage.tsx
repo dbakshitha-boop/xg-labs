@@ -226,7 +226,7 @@ export function PortfolioPage() {
       <div style={{ minHeight: "100dvh", background: "#E9F0FF", overflowY: "auto" }}>
         {/* TopBar */}
         <div style={{ position: "sticky", top: 0, zIndex: 100, height: "114px" }}>
-          <TopBar />
+          <TopBar refinedLetsTalk />
         </div>
 
         {/* Hero text */}
@@ -237,30 +237,30 @@ export function PortfolioPage() {
           <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "140%", color: "#414141", margin: "0 0 24px" }}>
             Creative, digital, and performance work built to move brands forward.
           </p>
-          <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 50, display: "inline-flex" }}>
+          <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 44, display: "inline-flex" }}>
             <button
               onClick={() => openContactForm()}
-              style={{ height: 50, paddingTop: 12, paddingRight: 34, paddingBottom: 12, paddingLeft: 16, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
+              style={{ height: 44, paddingTop: 10, paddingRight: 30, paddingBottom: 10, paddingLeft: 16, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
             >
               {/* Teal fill — leads left to right */}
-              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
               {/* Black fill — trails */}
-              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
-              {/* Text slides up on hover */}
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
+              {/* Text slides up on hover, sequenced to appear after the fill lands */}
               <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: "1em" }}>
-                <motion.span variants={{ rest: { y: 0 }, hover: { y: "-100%" } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ display: "block", fontFamily: "'Poppins', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>
                   Become Client
                 </motion.span>
-                <motion.span aria-hidden variants={{ rest: { y: "100%" }, hover: { y: 0 } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Poppins', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>
+                <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>
                   Become Client
                 </motion.span>
               </div>
             </button>
             {/* Circle arrow — black → teal on hover */}
-            <motion.div variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }} transition={{ duration: 0.3 }} style={{ position: "absolute", top: 0, right: -16, width: 50, height: 50, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
-              <svg width={22} height={22} viewBox="0 0 24 24" style={{ display: "block" }} fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <motion.div variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+              <motion.svg width={18} height={18} viewBox="0 0 24 24" style={{ display: "block" }} fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
-              </svg>
+              </motion.svg>
             </motion.div>
           </motion.div>
         </div>
@@ -269,7 +269,7 @@ export function PortfolioPage() {
         {METRIC_CARDS.map((card, i) => (
           <div key={i}>
             <div style={{ overflow: "hidden", height: "240px", margin: "0 40px", borderRadius: "12px" }}>
-              <img src={card.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              <img src={card.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: "12px" }} />
             </div>
             <div style={{ padding: "20px 40px 32px" }}>
               <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "clamp(20px, 5.5vw, 28px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#060606", margin: "0 0 8px" }}>
@@ -300,7 +300,7 @@ export function PortfolioPage() {
             {visibleCards.map((card, i) => (
               <div key={card.workId} onClick={() => routerNavigate(`/blog/case-study/${card.workId}`)} style={{ display: "flex", flexDirection: "column", gap: "12px", cursor: "pointer" }}>
                 <div style={{ width: "100%", aspectRatio: "400 / 237", borderRadius: "9.47px", overflow: "hidden", position: "relative", background: "#d5d5d5" }}>
-                  <img src={card.img} alt={card.category} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={card.img} alt={card.category} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", borderRadius: "9.47px" }} />
                 </div>
                 <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#888888", margin: 0 }}>{card.category}</p>
                 <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(16px, 4vw, 22px)", lineHeight: "130%", letterSpacing: "-0.01em", color: "#060606", margin: 0 }}>{card.description}</p>
@@ -325,7 +325,7 @@ export function PortfolioPage() {
       {/* Nav */}
       <div style={{ position: "relative", zIndex: 100, height: "114px" }}>
         <div style={{ position: "relative", width: "100%", height: "100%" }}>
-          <TopBar />
+          <TopBar refinedLetsTalk />
         </div>
       </div>
 
@@ -449,13 +449,15 @@ export function PortfolioPage() {
                       paddingLeft: 0,
                       boxSizing: "border-box",
                     }}>
-                      <motion.div
-                        layoutId={lid}
-                        transition={{ layout: T }}
-                        style={{ flex: 1, borderRadius: "8px", overflow: "hidden", position: "relative", minHeight: 0 }}
-                      >
-                        <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                      </motion.div>
+                      <div style={{ flex: 1, borderRadius: "8px", overflow: "hidden", minHeight: 0 }}>
+                        <motion.div
+                          layoutId={lid}
+                          transition={{ layout: T }}
+                          style={{ height: "100%", position: "relative", borderRadius: "8px", overflow: "hidden" }}
+                        >
+                          <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }} />
+                        </motion.div>
+                      </div>
                       <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "clamp(20px, 2.4vw, 36px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#060606", margin: 0 }}>
                         {card.metric}
                       </h3>
@@ -502,7 +504,7 @@ export function PortfolioPage() {
                             fontFamily: "'Space Grotesk', sans-serif",
                             fontWeight: 600, fontSize: "13px",
                             letterSpacing: "0.06em", textTransform: "uppercase" as const,
-                            cursor: "pointer", transition: "all 0.2s ease",
+                            cursor: "pointer", transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
                           }}
                         >
                           {f}
@@ -526,7 +528,7 @@ export function PortfolioPage() {
                           style={{ display: "flex", flexDirection: "column", gap: "12px", cursor: "pointer" }}
                         >
                           <div style={{ width: "100%", aspectRatio: "400 / 237", borderRadius: "9.47px", overflow: "hidden", position: "relative", background: "#d5d5d5" }}>
-                            <img src={card.img} alt={card.category} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                            <img src={card.img} alt={card.category} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", borderRadius: "9.47px" }} />
                           </div>
                           <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#888888", margin: 0 }}>
                             {card.category}

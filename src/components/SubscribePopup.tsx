@@ -156,10 +156,11 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
                 disabled={submitting || submitted}
                 style={{
                   flex: 1,
+                  height: 48,
                   border: `1.5px solid ${emailError ? "#ff4d4d" : "#C8CDD8"}`,
                   borderRadius: "10px",
                   background: "#ffffff",
-                  padding: "14px 18px",
+                  padding: "0 18px",
                   fontFamily: "'Space Grotesk', sans-serif",
                   fontSize: "14px",
                   color: "#1a1a1a",
@@ -169,58 +170,92 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
               />
 
               {/* Subscribe button */}
-              <button
-                onClick={handleSubscribe}
-                disabled={submitting || submitted}
+              <motion.div
+                initial="rest"
+                animate={submitted ? "success" : "rest"}
+                whileHover={submitting || submitted ? undefined : "hover"}
+                whileTap={submitting || submitted ? undefined : "hover"}
                 style={{
+                  position: "relative",
+                  height: 48,
                   display: "inline-flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  background: submitted ? "#02A884" : "#1a1a1a",
-                  border: "none",
-                  borderRadius: "100px",
-                  height: "52px",
-                  boxSizing: "border-box",
-                  padding: "0 5px 0 22px",
-                  cursor: submitting || submitted ? "default" : "pointer",
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                  letterSpacing: "0.1em",
-                  lineHeight: 1,
-                  textTransform: "uppercase",
-                  color: "#ffffff",
-                  whiteSpace: "nowrap",
                   flexShrink: 0,
-                  opacity: submitting ? 0.7 : 1,
-                  transition: "background 0.3s",
+                  pointerEvents: submitting || submitted ? "none" : "auto",
                 }}
               >
-                {submitted ? "Subscribed ✓" : submitting ? "..." : "Subscribe"}
-                <div
+                <button
+                  onClick={handleSubscribe}
+                  disabled={submitting || submitted}
                   style={{
-                    width: "42px",
-                    height: "42px",
-                    borderRadius: "50%",
-                    background: submitted ? "#ffffff" : "#02A884",
-                    display: "flex",
+                    height: 48,
+                    paddingTop: 0,
+                    paddingRight: 34,
+                    paddingBottom: 0,
+                    paddingLeft: 18,
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                    transition: "background 0.3s",
+                    background: "transparent",
+                    borderRadius: 100,
+                    border: "1.5px solid #1a1a1a",
+                    cursor: submitting || submitted ? "default" : "pointer",
+                    boxSizing: "border-box",
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path
-                      d="M2 7H12M12 7L7 2M12 7L7 12"
-                      stroke={submitted ? "#02A884" : "#ffffff"}
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </button>
+                  <motion.span
+                    aria-hidden
+                    variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 }, success: { scaleX: 1 } }}
+                    transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+                    style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
+                  />
+                  <motion.span
+                    aria-hidden
+                    variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 }, success: { scaleX: 0 } }}
+                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
+                    style={{ position: "absolute", inset: 0, background: "#1a1a1a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
+                  />
+                  <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 17, height: "1em" }}>
+                    <motion.span
+                      variants={{
+                        rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } },
+                        hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } },
+                        success: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1] } },
+                      }}
+                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 17, lineHeight: 1, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#1a1a1a" }}
+                    >
+                      {submitting ? "..." : "Subscribe"}
+                    </motion.span>
+                    <motion.span
+                      aria-hidden
+                      variants={{
+                        rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } },
+                        hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } },
+                        success: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1] } },
+                      }}
+                      style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 17, lineHeight: 1, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}
+                    >
+                      {submitted ? "Subscribed ✓" : submitting ? "..." : "Subscribe"}
+                    </motion.span>
+                  </div>
+                </button>
+                <motion.div
+                  variants={{ rest: { background: "#1a1a1a" }, hover: { background: "#02A884" }, success: { background: "#ffffff" } }}
+                  transition={{ duration: 0.18 }}
+                  style={{ position: "absolute", top: 4, right: -12, width: 40, height: 40, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4, pointerEvents: "none" }}
+                >
+                  <motion.svg
+                    width={15}
+                    height={15}
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" }, success: { stroke: "#02A884" } }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    <path d="M2 7H12M12 7L7 2M12 7L7 12" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </motion.svg>
+                </motion.div>
+              </motion.div>
             </div>
 
             {/* Validation / error feedback */}

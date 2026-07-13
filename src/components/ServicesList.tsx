@@ -106,7 +106,7 @@ export function ServicesList() {
   return (
     <div
       onMouseEnter={() => setVariant('default')}
-      className="w-full max-w-[1920px] mx-auto px-4 lg:px-0 py-20 flex flex-col font-sans bg-[#F7F8FA]"
+      className="w-full max-w-[1920px] mx-auto px-4 lg:px-0 py-20 flex flex-col lg:gap-[60px] font-sans bg-[#F7F8FA]"
     >
       {/* Mobile/tablet header — lg:hidden so desktop is untouched */}
       <div className="lg:hidden px-6 pt-10 pb-8 flex flex-col gap-4">
@@ -122,24 +122,63 @@ export function ServicesList() {
           </p>
           <motion.div
             initial="rest" whileHover="hover" animate="rest"
-            style={{ position: 'relative', height: 40, display: 'inline-flex', flexShrink: 0, cursor: 'pointer' }}
+            style={{ position: 'relative', height: 36, display: 'inline-flex', flexShrink: 0, cursor: 'pointer' }}
           >
-            <button onClick={() => navigate("/services")} style={{ height: 40, paddingTop: 8, paddingRight: 28, paddingBottom: 8, paddingLeft: 14, display: 'inline-flex', alignItems: 'center', background: '#ffffff', borderRadius: 42, border: '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
-              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
-              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
+            <button onClick={() => navigate("/services")} style={{ height: 36, paddingTop: 7, paddingRight: 26, paddingBottom: 7, paddingLeft: 14, display: 'inline-flex', alignItems: 'center', background: '#ffffff', borderRadius: 42, border: '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
               <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
-                <motion.span variants={{ rest: { y: 0 }, hover: { y: '-100%' } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ display: 'block', fontFamily: "'Poppins', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
                   View More
                 </motion.span>
-                <motion.span aria-hidden variants={{ rest: { y: '100%' }, hover: { y: 0 } }} transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Poppins', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
+                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
                   View More
                 </motion.span>
               </div>
             </button>
-            <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.3 }} style={{ position: 'absolute', top: 0, right: -13, width: 40, height: 40, borderRadius: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
-              <svg width={16} height={16} viewBox="0 0 24 24" style={{ display: 'block' }} fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.18 }} style={{ position: 'absolute', top: 2, right: -10, width: 32, height: 32, borderRadius: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
+              <motion.svg width={20} height={20} viewBox="0 0 24 24" style={{ display: 'block' }} fill="none" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
-              </svg>
+              </motion.svg>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Desktop header — hidden lg:flex so mobile is untouched */}
+      <div className="hidden lg:flex items-start justify-between gap-12" style={{ paddingLeft: "100px", paddingRight: "70px", paddingBottom: "40px" }}>
+        <div className="flex flex-col gap-3 max-w-[820px]">
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", lineHeight: "120%", letterSpacing: "0.04em", textTransform: "uppercase", color: "#060606" }}>
+            Everything your brand needs to grow built into one system
+          </p>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(24px, 2.6vw, 34px)", lineHeight: "128%", letterSpacing: "0%", color: "#5F5F5F" }}>
+            Every service works together as one system, built to create clarity, momentum, and results.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-4 shrink-0 pt-1">
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "140%", letterSpacing: "0%", color: "#6E6E6E", whiteSpace: "nowrap" }}>
+            No noise. No guesswork.<br />Just structured creative and strategic execution.
+          </p>
+          <motion.div
+            initial="rest" whileHover="hover" animate="rest"
+            style={{ position: 'relative', height: 36, display: 'inline-flex', flexShrink: 0, cursor: 'pointer' }}
+          >
+            <button onClick={() => navigate("/services")} style={{ height: 36, paddingTop: 7, paddingRight: 26, paddingBottom: 7, paddingLeft: 14, display: 'inline-flex', alignItems: 'center', background: '#ffffff', borderRadius: 42, border: '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
+              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
+                  View More
+                </motion.span>
+                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
+                  View More
+                </motion.span>
+              </div>
+            </button>
+            <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.18 }} style={{ position: 'absolute', top: 2, right: -10, width: 32, height: 32, borderRadius: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
+              <motion.svg width={20} height={20} viewBox="0 0 24 24" style={{ display: 'block' }} fill="none" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+              </motion.svg>
             </motion.div>
           </motion.div>
         </div>
@@ -184,6 +223,7 @@ function ServiceCard({
   setHoveredIndex: (idx: number | null) => void;
 }) {
   const { setVariant, setText } = useCursor();
+  const navigate = useNavigate();
   const [hasBeenRevealed, setHasBeenRevealed] = useState(false);
   const isHovered = hoveredIndex === index;
   const isDimmed = hoveredIndex !== null && hoveredIndex !== index;
@@ -232,10 +272,11 @@ function ServiceCard({
     <motion.div
       ref={cardRef}
       className={cn(
-        "group relative w-full lg:!cursor-none transition-all duration-500",
+        "group relative w-full lg:!cursor-none transition-all duration-500 overflow-hidden cursor-pointer",
         isDimmed ? "lg:blur-[2px] opacity-100" : "opacity-100",
         active ? "z-50" : "z-10"
       )}
+      onClick={() => navigate("/services", { state: { serviceIndex: index } })}
       onMouseEnter={() => {
         if (!isMobile) {
           setHoveredIndex(index);
@@ -401,82 +442,100 @@ function ServiceCard({
       </div>
 
       {/* ── Desktop card layout (unchanged) ── */}
-      <div className="hidden lg:flex flex-row bg-[#F7F8FA] transition-colors duration-500" style={{ paddingLeft: "100px", paddingRight: "70px", gap: "80px" }}>
+      {!isMobile && (
+      <div
+        className="bg-[#F7F8FA] transition-colors duration-500"
+        style={{
+          display: "grid",
+          paddingLeft: "100px",
+          paddingRight: "70px",
+          minHeight: "340px",
+          gridTemplateColumns: "350px 1fr",
+          columnGap: "80px",
+          rowGap: "36px",
+          alignContent: "center",
+          alignItems: "start",
+        }}
+      >
+        {/* Row 1, Col 1: Title + subtitle — aligned with content lines */}
+        <div className="flex flex-col justify-start z-10">
+          <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-[#414141] mb-2 uppercase font-['Sora',sans-serif]">
+            {title}
+          </h3>
+          <p className="text-base text-gray-500 max-w-full lg:max-w-[250px] leading-relaxed font-['Sora',sans-serif]">
+            {subtitle}
+          </p>
+        </div>
 
-        {/* Left Column */}
-        <div className="w-full lg:w-[350px] shrink-0 flex flex-col justify-between z-10 py-10 lg:py-[60px]">
-          <div className="flex flex-col justify-start">
-            <h3 className="text-xl md:text-2xl font-bold tracking-tight text-[#414141] mb-2 uppercase font-['Sora',sans-serif]">
-              {title}
-            </h3>
-            <p className="text-sm text-gray-500 max-w-full lg:max-w-[250px] leading-relaxed font-['Sora',sans-serif]">
-              {subtitle}
-            </p>
-          </div>
+        {/* Row 1, Col 2: Content Lines — aligned with title */}
+        <div className="flex flex-col gap-0 w-full min-w-0 relative z-30">
+          {contentLines.map((line, idx) => (
+            <div key={idx} className="relative leading-[1.2] tracking-[-0.02em] font-normal text-[#6E6E6E] font-['Sora',sans-serif] py-0 lg:py-[2px]" style={{ fontSize: "clamp(18px, 4.5vw, 32px)" }}>
+              <RevealText
+                isActive={active}
+                hasBeenRevealed={hasBeenRevealed}
+                delay={idx * lineStagger}
+                highlight={
+                  index === 0 && idx === 1 ? "no waste, no guesswork." :
+                    index === 1 && idx === 1 ? "demand over time." :
+                      index === 2 && idx === 1 ? "convert traffic into action." :
+                        index === 3 && idx === 1 ? "clarity and control." :
+                          index === 4 && idx === 1 ? "attention and drive engagement." :
+                            index === 5 && idx === 1 ? "relevance, reach, and structure." :
+                              index === 6 && idx === 1 ? "scale consistently." :
+                                undefined
+                }
+              >
+                {line}
+              </RevealText>
+            </div>
+          ))}
+        </div>
 
-          {/* State 2: "What We Deliver" section */}
+        {/* Row 2, Col 1: "What We Deliver" — aligned with deliverables */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: active ? 1 : 0, y: active ? 0 : 10 }}
+          transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
+          className="hidden md:block z-10"
+        >
+          <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "20px", lineHeight: "100%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#6E6E6E" }}>
+            What We Deliver
+          </span>
+        </motion.div>
+
+        {/* Row 2, Col 2: Deliverables Grid — aligned with "What We Deliver" */}
+        <div className={cn(
+          "flex flex-wrap gap-x-16 gap-y-4 min-w-0 relative z-10 transition-all duration-500",
+          active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 lg:opacity-0"
+        )}>
+          {deliverables.map((item, i) => (
+            <motion.div
+              key={`deliverable-${i}`}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: active ? 1 : 0, x: active ? 0 : -10 }}
+              transition={{ duration: 0.25, delay: active ? 0.2 + (i * 0.03) : 0, ease: [0.76, 0, 0.24, 1] }}
+              className="text-[#414141] font-medium font-['Sora',sans-serif] flex items-center gap-3"
+              style={{ fontSize: "clamp(14px, 3vw, 20px)", marginRight: "16px" }}
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-[#00A88D] shrink-0" />
+              {item}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Divider line — spans just the right column at rest, extends to the text margin on hover */}
+        {!isMobile && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: active ? 1 : 0, y: active ? 0 : 10 }}
+            className="absolute bottom-0"
+            style={{ height: "1px", backgroundColor: "#6E6E6E", right: "70px" }}
+            initial={false}
+            animate={{ left: active ? 100 : 530 }}
             transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
-            className="mt-6 lg:mt-0 hidden md:block"
-          >
-            <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "20px", lineHeight: "100%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#6E6E6E" }}>
-              What We Deliver
-            </span>
-          </motion.div>
-        </div>
-
-        {/* Right Column: Content Lines & Deliverables */}
-        <div className="w-full lg:flex-1 min-w-0 relative z-10 py-10 lg:py-[60px]" style={{ borderBottom: "1px solid #6E6E6E" }}>
-          <div className="flex flex-col h-full">
-            {/* Content Lines */}
-            <div className="flex flex-col gap-0 mb-6 lg:mb-[60px] w-full z-30">
-              {contentLines.map((line, idx) => (
-                <div key={idx} className="relative leading-[1.2] tracking-[-0.02em] font-normal text-[#6E6E6E] font-['Sora',sans-serif] py-0 lg:py-[2px]" style={{ fontSize: "clamp(18px, 4.5vw, 32px)" }}>
-                  <RevealText
-                    isActive={active}
-                    hasBeenRevealed={hasBeenRevealed}
-                    delay={idx * lineStagger}
-                    highlight={
-                      index === 0 && idx === 1 ? "no waste, no guesswork." :
-                        index === 1 && idx === 1 ? "demand over time." :
-                          index === 2 && idx === 1 ? "convert traffic into action." :
-                            index === 3 && idx === 1 ? "clarity and control." :
-                              index === 4 && idx === 1 ? "attention and drive engagement." :
-                                index === 5 && idx === 1 ? "relevance, reach, and structure." :
-                                  index === 6 && idx === 1 ? "scale consistently." :
-                                    undefined
-                    }
-                  >
-                    {line}
-                  </RevealText>
-                </div>
-              ))}
-            </div>
-
-            {/* State 2: Deliverables Grid */}
-            <div className={cn(
-              "flex flex-wrap gap-x-16 gap-y-4 pt-6 transition-all duration-500",
-              active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 lg:opacity-0"
-            )}>
-              {deliverables.map((item, i) => (
-                <motion.div
-                  key={`deliverable-${i}`}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: active ? 1 : 0, x: active ? 0 : -10 }}
-                  transition={{ duration: 0.25, delay: active ? 0.2 + (i * 0.03) : 0, ease: [0.76, 0, 0.24, 1] }}
-                  className="text-[#414141] font-medium font-['Sora',sans-serif] flex items-center gap-3"
-                  style={{ fontSize: "clamp(14px, 3vw, 20px)", marginRight: "16px" }}
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#00A88D] shrink-0" />
-                  {item}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
+          />
+        )}
       </div>
+      )}
 
     </motion.div>
   );
@@ -520,15 +579,15 @@ function RevealText({ children, isActive, hasBeenRevealed, highlight, delay = 0 
                 {target}
               </motion.span>
 
-              {/* Highlight Background - Locked to Left -> Right Flow */}
+              {/* Highlight Background - Locked to Right -> Left Flow */}
               <motion.div
                 className="absolute inset-y-0 left-0 right-0 bg-[#00A88D] z-10"
-                initial={{ scaleX: 0, originX: 0 }}
+                initial={{ scaleX: 0, originX: 1 }}
                 animate={{
                   scaleX: isActive ? 1 : 0,
                 }}
                 style={{
-                  originX: isActive ? 0 : 1 // Expand from left, retract to right
+                  originX: isActive ? 1 : 0 // Expand from right, retract to left
                 }}
                 transition={{
                   duration: 0.6,

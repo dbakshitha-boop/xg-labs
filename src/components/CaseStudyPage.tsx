@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import xgLogoWhite from "../assets/2.png";
+import arrowIcon from "../assets/arrow-icon.png";
 import { motion } from "motion/react";
 import { submitContactForm, fetchWork } from "../lib/api";
 import type { Work } from "../lib/api";
@@ -261,11 +262,11 @@ function EmbeddedContactForm({ px }: { px: string }) {
               <motion.span variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }} transition={{ duration: 0.15 }} style={{ position: "absolute" }}>
                 {submitted ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "'Space Grotesk',sans-serif", color: "#02A884" }}>✓</span>
                   : submitting ? <span style={{ fontSize: "22px", fontFamily: "'Space Grotesk',sans-serif", color: "rgba(0,0,0,0.25)" }}>·</span>
-                  : <svg width="36" height="36" viewBox="0 0 64 64"><g fill={btnColor} transform="rotate(-30 32 32)"><rect x="29" y="18" width="6" height="34" /><rect x="18" y="14" width="28" height="6" /><rect x="14" y="18" width="6" height="6" /><rect x="10" y="24" width="6" height="6" /><rect x="46" y="18" width="6" height="6" /><rect x="52" y="24" width="6" height="6" /></g></svg>}
+                  : <img src={arrowIcon} alt="" width={36} height={36} style={{ display: "block" }} />}
               </motion.span>
               {!submitting && !submitted && (
                 <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }}
-                  style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 500, fontSize: "28px", lineHeight: "1", textTransform: "uppercase" as const, color: "#0f0f0f", whiteSpace: "nowrap" as const, position: "absolute" as const }}>
+                  style={{ fontFamily: "'Space Grotesk',sans-serif", fontWeight: 500, fontSize: "28px", lineHeight: "1", textTransform: "uppercase" as const, color: "#02A884", whiteSpace: "nowrap" as const, position: "absolute" as const }}>
                   ENTER
                 </motion.span>
               )}
@@ -420,12 +421,13 @@ export function CaseStudyPage({ id }: { id?: string }) {
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
               <p
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Sora', sans-serif",
                   fontWeight: 600,
-                  fontSize: "11px",
-                  letterSpacing: "0.16em",
+                  fontSize: "24px",
+                  lineHeight: "120%",
+                  letterSpacing: "-0.02em",
                   textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.45)",
+                  color: "#9A9A9A",
                   margin: 0,
                 }}
               >
@@ -434,12 +436,12 @@ export function CaseStudyPage({ id }: { id?: string }) {
 
               <h1
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(28px, 3.4vw, 56px)",
-                  lineHeight: "1.1",
-                  letterSpacing: "-0.025em",
-                  color: "#ffffff",
+                  fontFamily: "'Cal Sans', sans-serif",
+                  fontWeight: 400,
+                  fontSize: "48px",
+                  lineHeight: "120%",
+                  letterSpacing: "-0.02em",
+                  color: "#F7F8FA",
                   margin: 0,
                 }}
               >
@@ -448,12 +450,13 @@ export function CaseStudyPage({ id }: { id?: string }) {
 
               <p
                 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
+                  fontFamily: "'Sora', sans-serif",
                   fontWeight: 600,
-                  fontSize: "11px",
-                  letterSpacing: "0.14em",
+                  fontSize: "24px",
+                  lineHeight: "120%",
+                  letterSpacing: "-0.02em",
                   textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.35)",
+                  color: "#6E6E6E",
                   margin: 0,
                 }}
               >
@@ -480,12 +483,12 @@ export function CaseStudyPage({ id }: { id?: string }) {
                 >
                   <p
                     style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
-                      fontWeight: 700,
-                      fontSize: "clamp(32px, 4vw, 56px)",
-                      lineHeight: 1,
+                      fontFamily: "'Cal Sans', sans-serif",
+                      fontWeight: 400,
+                      fontSize: "56px",
+                      lineHeight: "120%",
                       letterSpacing: "-0.02em",
-                      color: "#ffffff",
+                      color: "#F7F8FA",
                       margin: 0,
                     }}
                   >
@@ -493,12 +496,13 @@ export function CaseStudyPage({ id }: { id?: string }) {
                   </p>
                   <p
                     style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontFamily: "'Sora', sans-serif",
                       fontWeight: 400,
-                      fontSize: "13px",
-                      color: "rgba(255,255,255,0.45)",
+                      fontSize: "20px",
+                      letterSpacing: "0",
+                      color: "#9A9A9A",
                       margin: 0,
-                      lineHeight: 1.4,
+                      lineHeight: "100%",
                     }}
                   >
                     {stat.label}

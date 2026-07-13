@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigationType } from "react-router-dom";
 import { ServicesList } from "./components/ServicesList";
 import { WhatMakesUsDifferent } from "./components/landing/WhatMakesUsDifferent";
 import { SelectedWork } from "./components/SelectedWork";
@@ -22,9 +22,27 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ContactFormProvider } from "./components/ContactFormContext";
 
+function ScrollToTop() {
+  const location = useLocation();
+  const navigationType = useNavigationType();
+
+  useEffect(() => {
+    // Let the browser restore scroll position on back/forward navigation.
+    if (navigationType === "POP") return;
+    // These routes handle their own scroll target once the section mounts.
+    if (location.state?.scrollToSection || location.state?.scrollToFooter) return;
+    window.scrollTo(0, 0);
+  }, [location.pathname, location.state, navigationType]);
+
+  return null;
+}
+
 function HomePage() {
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(!location.state?.skipLoading);
+  const [isLoading, setIsLoading] = useState(() => {
+    if (location.state?.skipLoading) return false;
+    return sessionStorage.getItem("xg-intro-played") !== "1";
+  });
 
   useEffect(() => {
     const targetId = location.state?.scrollToFooter ? "footer" : location.state?.scrollToSection;
@@ -43,7 +61,14 @@ function HomePage() {
 
   return (
     <>
-      {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+      {isLoading && (
+        <LoadingScreen
+          onComplete={() => {
+            sessionStorage.setItem("xg-intro-played", "1");
+            setIsLoading(false);
+          }}
+        />
+      )}
       <div className="min-h-screen bg-white cursor-none">
         <HeroSection startSequence={!isLoading} />
         <ServicesList />
@@ -71,6 +96,7 @@ export default function App() {
     <CursorProvider>
       <BrowserRouter>
         <ContactFormProvider>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />

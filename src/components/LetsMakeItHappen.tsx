@@ -219,7 +219,7 @@ export function LetsMakeItHappen() {
           style={{
             position: "relative",
             zIndex: 1,
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Cal Sans', sans-serif",
             fontWeight: 300,
             fontSize: "clamp(36px, 5vw, 72px)",
             color: "#ffffff",

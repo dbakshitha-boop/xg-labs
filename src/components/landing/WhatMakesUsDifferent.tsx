@@ -239,7 +239,7 @@ function RevealText({ children, delay = 0, isActive }: { children: React.ReactNo
 
 function SubheaderContainer({ title, id }: { title: string, id: string }) {
   return (
-    <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#060606] uppercase w-full" style={{ fontSize: "clamp(20px, 2.2vw, 32px)" }} data-name="Subheader Container">
+    <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#414141] uppercase w-full" style={{ fontSize: "clamp(20px, 2.2vw, 32px)" }} data-name="Subheader Container">
       <p className="basis-0 grow min-h-px min-w-px relative shrink-0">{title}</p>
     </div>
   );

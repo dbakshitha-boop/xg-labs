@@ -303,12 +303,12 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           <button
             style={{
               height: 32,
-              paddingLeft: 8,
-              paddingRight: 28,
+              paddingLeft: 12,
+              paddingRight: 22,
               display: "inline-flex",
               alignItems: "center",
               background: "#ffffff",
-              borderRadius: 32,
+              borderRadius: 42,
               border: "1.5px solid #1a1a1a",
               cursor: "pointer",
               boxSizing: "border-box",
@@ -319,28 +319,26 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
             <motion.span
               aria-hidden
               variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-              transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
               style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
             />
             <motion.span
               aria-hidden
               variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-              transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
               style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
             />
             <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 11 }}>
               <motion.span
-                variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
-                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                style={{ display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+                variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
               >
                 View Cases
               </motion.span>
               <motion.span
                 aria-hidden
-                variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
-                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
               >
                 View Cases
               </motion.span>
@@ -348,12 +346,12 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           </button>
           <motion.div
             variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
-            transition={{ duration: 0.3 }}
-            style={{ position: "absolute", top: 0, right: -9, width: 32, height: 32, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+            transition={{ duration: 0.18 }}
+            style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
           >
-            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+            <motion.svg width={18} height={18} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
-            </svg>
+            </motion.svg>
           </motion.div>
         </motion.div>
 
@@ -368,12 +366,12 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           <button
             style={{
               height: 32,
-              paddingLeft: 8,
-              paddingRight: 28,
+              paddingLeft: 12,
+              paddingRight: 22,
               display: "inline-flex",
               alignItems: "center",
               background: "#0a0a0a",
-              borderRadius: 32,
+              borderRadius: 42,
               border: "1.5px solid #0a0a0a",
               cursor: "pointer",
               boxSizing: "border-box",
@@ -384,28 +382,26 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
             <motion.span
               aria-hidden
               variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-              transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
               style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
             />
             <motion.span
               aria-hidden
               variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-              transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
               style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
             />
             <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 11 }}>
               <motion.span
-                variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
-                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                style={{ display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
               >
                 {"Let's Talk"}
               </motion.span>
               <motion.span
                 aria-hidden
-                variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
-                transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
+                variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
               >
                 {"Let's Talk"}
               </motion.span>
@@ -413,12 +409,12 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           </button>
           <motion.div
             variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }}
-            transition={{ duration: 0.3 }}
-            style={{ position: "absolute", top: 0, right: -9, width: 32, height: 32, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+            transition={{ duration: 0.18 }}
+            style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
           >
-            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.3 }} d="M5 12h14" />
-              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.3 }} d="M13 5l7 7-7 7" />
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M5 12h14" />
+              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M13 5l7 7-7 7" />
             </svg>
           </motion.div>
         </motion.div>
@@ -467,6 +463,21 @@ function CardSlide({
   const navigate = useNavigate();
   const { open: openContactForm } = useContactForm();
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const accordionColRef = useRef<HTMLDivElement>(null);
+  const [accordionHeight, setAccordionHeight] = useState<number | null>(null);
+
+  // Keep the image height in sync with the accordion column, including
+  // while an item is animating open/closed, so the image grows/shrinks with it.
+  useEffect(() => {
+    const el = accordionColRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      const height = entries[0]?.contentRect.height;
+      if (height) setAccordionHeight(height);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const seg = 1 / total;
   const isLast = index === total - 1;
@@ -568,17 +579,17 @@ function CardSlide({
                 whileHover="hover"
                 animate="rest"
                 onClick={() => navigate("/blog/case-study/0")}
-                style={{ position: "relative", height: 36, display: "inline-flex", cursor: "pointer" }}
+                style={{ position: "relative", height: 32, display: "inline-flex", cursor: "pointer" }}
               >
                 <button
                   style={{
-                    height: 36,
+                    height: 32,
                     paddingLeft: 12,
-                    paddingRight: 38,
+                    paddingRight: 22,
                     display: "inline-flex",
                     alignItems: "center",
                     background: "#ffffff",
-                    borderRadius: 36,
+                    borderRadius: 42,
                     border: "1.5px solid #1a1a1a",
                     cursor: "pointer",
                     boxSizing: "border-box",
@@ -589,28 +600,26 @@ function CardSlide({
                   <motion.span
                     aria-hidden
                     variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                    transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                    transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
                     style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
                   />
                   <motion.span
                     aria-hidden
                     variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                    transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
                     style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
                   />
                   <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 13 }}>
                     <motion.span
-                      variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
-                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                      style={{ display: "block", fontFamily: "’Space Grotesk’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+                      variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                      style={{ display: "block", fontFamily: "’Cal Sans’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
                     >
                       View Cases
                     </motion.span>
                     <motion.span
                       aria-hidden
-                      variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
-                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "’Space Grotesk’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                      variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "’Cal Sans’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
                     >
                       View Cases
                     </motion.span>
@@ -618,12 +627,12 @@ function CardSlide({
                 </button>
                 <motion.div
                   variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
-                  transition={{ duration: 0.3 }}
-                  style={{ position: "absolute", top: 0, right: -11, width: 36, height: 36, borderRadius: 36, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
                 >
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                  <motion.svg width={18} height={18} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
-                  </svg>
+                  </motion.svg>
                 </motion.div>
               </motion.div>
 
@@ -633,17 +642,17 @@ function CardSlide({
                 whileHover="hover"
                 animate="rest"
                 onClick={() => openContactForm()}
-                style={{ position: "relative", height: 36, display: "inline-flex", cursor: "pointer" }}
+                style={{ position: "relative", height: 32, display: "inline-flex", cursor: "pointer" }}
               >
                 <button
                   style={{
-                    height: 36,
+                    height: 32,
                     paddingLeft: 12,
-                    paddingRight: 38,
+                    paddingRight: 22,
                     display: "inline-flex",
                     alignItems: "center",
                     background: "#0a0a0a",
-                    borderRadius: 36,
+                    borderRadius: 42,
                     border: "1.5px solid #0a0a0a",
                     cursor: "pointer",
                     boxSizing: "border-box",
@@ -654,28 +663,26 @@ function CardSlide({
                   <motion.span
                     aria-hidden
                     variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                    transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
+                    transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
                     style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
                   />
                   <motion.span
                     aria-hidden
                     variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                    transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
+                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
                     style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
                   />
                   <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 13 }}>
                     <motion.span
-                      variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
-                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                      style={{ display: "block", fontFamily: "’Space Grotesk’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                      variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                      style={{ display: "block", fontFamily: "’Cal Sans’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
                     >
                       {"Let’s Talk"}
                     </motion.span>
                     <motion.span
                       aria-hidden
-                      variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
-                      transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "’Space Grotesk’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
+                      variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "’Cal Sans’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
                     >
                       {"Let’s Talk"}
                     </motion.span>
@@ -683,12 +690,12 @@ function CardSlide({
                 </button>
                 <motion.div
                   variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }}
-                  transition={{ duration: 0.3 }}
-                  style={{ position: "absolute", top: 0, right: -11, width: 36, height: 36, borderRadius: 36, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
                 >
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
-                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.3 }} d="M5 12h14" />
-                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.3 }} d="M13 5l7 7-7 7" />
+                  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M5 12h14" />
+                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M13 5l7 7-7 7" />
                   </svg>
                 </motion.div>
               </motion.div>
@@ -696,9 +703,9 @@ function CardSlide({
           </div>
         </div>
 
-        {/* Row 2: image stretches to match accordion height */}
-        <div style={{ display: "flex", gap: "48px", alignItems: "stretch" }}>
-          <div style={{ width: "280px", flexShrink: 0, borderRadius: "12px", overflow: "hidden" }}>
+        {/* Row 2: image height tracks the accordion column, growing/shrinking as items expand */}
+        <div style={{ display: "flex", gap: "48px", alignItems: "flex-start" }}>
+          <div style={{ width: "280px", flexShrink: 0, borderRadius: "12px", overflow: "hidden", height: accordionHeight ? `${accordionHeight}px` : "auto" }}>
             <img
               src={service.images[0]}
               alt={service.title}
@@ -706,7 +713,7 @@ function CardSlide({
             />
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div ref={accordionColRef} style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
             {service.items.map((item, i) => (
               <AccordionRow
                 key={i}
@@ -750,7 +757,7 @@ function GridServiceCard({ service }: { service: ServiceData }) {
                 <svg width="6" height="6" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
             </button>
-            <button onClick={() => openContactForm()} style={{ display: "flex", alignItems: "center", gap: "5px", border: "none", borderRadius: "100px", background: "#1a1a1a", padding: "4px 8px 4px 11px", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "7.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>
+            <button onClick={() => openContactForm()} style={{ display: "flex", alignItems: "center", gap: "5px", border: "none", borderRadius: "100px", background: "#1a1a1a", padding: "4px 8px 4px 11px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "7.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>
               {"Let's Talk"}
               <div style={{ width: 14, height: 14, borderRadius: "50%", background: "#02A884", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <svg width="6" height="6" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -988,7 +995,7 @@ export function ServicesPage() {
                   onClick={() => navigate("/portfolio")}
                   style={{ background: "#ffffff", borderRadius: "12px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", cursor: "pointer", paddingBottom: "12px", paddingRight: "16px" }}
                 >
-                  <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4.17vw, 80px)", lineHeight: "1.2", letterSpacing: "-0.04em", color: "rgba(0,0,0,0.15)", userSelect: "none", textAlign: "right" }}>
+                  <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4.17vw, 80px)", lineHeight: "1.2", letterSpacing: "0em", color: "rgba(0,0,0,0.15)", userSelect: "none", textAlign: "right" }}>
                     View Works
                   </span>
                 </div>
@@ -998,7 +1005,7 @@ export function ServicesPage() {
                   onClick={() => openContactForm()}
                   style={{ background: "#ffffff", borderRadius: "12px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", cursor: "pointer", paddingBottom: "12px", paddingRight: "16px" }}
                 >
-                  <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4.17vw, 80px)", lineHeight: "1.2", letterSpacing: "-0.04em", color: "#636363", userSelect: "none", textAlign: "right" }}>
+                  <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4.17vw, 80px)", lineHeight: "1.2", letterSpacing: "0em", color: "#636363", userSelect: "none", textAlign: "right" }}>
                     Let's talk
                   </span>
                 </div>

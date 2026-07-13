@@ -9,15 +9,17 @@ import imgImage5 from "figma:asset/d1e53c97c1810297d3642b6fa789643c8fe962af.png"
 const CARD_W = 312.893;
 const CARD_H = 337.434;
 
-// Positions are relative to the group wrapper (1061.17 x 476.15)
+// Positions are relative to the group wrapper (1316.43 x 476.15)
 // Each entry: bounding-box left/top/w/h of the rotated card, plus the rotation
+// Left positions are evenly spaced (185px gaps) so every card stays visible —
+// the previous uneven spacing (down to a 70px gap near the end) buried the last card.
 const CARDS = [
-  { src: imgImage1, left: 0,      top: 48.94, bw: 394.942, bh: 411.618, rotate: -16.281, z: 1 },
-  { src: imgImage4, left: 157.29, top: 12.02,  bw: 389.24,  bh: 406.633, rotate:  14.924, z: 2 },
-  { src: imgImage3, left: 334.17, top: 0,      bw: 362.404, bh: 382.746, rotate:  -9.116, z: 4 },
-  { src: imgImage2, left: 476,    top: 10.94,  bw: 350.144, bh: 371.652, rotate:  -6.704, z: 5 },
-  { src: imgImage,  left: 599.98, top: 54.6,   bw: 359.11,  bh: 379.776, rotate:  -8.456, z: 3 },
-  { src: imgImage5, left: 669.74, top: 67.6,   bw: 391.425, bh: 408.548, rotate:  15.438, z: 0 },
+  { src: imgImage1, left: 0,   top: 44,  bw: 394.942, bh: 411.618, rotate: -14, z: 1 },
+  { src: imgImage4, left: 185, top: 10,  bw: 389.24,  bh: 406.633, rotate:  12, z: 4 },
+  { src: imgImage3, left: 370, top: 0,   bw: 362.404, bh: 382.746, rotate:  -8, z: 5 },
+  { src: imgImage2, left: 555, top: 14,  bw: 350.144, bh: 371.652, rotate:   7, z: 3 },
+  { src: imgImage,  left: 740, top: 40,  bw: 359.11,  bh: 379.776, rotate:  -9, z: 0 },
+  { src: imgImage5, left: 925, top: 58,  bw: 391.425, bh: 408.548, rotate:  13, z: 2 },
 ];
 
 export default function CardImages({ isVisible }: { isVisible?: boolean }) {
@@ -28,7 +30,7 @@ export default function CardImages({ isVisible }: { isVisible?: boolean }) {
         position: "absolute",
         top: 740,
         left: "50%",
-        width: 1061.17,
+        width: 1316.43,
         height: 476.15,
         transform: "translateX(-50%) scale(0.78)",
         transformOrigin: "top center",

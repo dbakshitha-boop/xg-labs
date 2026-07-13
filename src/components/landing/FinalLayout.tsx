@@ -61,9 +61,9 @@ function TextContainer() {
       className="absolute content-stretch flex flex-col gap-[24px] items-center justify-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] text-center"
       data-name="Text Container"
     >
-      <p className="font-['Sora:Regular'] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
+      <p className="font-['Sora',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
       <p className="font-['Cal_Sans'] font-[400] leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center mt-[-12px]">From Vision<br />To Velocity</p>
-      <p className="font-['Sora:Regular'] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full text-center">
+      <p className="font-['Sora',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full text-center">
         We align strategy, creative, and performance
         <br />
         to accelerate growth.
@@ -109,7 +109,20 @@ function ArrowContainer({ onPrev, onNext }: { onPrev?: () => void; onNext?: () =
   );
 }
 
-function Frame4() {
+function Frame4({ isVisible }: { isVisible?: boolean }) {
+  // "ordinary." reads black while the panel is still sliding in, then flips to
+  // white once it has fully landed (matching the 1.2s horizontal panel transition).
+  const [landed, setLanded] = useState(false);
+
+  useEffect(() => {
+    if (!isVisible) {
+      setLanded(false);
+      return;
+    }
+    const timer = setTimeout(() => setLanded(true), 1200);
+    return () => clearTimeout(timer);
+  }, [isVisible]);
+
   return (
     <div className="content-stretch flex flex-col gap-[24px] items-center relative shrink-0 w-full">
       <div className="flex flex-col justify-center relative shrink-0 w-full text-center">
@@ -118,7 +131,12 @@ function Frame4() {
       <p className="font-['Cal_Sans',sans-serif] font-normal not-italic relative shrink-0 text-[#414141] text-center w-full" style={{ fontSize: '60px', lineHeight: '1.1', letterSpacing: '-0.02em' }}>
         A creative partner for brands<br />who refuse to be{" "}
         <span className="relative inline-block mx-1 px-4">
-          <span className="relative z-10 text-white">ordinary.</span>
+          <span
+            className="relative z-10"
+            style={{ color: landed ? "#ffffff" : "#414141", transition: "color 0.15s ease" }}
+          >
+            ordinary.
+          </span>
           <motion.span
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
@@ -133,10 +151,10 @@ function Frame4() {
   );
 }
 
-function Frame5() {
+function Frame5({ isVisible }: { isVisible?: boolean }) {
   return (
     <div className="absolute flex flex-col gap-[28px] items-center left-1/2 text-center -translate-x-1/2 -translate-y-1/2 z-10" style={{ top: 'calc(50% - 48px)', width: "min(900px, calc(100% - 20px))" }}>
-      <Frame4 />
+      <Frame4 isVisible={isVisible} />
       <p className="font-['Sora',sans-serif] font-normal text-center relative shrink-0 text-[#6e6e6e] mx-auto" style={{ fontSize: '20px', lineHeight: '1.5', letterSpacing: '0', maxWidth: '650px' }}>We turn ideas into visuals that move people — and move brands forward. Every piece we create is intentional, expressive, and designed to hit with purpose.</p>
     </div>
   );
@@ -214,7 +232,7 @@ export function AboutSection({ scrollStep }: { scrollStep: number }) {
       </div>
 
       {/* Text Content */}
-      <Frame5 />
+      <Frame5 isVisible={isVisible} />
     </div>
   );
 }
@@ -401,27 +419,17 @@ const SERVICE_IMG_MAP: Record<string, string> = {
   influencer,
 };
 
-export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boolean; containerWidth?: string; logoSrc?: string }) {
+export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk = false }: { dark?: boolean; containerWidth?: string; logoSrc?: string; refinedLetsTalk?: boolean }) {
   const navigate = useNavigate();
   const [serviceOpen, setServiceOpen] = useState(false);
   const [hoveredSlug, setHoveredSlug] = useState<string>("performance-marketing");
-  const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { open: openContactForm } = useContactForm();
-  const lastScrollY = useRef(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      if (currentY < 10) {
-        setHidden(false);
-      } else if (currentY > lastScrollY.current) {
-        setHidden(true);
-      } else {
-        setHidden(false);
-      }
-      lastScrollY.current = currentY;
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -441,11 +449,9 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               {logoSrc ? (
-                <div style={{ overflow: "hidden", height: "50px", width: "160px" }}>
-                  <img alt="Xg Labs" src={logoSrc} style={{ height: "200px", width: "200px", marginTop: "-72px", marginLeft: "-16px", display: "block" }} />
-                </div>
+                <img alt="Xg Labs" src={logoSrc} style={{ height: "40px", width: "auto", display: "block" }} />
               ) : (
-                <img alt="Xg Labs" src={imgImage12} style={{ height: "52px", width: "auto", display: "block" }} />
+                <img alt="Xg Labs" src={imgImage12} style={{ height: "42px", width: "auto", display: "block" }} />
               )}
               <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" style={{ color: "#fff", background: "none", border: "none", cursor: "pointer", padding: "8px" }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -475,7 +481,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                       else navigate("/", { state: { skipLoading: true, scrollToFooter: true } });
                     }
                   }}
-                  style={{ width: "100%", textAlign: "left", padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#fff", background: "none", border: "none", borderBottomStyle: "solid", borderBottomWidth: "1px", borderBottomColor: "rgba(255,255,255,0.08)", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "clamp(22px, 6vw, 28px)", textTransform: "uppercase", letterSpacing: "0.02em" }}
+                  style={{ width: "100%", textAlign: "left", padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#fff", background: "none", border: "none", borderBottomStyle: "solid", borderBottomWidth: "1px", borderBottomColor: "rgba(255,255,255,0.08)", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 500, fontSize: "clamp(22px, 6vw, 28px)", textTransform: "uppercase", letterSpacing: "0.02em" }}
                 >
                   {item}
                 </motion.button>
@@ -484,7 +490,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
             <div style={{ padding: "16px 24px 40px" }}>
               <button
                 onClick={() => { setMobileMenuOpen(false); openContactForm(); }}
-                style={{ width: "100%", padding: "16px", background: "#fff", color: "#000", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
+                style={{ width: "100%", padding: "16px", background: "#fff", color: "#414141", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
               >
                 Let's Talk
               </button>
@@ -495,11 +501,23 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
 
       {/* ── Nav bar (unchanged desktop layout) ── */}
       <motion.div
-      initial={{ y: -50, opacity: 0 }}
-      animate={{ y: hidden ? -120 : 0, opacity: hidden ? 0 : 1 }}
-      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      initial={{ y: -16, opacity: 0 }}
+      animate={{
+        y: 0,
+        opacity: 1,
+        boxShadow: dark
+          ? "none"
+          : scrolled
+            ? "0px 4px 24px 0px rgba(0,0,0,0.10)"
+            : "0px 0px 15px 0px rgba(0,0,0,0.05)",
+      }}
+      transition={{
+        y: { duration: 0.35, delay: 0.1, ease: "easeOut" },
+        opacity: { duration: 0.35, delay: 0.1, ease: "easeOut" },
+        boxShadow: { duration: 0.3, ease: "easeInOut" },
+      }}
       onMouseLeave={() => setServiceOpen(false)}
-      className={`fixed flex flex-col top-[40px] z-50 pointer-events-auto rounded-[8px] ${dark ? "ring-1 ring-white/[0.15]" : "bg-white shadow-[0px_0px_15px_0px_rgba(0,0,0,0.05)]"}`}
+      className={`fixed flex flex-col top-[40px] z-50 pointer-events-auto rounded-[8px] ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
       style={(() => {
         const w = containerWidth ?? "100vw";
         const pad = containerWidth ? "40px" : "80px";
@@ -517,11 +535,9 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
       <div className="flex items-center justify-between px-[24px] py-[8px] h-[74px]">
         <div className="shrink-0 cursor-pointer" onClick={() => navigate("/", { state: { skipLoading: true } })} onMouseEnter={() => setServiceOpen(false)}>
           {logoSrc ? (
-            <div style={{ overflow: "hidden", height: "50px", width: "160px" }}>
-              <img alt="Xg Labs" src={logoSrc} style={{ height: "200px", width: "200px", marginTop: "-72px", marginLeft: "-16px", display: "block" }} />
-            </div>
+            <img alt="Xg Labs" src={logoSrc} style={{ height: "44px", width: "auto", display: "block" }} />
           ) : (
-            <img alt="Xg Labs" src={imgImage12} style={{ height: "68px", width: "auto", display: "block" }} />
+            <img alt="Xg Labs" src={imgImage12} style={{ height: "54px", width: "auto", display: "block" }} />
           )}
         </div>
 
@@ -550,7 +566,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                       rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
                       hover: { clipPath: "polygon(0% 35%, 100% 0%, 100% 100%, 0% 100%)" },
                     }}
-                    transition={{ duration: 0.32, ease: [0.65, 0, 0.35, 1] }}
+                    transition={{ duration: 0.2, ease: [0.65, 0, 0.35, 1] }}
                     style={{ position: "absolute", inset: 0, background: "#02A884", zIndex: 1 }}
                   />
                   {/* Black — trails, ends fully covering */}
@@ -560,13 +576,13 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                       rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
                       hover: { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" },
                     }}
-                    transition={{ duration: 0.42, ease: [0.65, 0, 0.35, 1], delay: 0.09 }}
+                    transition={{ duration: 0.26, ease: [0.65, 0, 0.35, 1], delay: 0.05 }}
                     style={{ position: "absolute", inset: 0, background: "#0a0a0a", zIndex: 2 }}
                   />
                   <motion.span
                     variants={{ rest: { color: dark ? "#9A9A9A" : "#000000" }, hover: { color: "#ffffff" } }}
-                    transition={{ duration: 0.15, ease: "easeOut", delay: 0.2 }}
-                    style={{ position: "relative", zIndex: 3, fontFamily: "'Poppins', sans-serif" }}
+                    transition={{ duration: 0.1, ease: "easeOut", delay: 0.12 }}
+                    style={{ position: "relative", zIndex: 3, fontFamily: "'Cal Sans', sans-serif" }}
                     className="text-sm font-semibold uppercase"
                   >
                     {item}
@@ -578,7 +594,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                     <motion.path
                       d="M2 4L6 8L10 4"
                       variants={{ rest: { stroke: dark ? "#9A9A9A" : "#000000" }, hover: { stroke: "#ffffff" } }}
-                      transition={{ duration: 0.15, ease: "easeOut", delay: 0.2 }}
+                      transition={{ duration: 0.1, ease: "easeOut", delay: 0.12 }}
                       strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
                     />
                   </motion.svg>
@@ -625,7 +641,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                     rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
                     hover: { clipPath: "polygon(0% 35%, 100% 0%, 100% 100%, 0% 100%)" },
                   }}
-                  transition={{ duration: 0.32, ease: [0.65, 0, 0.35, 1] }}
+                  transition={{ duration: 0.2, ease: [0.65, 0, 0.35, 1] }}
                   style={{ position: "absolute", inset: 0, background: "#02A884", zIndex: 1 }}
                 />
                 {/* Black — trails 90 ms behind teal, ends fully covering */}
@@ -635,15 +651,15 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                     rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
                     hover: { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" },
                   }}
-                  transition={{ duration: 0.42, ease: [0.65, 0, 0.35, 1], delay: 0.09 }}
+                  transition={{ duration: 0.26, ease: [0.65, 0, 0.35, 1], delay: 0.05 }}
                   style={{ position: "absolute", inset: 0, background: "#0a0a0a", zIndex: 2 }}
                 />
                 {/* Text turns white after black fill rises */}
                 <motion.span
                   variants={{ rest: { color: dark ? "#9A9A9A" : "#000000" }, hover: { color: "#ffffff" } }}
-                  transition={{ duration: 0.15, ease: "easeOut", delay: 0.2 }}
-                  style={{ position: "relative", zIndex: 3 }}
-                  className="font-space text-sm font-medium uppercase"
+                  transition={{ duration: 0.1, ease: "easeOut", delay: 0.12 }}
+                  style={{ position: "relative", zIndex: 3, fontFamily: "'Cal Sans', sans-serif" }}
+                  className="text-sm font-medium uppercase"
                 >
                   {item}
                 </motion.span>
@@ -655,103 +671,25 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
         {/* Let's Talk button — hidden on mobile */}
         <div className="hidden lg:flex items-center" onMouseEnter={() => setServiceOpen(false)}>
           <motion.div
-            initial="rest"
-            whileHover="hover"
-            animate="rest"
-            style={{ position: 'relative', height: 50, display: 'inline-flex' }}
+            initial="rest" whileHover="hover" {...(refinedLetsTalk ? { whileTap: "hover" } : {})} animate="rest"
+            style={{ position: 'relative', height: 36, display: 'inline-flex', flexShrink: 0, cursor: 'pointer' }}
           >
-            <button
-              aria-label="Let's talk"
-              onClick={() => openContactForm()}
-              style={{
-                height: 50,
-                paddingTop: 12,
-                paddingRight: 34,
-                paddingBottom: 12,
-                paddingLeft: 16,
-                display: 'inline-flex',
-                alignItems: 'center',
-                background: dark ? '#2a2a2a' : '#ffffff',
-                borderRadius: 42,
-                border: dark ? '1px solid rgba(255,255,255,0.25)' : '1px solid #9A9A9A',
-                cursor: 'pointer',
-                boxSizing: 'border-box',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Teal fill — leads left to right */}
-              <motion.span
-                aria-hidden
-                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
-                style={{
-                  position: 'absolute', inset: 0,
-                  background: '#02A884',
-                  transformOrigin: 'left center',
-                  zIndex: 1, pointerEvents: 'none',
-                }}
-              />
-              {/* Black fill — trails left to right */}
-              <motion.span
-                aria-hidden
-                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                transition={{ duration: 0.32, ease: [0.4, 0, 0.2, 1], delay: 0.08 }}
-                style={{
-                  position: 'absolute', inset: 0,
-                  background: '#0a0a0a',
-                  transformOrigin: 'left center',
-                  zIndex: 2, pointerEvents: 'none',
-                }}
-              />
-              {/* Text — slides up from bottom on hover */}
-              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: 18 }}>
-                <motion.span
-                  variants={{ rest: { y: 0 }, hover: { y: -18 } }}
-                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                  style={{
-                    display: 'block',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontSize: 14, fontWeight: 600,
-                    letterSpacing: '0.08em', textTransform: 'uppercase',
-                    whiteSpace: 'nowrap', color: '#414141',
-                  }}
-                >
+            <button aria-label="Let's talk" onClick={() => openContactForm()} style={{ height: 36, paddingTop: refinedLetsTalk ? 9 : 7, paddingRight: 26, paddingBottom: refinedLetsTalk ? 9 : 7, paddingLeft: 14, display: 'inline-flex', alignItems: 'center', background: dark ? 'rgba(255,255,255,0.08)' : '#ffffff', borderRadius: 42, border: dark ? '1px solid rgba(255,255,255,0.25)' : '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
+              <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
+              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, fontSize: 14, height: '1em' }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, lineHeight: 1, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: dark ? '#ffffff' : (refinedLetsTalk ? '#9A9A9A' : '#414141') }}>
                   Let's Talk
                 </motion.span>
-                <motion.span
-                  aria-hidden
-                  variants={{ rest: { y: 18 }, hover: { y: 0 } }}
-                  transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                  style={{
-                    position: 'absolute', top: 0, left: 0,
-                    display: 'block',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontSize: 14, fontWeight: 600,
-                    letterSpacing: '0.08em', textTransform: 'uppercase',
-                    whiteSpace: 'nowrap', color: '#ffffff',
-                  }}
-                >
+                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, lineHeight: 1, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
                   Let's Talk
                 </motion.span>
               </div>
             </button>
-            {/* Circle — overlays oval's right edge */}
-            <motion.div
-              variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }}
-              transition={{ duration: 0.3 }}
-              style={{
-                position: 'absolute', top: 0, right: -16,
-                width: 50, height: 50, borderRadius: 50,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                zIndex: 4,
-              }}
-            >
-              <svg width={22} height={22} viewBox="0 0 24 24" style={{ display: 'block' }}
-                fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14" />
-                <path d="M13 5l7 7-7 7" />
-              </svg>
+            <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.18 }} style={{ position: 'absolute', top: 2, right: -10, width: 32, height: 32, borderRadius: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
+              <motion.svg width={20} height={20} viewBox="0 0 24 24" style={{ display: 'block' }} fill="none" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+              </motion.svg>
             </motion.div>
           </motion.div>
         </div>
@@ -788,7 +726,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
           {/* Far Left: tagline column */}
           <div style={{ flexShrink: 0, display: "flex", alignItems: "flex-end" }}>
             <p style={{
-              fontFamily: "'Space Grotesk', 'Cal Sans' sans-serif",
+              fontFamily: "'Cal Sans', sans-serif",
               fontWeight: 600,
               fontSize: "26px",
               letterSpacing: "-0.02em",
@@ -818,7 +756,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
                   }}
                 >
                   <span style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontFamily: "'Cal Sans', sans-serif",
                     fontWeight: 500,
                     fontSize: "13px",
                     letterSpacing: "0.06em",
@@ -861,7 +799,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
           {/* Right: Connect With */}
           <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "6px", marginLeft: "26px" }}>
             <p style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Cal Sans', sans-serif",
               fontWeight: 700,
               fontSize: "10px",
               letterSpacing: "0.14em",
@@ -878,7 +816,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc }: { dark?: boole
               "Chennai, Tamil Nadu, India",
             ].map((line) => (
               <p key={line} style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Cal Sans', sans-serif",
                 fontWeight: 400,
                 fontSize: "12px",
                 color: dark ? "rgba(255,255,255,0.7)" : "#1a1a1a",

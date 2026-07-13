@@ -100,8 +100,13 @@ export function BlogPostPage() {
   }, [sections]);
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888" }}>Loading...</p>
+    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+        style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid #e2e2e2", borderTopColor: "#414141" }}
+      />
+      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888" }}>Loading</p>
     </div>
   );
   if (fetchError) return (
