@@ -165,14 +165,14 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
             scrollDeltaAccumulator.current += e.deltaY;
 
-            // Throttle: min 600ms between steps to prevent accidental double-steps
-            if (now - lastStepTime.current < 600) return;
+            // Throttle: min 900ms between steps to prevent accidental double-steps
+            if (now - lastStepTime.current < 900) return;
 
-            if (scrollDeltaAccumulator.current > 50) {
+            if (scrollDeltaAccumulator.current > 120) {
                 setScrollStep(prev => Math.min(prev + 1, 3));
                 scrollDeltaAccumulator.current = 0;
                 lastStepTime.current = now;
-            } else if (scrollDeltaAccumulator.current < -50) {
+            } else if (scrollDeltaAccumulator.current < -120) {
                 setScrollStep(prev => Math.max(prev - 1, 0));
                 scrollDeltaAccumulator.current = 0;
                 lastStepTime.current = now;
@@ -659,7 +659,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                         </motion.div>
 
                         <motion.div
-                             animate={{ width: scrollStep === 3 ? "100vw" : "70vw", opacity: (scrollStep === 1 || scrollStep === 3) ? 0 : 1 }}
+                             animate={{ width: scrollStep === 3 ? "100vw" : "70vw", opacity: (scrollStep === 0 || scrollStep === 2) ? 1 : 0 }}
                              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                              className="absolute top-0 left-0 h-full z-50 pointer-events-none"
                         >

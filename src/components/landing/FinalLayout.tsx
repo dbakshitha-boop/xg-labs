@@ -580,7 +580,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                     style={{ position: "absolute", inset: 0, background: "#0a0a0a", zIndex: 2 }}
                   />
                   <motion.span
-                    variants={{ rest: { color: dark ? "#9A9A9A" : "#000000" }, hover: { color: "#ffffff" } }}
+                    variants={{ rest: { color: dark ? "#9A9A9A" : "#414141" }, hover: { color: "#ffffff" } }}
                     transition={{ duration: 0.1, ease: "easeOut", delay: 0.12 }}
                     style={{ position: "relative", zIndex: 3, fontFamily: "'Cal Sans', sans-serif" }}
                     className="text-sm font-semibold uppercase"
@@ -593,7 +593,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                   >
                     <motion.path
                       d="M2 4L6 8L10 4"
-                      variants={{ rest: { stroke: dark ? "#9A9A9A" : "#000000" }, hover: { stroke: "#ffffff" } }}
+                      variants={{ rest: { stroke: dark ? "#9A9A9A" : "#414141" }, hover: { stroke: "#ffffff" } }}
                       transition={{ duration: 0.1, ease: "easeOut", delay: 0.12 }}
                       strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"
                     />
@@ -656,7 +656,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                 />
                 {/* Text turns white after black fill rises */}
                 <motion.span
-                  variants={{ rest: { color: dark ? "#9A9A9A" : "#000000" }, hover: { color: "#ffffff" } }}
+                  variants={{ rest: { color: dark ? "#9A9A9A" : "#414141" }, hover: { color: "#ffffff" } }}
                   transition={{ duration: 0.1, ease: "easeOut", delay: 0.12 }}
                   style={{ position: "relative", zIndex: 3, fontFamily: "'Cal Sans', sans-serif" }}
                   className="text-sm font-medium uppercase"
@@ -674,20 +674,20 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
             initial="rest" whileHover="hover" {...(refinedLetsTalk ? { whileTap: "hover" } : {})} animate="rest"
             style={{ position: 'relative', height: 36, display: 'inline-flex', flexShrink: 0, cursor: 'pointer' }}
           >
-            <button aria-label="Let's talk" onClick={() => openContactForm()} style={{ height: 36, paddingTop: refinedLetsTalk ? 9 : 7, paddingRight: 26, paddingBottom: refinedLetsTalk ? 9 : 7, paddingLeft: 14, display: 'inline-flex', alignItems: 'center', background: dark ? 'rgba(255,255,255,0.08)' : '#ffffff', borderRadius: 42, border: dark ? '1px solid rgba(255,255,255,0.25)' : '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
+            <button aria-label="Let's talk" onClick={() => openContactForm()} style={{ height: 36, paddingTop: refinedLetsTalk ? 8 : 6, paddingRight: 22, paddingBottom: refinedLetsTalk ? 8 : 6, paddingLeft: 12, display: 'inline-flex', alignItems: 'center', background: dark ? 'rgba(255,255,255,0.08)' : '#ffffff', borderRadius: 42, border: dark ? '1px solid rgba(255,255,255,0.25)' : '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
-              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, fontSize: 14, height: '1em' }}>
-                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, lineHeight: 1, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: dark ? '#ffffff' : (refinedLetsTalk ? '#9A9A9A' : '#414141') }}>
+              <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, fontSize: 15, height: '1em' }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: '0em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: dark ? '#ffffff' : (refinedLetsTalk ? '#9A9A9A' : '#414141') }}>
                   Let's Talk
                 </motion.span>
-                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, lineHeight: 1, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
+                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: '0em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
                   Let's Talk
                 </motion.span>
               </div>
             </button>
-            <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.18 }} style={{ position: 'absolute', top: 2, right: -10, width: 32, height: 32, borderRadius: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
-              <motion.svg width={20} height={20} viewBox="0 0 24 24" style={{ display: 'block' }} fill="none" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <motion.div variants={{ rest: { background: '#000000' }, hover: { background: '#02A884' } }} transition={{ duration: 0.18 }} style={{ position: 'absolute', top: 2, right: -12, width: 32, height: 32, borderRadius: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 4 }}>
+              <motion.svg width={18} height={18} viewBox="0 0 24 24" style={{ display: 'block' }} fill="none" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
               </motion.svg>
             </motion.div>

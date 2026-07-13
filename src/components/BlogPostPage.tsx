@@ -1,63 +1,48 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { TopBar } from "./landing/FinalLayout";
-import { fetchArticle, subscribeEmail, type Article } from "../lib/api";
+import { ContactFormOverlay } from "./ContactFormOverlay";
+import { fetchArticle, fetchArticles, getArticleId, type Article } from "../lib/api";
 import { Footer } from "./Footer";
+import csData from "../assets/Casestudy/b30ff235c69da552f698cd1e2529642679c62af5.jpg";
+import csCrowd from "../assets/Casestudy/c5bb2f8721d702665ed2c54c04e3a840f4ee80ec.jpg";
+import csCbarch from "../assets/Casestudy/6acebc26902290df1ec9cf1c48e8424f7f4aac7b.jpg";
+import scrollFifthSip from "../assets/letsmakeithappenscroll/df49a56c44261f37bec84fd5b5ee75f09b009a72.jpg";
 
-// Social share icons
-function TwitterIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.912-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
+const PROCESS_STEPS = [
+  { num: "01", title: "DISCOVER", body: "Research, analytics audit, user interviews, funnel review." },
+  { num: "02", title: "DEFINE", body: "Brand pillars, UX architecture, conversion hypothesis." },
+  { num: "03", title: "DESIGN", body: "Identity, UI, prototypes, and creative assets." },
+  { num: "04", title: "DELIVER", body: "Handoff, campaign launch, measurement plan." },
+];
 
-function LinkedInIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
-}
+const BULLET_POINTS = [
+  "Funnel mapping & critical hypotheses",
+  "Creative playbooks (video, social, ads)",
+  "Landing page templates & measurement",
+  "Landing page templates & measurement",
+];
 
-function FacebookIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-    </svg>
-  );
-}
+const STRIP_IMAGES = [csData, csCrowd, csCbarch, scrollFifthSip];
 
-function LinkIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
-      <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
-    </svg>
-  );
-}
-
-function ArrowLeftIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 12H5M5 12l7 7M5 12l7-7" />
-    </svg>
-  );
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const month = d.toLocaleDateString("en-US", { month: "short" });
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${month} ${day}, ${d.getFullYear()}`;
 }
 
 export function BlogPostPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [article, setArticle] = useState<Article | null>(null);
+  const [allArticles, setAllArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState(0);
-  const [copied, setCopied] = useState(false);
-  const [subscribeEmail_, setSubscribeEmail_] = useState("");
-  const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
-  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const [formOpen, setFormOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 1024 : false
   );
@@ -78,26 +63,9 @@ export function BlogPostPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const sections = article?.content ?? [];
-  const author = article?.author;
-  const tags = article?.tags ?? [];
-  const date = article?.date ?? "";
-
-  // Track active section via IntersectionObserver — must be before any early returns
   useEffect(() => {
-    if (!sections.length) return;
-    const observers: IntersectionObserver[] = [];
-    sectionRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(i); },
-        { rootMargin: "-30% 0px -60% 0px" }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach((o) => o.disconnect());
-  }, [sections]);
+    fetchArticles().then(setAllArticles).catch(() => {});
+  }, []);
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
@@ -118,37 +86,16 @@ export function BlogPostPage() {
   );
   if (!article) return null;
 
-  function scrollToSection(i: number) {
-    sectionRefs.current[i]?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const sections = article.content ?? [];
+  const author = article.author;
+  const rows: Article["content"][] = [];
+  for (let i = 0; i < sections.length; i += 2) rows.push(sections.slice(i, i + 2));
 
-  function handleCopyLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
+  const sidePad = isMobile ? "20px" : "80px";
 
-  const shareUrl = encodeURIComponent(window.location.href);
-  const shareTitle = encodeURIComponent(article.title);
-
-  const shareLinks: Record<string, string> = {
-    twitter: `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`,
-    linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${shareTitle}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
-  };
-
-  async function handleShare(platform: "twitter" | "linkedin" | "facebook") {
-    if (isMobile && navigator.share) {
-      try {
-        await navigator.share({ title: article.title, url: window.location.href });
-        return;
-      } catch {
-        // user cancelled or API unavailable — fall through
-      }
-    }
-    window.open(shareLinks[platform], "_blank", "noopener,noreferrer,width=600,height=500");
-  }
+  const otherArticles = allArticles.filter((a) => getArticleId(a) !== id);
+  const relatedPool = otherArticles.length ? otherArticles : allArticles;
+  const relatedArticles = relatedPool.slice(0, 4);
 
   return (
     <div style={{ minHeight: "100vh", background: "#ffffff" }}>
@@ -159,576 +106,302 @@ export function BlogPostPage() {
         </div>
       </div>
 
-      {/* Back button */}
-      <div style={{ padding: isMobile ? "20px 20px 0" : "24px 80px 0", maxWidth: "1200px", margin: "0 auto" }}>
-        <button
-          onClick={() => navigate("/blog")}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 600,
-            fontSize: "13px",
-            letterSpacing: "0.04em",
-            color: "#888888",
-            padding: 0,
-            transition: "color 0.15s",
-          }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "#1a1a1a")}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "#888888")}
-        >
-          <ArrowLeftIcon />
-          Back to Blog
-        </button>
-      </div>
-
-      {/* Article header */}
+      {/* Overline + meta + title */}
       <motion.header
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        style={{ padding: isMobile ? "28px 20px 32px" : "48px 80px 56px", maxWidth: "1200px", margin: "0 auto" }}
+        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "24px 20px 0" : "32px 0 0" }}
       >
-        {/* Date + Author row */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "28px",
-            marginBottom: "28px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-            </svg>
-            <span
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 500,
-                fontSize: "13px",
-                color: "#888888",
-                letterSpacing: "0.02em",
-              }}
-            >
-              {date}
-            </span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 600,
-                fontSize: "13px",
-                color: "#555555",
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-              }}
-            >
-              {author?.name ?? "XG Labs"}
-            </span>
-          </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
+          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "16px", letterSpacing: "-0.02em", textTransform: "uppercase" as const, color: "#6E6E6E", margin: 0 }}>
+            {article.label || "Case Studies"}
+          </p>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", color: "#6E6E6E", margin: 0, whiteSpace: "nowrap" as const }}>
+            By {author?.name ?? "Xg Labs"} &nbsp;&nbsp;{formatDate(article.date)}&nbsp;&nbsp;{article.readTime}
+          </p>
         </div>
 
-        {/* Large title */}
         <h1
           style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontWeight: 700,
-            fontSize: isMobile ? "clamp(28px, 8vw, 40px)" : "clamp(42px, 6vw, 88px)",
-            lineHeight: "1.1",
+            fontFamily: "'Sora', sans-serif",
+            fontWeight: 400,
+            fontSize: isMobile ? "clamp(24px, 7vw, 32px)" : "clamp(28px, 3vw, 40px)",
+            lineHeight: "1.15",
             letterSpacing: "-0.02em",
-            color: "#1a1a1a",
+            color: "#414141",
             margin: "0 0 24px",
-            maxWidth: "820px",
+            maxWidth: "900px",
           }}
         >
           {article.title}
         </h1>
-
-        {/* Tags */}
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-          {tags?.map((tag) => (
-            <span
-              key={tag}
-              style={{
-                display: "inline-block",
-                padding: "6px 16px",
-                border: "1.5px solid #d0d0d0",
-                borderRadius: "100px",
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
-                fontSize: "11px",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                color: "#555555",
-              }}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
       </motion.header>
 
-      {/* Divider */}
-      <div style={{ height: "1px", background: "#e8e8e8", margin: isMobile ? "0 20px" : "0 80px" }} />
-
-      {/* Content area: sidebar + article body */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "200px 1fr",
-          gap: "0",
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: isMobile ? "0 20px" : "0 80px",
-          alignItems: "flex-start",
-        }}
+      {/* Hero image with LATEST badge */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "0 20px" : "0" }}
       >
-        {/* Left sidebar — sticky on desktop, inline on mobile */}
-        <aside
-          style={{
-            position: isMobile ? "static" : "sticky",
-            top: "130px",
-            paddingTop: isMobile ? "24px" : "56px",
-            paddingRight: isMobile ? "0" : "40px",
-            paddingBottom: isMobile ? "0" : "0",
-          }}
-        >
-          {/* CONTENTS */}
-          <div style={{ marginBottom: "40px" }}>
-            <p
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
-                fontSize: "10px",
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "#aaaaaa",
-                margin: "0 0 16px",
-              }}
-            >
-              Contents
-            </p>
-            <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              {sections?.map((sec, i) => (
-                <button
-                  key={i}
-                  onClick={() => scrollToSection(i)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0",
-                    background: "none",
-                    border: "none",
-                    padding: "6px 0 6px 12px",
-                    cursor: "pointer",
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontWeight: activeSection === i ? 600 : 400,
-                    fontSize: "13px",
-                    color: activeSection === i ? "#1a1a1a" : "#999999",
-                    textAlign: "left",
-                    transition: "color 0.15s",
-                    borderLeft: `2px solid ${activeSection === i ? "#1a1a1a" : "transparent"}`,
-                    lineHeight: "1.4",
-                  }}
-                >
-                  {sec.heading}
-                </button>
-              ))}
-            </nav>
+        <div style={{ position: "relative", borderRadius: "16px", overflow: "hidden", border: "1px solid #e0e0e0" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              background: "#02A884",
+              color: "#ffffff",
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 700,
+              fontSize: "12px",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase" as const,
+              padding: "9px 16px",
+              borderRadius: "0 0 10px 0",
+            }}
+          >
+            Latest
           </div>
+          <img
+            src={article.img}
+            alt={article.title}
+            style={{ width: "100%", height: isMobile ? "200px" : "380px", objectFit: "cover", display: "block" }}
+          />
+        </div>
+      </motion.div>
 
-          {/* SHARE */}
-          <div style={{ marginTop: isMobile ? "20px" : "0" }}>
-            <p
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
-                fontSize: "10px",
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "#aaaaaa",
-                margin: "0 0 14px",
-              }}
-            >
-              Share
-            </p>
-            <div style={{ display: "flex", gap: "10px" }}>
-              {/* Twitter */}
-              <button
-                onClick={() => handleShare("twitter")}
-                style={{ width: "36px", height: "36px", borderRadius: "50%", border: "1.5px solid #d0d0d0", background: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#555555", cursor: "pointer", transition: "border-color 0.15s, color 0.15s" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLButtonElement).style.color = "#1a1a1a"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLButtonElement).style.color = "#555555"; }}
-              >
-                <TwitterIcon />
-              </button>
-              {/* LinkedIn */}
-              <button
-                onClick={() => handleShare("linkedin")}
-                style={{ width: "36px", height: "36px", borderRadius: "50%", border: "1.5px solid #d0d0d0", background: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#555555", cursor: "pointer", transition: "border-color 0.15s, color 0.15s" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLButtonElement).style.color = "#1a1a1a"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLButtonElement).style.color = "#555555"; }}
-              >
-                <LinkedInIcon />
-              </button>
-              {/* Facebook */}
-              <button
-                onClick={() => handleShare("facebook")}
-                style={{ width: "36px", height: "36px", borderRadius: "50%", border: "1.5px solid #d0d0d0", background: "none", display: "flex", alignItems: "center", justifyContent: "center", color: "#555555", cursor: "pointer", transition: "border-color 0.15s, color 0.15s" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1a1a1a"; (e.currentTarget as HTMLButtonElement).style.color = "#1a1a1a"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#d0d0d0"; (e.currentTarget as HTMLButtonElement).style.color = "#555555"; }}
-              >
-                <FacebookIcon />
-              </button>
-              {/* Copy link */}
-              <button
-                onClick={handleCopyLink}
-                title={copied ? "Copied!" : "Copy link"}
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
-                  border: `1.5px solid ${copied ? "#1a7a4a" : "#d0d0d0"}`,
-                  background: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: copied ? "#1a7a4a" : "#555555",
-                  cursor: "pointer",
-                  transition: "border-color 0.15s, color 0.15s",
-                }}
-              >
-                <LinkIcon />
-              </button>
-            </div>
-          </div>
-        </aside>
+      {/* Description */}
+      {article.description && (
+        <div style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "24px 20px 0" : "24px 0 0" }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "16px" : "18px", lineHeight: "1.7", color: "#6E6E6E", margin: 0, maxWidth: "760px" }}>
+            {article.description}
+          </p>
+        </div>
+      )}
 
-        {/* Main article content */}
-        <motion.main
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{ paddingTop: isMobile ? "28px" : "56px", paddingBottom: isMobile ? "48px" : "80px", maxWidth: "640px" }}
-        >
-          {sections?.map((sec, i) => (
-            <section
-              key={i}
-              ref={(el) => { sectionRefs.current[i] = el; }}
-              style={{ marginBottom: "56px" }}
-            >
-              {/* Section heading */}
-              <h2
-                style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(22px, 2vw, 30px)",
-                  lineHeight: "1.25",
-                  color: "#1a1a1a",
-                  margin: "0 0 20px",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {sec.heading}
-              </h2>
-
-              {/* Paragraphs */}
-              {sec.paragraphs.map((para, j) => {
-                const isFirst = i === 0 && j === 0;
-                if (isFirst) {
-                  // Drop cap on first paragraph
-                  const firstChar = para.charAt(0);
-                  const rest = para.slice(1);
-                  return (
-                    <p
-                      key={j}
-                      style={{
-                        fontFamily: "'Space Grotesk', sans-serif",
-                        fontWeight: 400,
-                        fontSize: "clamp(15px, 1.1vw, 17px)",
-                        lineHeight: "1.75",
-                        color: "#333333",
-                        margin: "0 0 20px",
-                      }}
-                    >
-                      <span
-                        style={{
-                          float: "left",
-                          fontFamily: "'Playfair Display', Georgia, serif",
-                          fontWeight: 700,
-                          fontSize: "4.5em",
-                          lineHeight: "0.8",
-                          marginRight: "6px",
-                          marginTop: "6px",
-                          color: "#1a1a1a",
-                        }}
-                      >
-                        {firstChar}
-                      </span>
-                      {rest}
-                    </p>
-                  );
-                }
-                return (
+      {/* Content — paired columns */}
+      <motion.main
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "32px 20px 64px" : "48px 0 88px" }}
+      >
+        {rows.map((row, rowIdx) => (
+          <div
+            key={rowIdx}
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: isMobile ? "28px" : "64px",
+              marginBottom: rowIdx === rows.length - 1 ? 0 : (isMobile ? "28px" : "44px"),
+            }}
+          >
+            {row.map((sec, colIdx) => (
+              <div key={colIdx}>
+                {sec.heading && (
                   <p
-                    key={j}
                     style={{
-                      fontFamily: "'Space Grotesk', sans-serif",
+                      fontFamily: "'Cal Sans', sans-serif",
                       fontWeight: 400,
-                      fontSize: "clamp(15px, 1.1vw, 17px)",
-                      lineHeight: "1.75",
-                      color: "#333333",
-                      margin: "0 0 20px",
+                      fontSize: "18px",
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase" as const,
+                      color: "#414141",
+                      margin: "0 0 12px",
+                    }}
+                  >
+                    {sec.heading}
+                  </p>
+                )}
+                {sec.paragraphs.map((para, pIdx) => (
+                  <p
+                    key={pIdx}
+                    style={{
+                      fontFamily: "'Sora', sans-serif",
+                      fontWeight: 400,
+                      fontSize: "16px",
+                      lineHeight: "1.7",
+                      color: "#5F5F5F",
+                      margin: pIdx === sec.paragraphs.length - 1 ? 0 : "0 0 12px",
                     }}
                   >
                     {para}
                   </p>
-                );
-              })}
-
-              {/* Blockquote */}
-              {sec.blockquote && (
-                <blockquote
-                  style={{
-                    margin: "32px 0",
-                    paddingLeft: "24px",
-                    borderLeft: "3px solid #1a1a1a",
-                  }}
-                >
-                  <p
+                ))}
+                {sec.blockquote && (
+                  <div
                     style={{
-                      fontFamily: "'Playfair Display', Georgia, serif",
-                      fontWeight: 400,
-                      fontStyle: "italic",
-                      fontSize: "clamp(16px, 1.3vw, 20px)",
-                      lineHeight: "1.65",
-                      color: "#333333",
-                      margin: 0,
+                      marginTop: "16px",
+                      padding: "14px 18px",
+                      background: "#F7F8FA",
+                      borderRadius: "10px",
                     }}
                   >
-                    {sec.blockquote}
-                  </p>
-                </blockquote>
-              )}
-            </section>
-          ))}
-
-          {/* Newsletter subscribe box */}
-          <div
-            style={{
-              background: "#f5f5f5",
-              borderRadius: "16px",
-              padding: isMobile ? "32px 20px" : "48px 40px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              gap: "12px",
-              marginTop: "24px",
-            }}
-          >
-            <div
-              style={{
-                width: "44px",
-                height: "44px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#888888",
-                marginBottom: "4px",
-              }}
-            >
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-            </div>
-            <h3
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontWeight: 700,
-                fontSize: "clamp(18px, 1.6vw, 24px)",
-                color: "#1a1a1a",
-                margin: 0,
-              }}
-            >
-              Subscribe to the newsletter
-            </h3>
-            <p
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 400,
-                fontSize: "14px",
-                color: "#888888",
-                margin: 0,
-                maxWidth: "320px",
-                lineHeight: "1.6",
-              }}
-            >
-              Get the latest posts and insights delivered straight to your inbox. No spam, ever.
-            </p>
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                width: "100%",
-                maxWidth: "400px",
-                marginTop: "8px",
-              }}
-            >
-              <input
-                type="email"
-                placeholder="your@email.com"
-                value={subscribeEmail_}
-                onChange={(e) => setSubscribeEmail_(e.target.value)}
-                style={{
-                  flex: 1,
-                  padding: "12px 16px",
-                  border: "1.5px solid #d0d0d0",
-                  borderRadius: "8px",
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontSize: "14px",
-                  outline: "none",
-                  color: "#1a1a1a",
-                  background: "#ffffff",
-                }}
-              />
-              <button
-                onClick={async () => {
-                  if (!subscribeEmail_ || subscribeStatus === "loading" || subscribeStatus === "done") return;
-                  setSubscribeStatus("loading");
-                  try {
-                    await subscribeEmail(subscribeEmail_);
-                    setSubscribeStatus("done");
-                    setSubscribeEmail_("");
-                  } catch {
-                    setSubscribeStatus("error");
-                  }
-                }}
-                style={{
-                  padding: "12px 22px",
-                  border: "none",
-                  borderRadius: "8px",
-                  background: subscribeStatus === "done" ? "#02A884" : "#1a1a1a",
-                  color: "#ffffff",
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "13px",
-                  letterSpacing: "0.02em",
-                  cursor: subscribeStatus === "loading" || subscribeStatus === "done" ? "default" : "pointer",
-                  flexShrink: 0,
-                  transition: "background 0.2s",
-                }}
-              >
-                {subscribeStatus === "loading" ? "..." : subscribeStatus === "done" ? "✓ Subscribed" : subscribeStatus === "error" ? "Try again" : "Subscribe"}
-              </button>
-            </div>
+                    <p
+                      style={{
+                        fontFamily: "'Sora', sans-serif",
+                        fontWeight: 400,
+                        fontStyle: "italic",
+                        fontSize: "14px",
+                        lineHeight: "1.6",
+                        color: "#414141",
+                        margin: 0,
+                      }}
+                    >
+                      {sec.blockquote}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        </motion.main>
-      </div>
+        ))}
+      </motion.main>
 
-      {/* Divider */}
-      <div style={{ height: "1px", background: "#e8e8e8", margin: isMobile ? "0 20px" : "0 80px" }} />
+      {/* ── CTA Banner ── */}
+      <section style={{ background: "#0a0a0a", padding: isMobile ? "40px 20px" : "56px 80px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+        <h3 style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "clamp(22px, 6vw, 28px)" : "clamp(24px, 2.6vw, 38px)", lineHeight: "1.2", letterSpacing: "-0.01em", color: "#F7F8FA", margin: 0 }}>
+          Want a two-week creative audit for your brand?
+        </h3>
+        <motion.div initial="rest" whileHover="hover" whileTap="hover" animate="rest" style={{ position: "relative", height: 52, display: "inline-flex", flexShrink: 0 }}>
+          <button onClick={() => setFormOpen(true)} style={{ height: 52, paddingTop: 12, paddingRight: 40, paddingBottom: 12, paddingLeft: 22, display: "inline-flex", alignItems: "center", background: "#000000", borderRadius: 42, border: "1.5px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}>
+            <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
+            <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#000000", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
+            <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 16, height: "1em" }}>
+              <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 16, fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#F7F8FA" }}>Book a Call</motion.span>
+              <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 16, fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#F7F8FA" }}>Book a Call</motion.span>
+            </div>
+          </button>
+          <motion.div variants={{ rest: { background: "#02A884" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 5, right: -12, width: 42, height: 42, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+            <motion.svg width={18} height={18} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: "#F7F8FA" }, hover: { stroke: "#F7F8FA" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M13 5l7 7-7 7" /></motion.svg>
+          </motion.div>
+        </motion.div>
+      </section>
 
-      {/* Author section */}
-      <motion.section
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        style={{
-          padding: isMobile ? "48px 20px 64px" : "80px 80px 100px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
-          gap: "0",
-        }}
-      >
-        {/* Avatar circle */}
-        <div
-          style={{
-            width: "96px",
-            height: "96px",
-            borderRadius: "50%",
-            background: "#eeeeee",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "24px",
-          }}
+      {/* ── Quote + Image Strip ── */}
+      <section style={{ background: "#F7F8FA" }}>
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          style={{ paddingTop: "72px", paddingBottom: "44px", paddingLeft: sidePad, paddingRight: sidePad, textAlign: "center" as const }}
         >
-          <span
+          <p
             style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontWeight: 700,
-              fontSize: "40px",
-              color: "#555555",
-              lineHeight: 1,
+              fontFamily: "'Sora', sans-serif",
+              fontWeight: 400,
+              fontSize: "clamp(20px, 2.6vw, 36px)",
+              lineHeight: "1.2",
+              letterSpacing: "-0.02em",
+              color: "#A3A3A3",
+              margin: "0 auto",
             }}
           >
-            {author?.initial ?? "X"}
-          </span>
+            We aligned product messaging with performance
+            <br />
+            creative so campaigns matched the app experience —
+            <br />
+            <span style={{ color: "#636363" }}>
+              reducing drop-off and increasing conversion efficiency.
+            </span>
+          </p>
+        </motion.div>
+
+        {/* Bullet points row */}
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: isMobile ? "16px 12px" : "0", paddingTop: "0", paddingBottom: "36px", paddingLeft: sidePad, paddingRight: sidePad }}>
+          {BULLET_POINTS.map((item, i) => (
+            <p key={i} style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "15px" : "clamp(15px, 1.2vw, 18px)", lineHeight: "1.5", color: "#414141", margin: 0, paddingLeft: isMobile ? 0 : "16px", paddingRight: isMobile ? 0 : "20px" }}>
+              {"· "}{item}
+            </p>
+          ))}
         </div>
 
-        {/* Written by label */}
-        <p
-          style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 700,
-            fontSize: "11px",
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: "#aaaaaa",
-            margin: "0 0 10px",
-          }}
+        {/* 4-image strip — edge to edge */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: "0" }}
         >
-          Written by
-        </p>
+          {STRIP_IMAGES.map((src, i) => (
+            <div key={i} style={{ aspectRatio: "3/4", overflow: "hidden" }}>
+              <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            </div>
+          ))}
+        </motion.div>
+      </section>
 
-        {/* Author name */}
-        <h2
-          style={{
-            fontFamily: "'Playfair Display', Georgia, serif",
-            fontWeight: 700,
-            fontSize: "clamp(28px, 3vw, 48px)",
-            lineHeight: "1.1",
-            letterSpacing: "-0.02em",
-            color: "#1a1a1a",
-            margin: "0 0 16px",
-          }}
-        >
-          {author?.name ?? "XG Labs"}
-        </h2>
+      {/* ── Process Overview ── */}
+      <section style={{ background: "#ffffff", paddingTop: isMobile ? "48px" : "80px", paddingBottom: isMobile ? "28px" : "40px", paddingLeft: sidePad, paddingRight: sidePad }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "220px 1fr", gap: isMobile ? "12px" : "48px", marginBottom: isMobile ? "28px" : "48px" }}>
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "#1a1a1a", margin: 0 }}>
+            Process Overview
+          </p>
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: isMobile ? "14px" : "clamp(15px, 1.1vw, 18px)", lineHeight: "1.6", color: "#6E6E6E", margin: 0 }}>
+            We followed a structured, four-step approach that aligned brand, product, and strategy — moving from insight to execution with clarity and intention.
+          </p>
+        </div>
 
-        {/* Bio */}
-        <p
-          style={{
-            fontFamily: "'Space Grotesk', sans-serif",
-            fontWeight: 400,
-            fontSize: "clamp(14px, 1.1vw, 17px)",
-            lineHeight: "1.65",
-            color: "#666666",
-            margin: 0,
-            maxWidth: "480px",
-          }}
-        >
-          {author?.bio ?? ""}
-        </p>
-      </motion.section>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: "12px" }}>
+          {PROCESS_STEPS.map((step, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: i * 0.07, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              style={{ background: "#F7F8FA", borderRadius: "12px", padding: isMobile ? "18px 16px" : "24px 20px", display: "flex", flexDirection: "column", gap: "12px" }}
+            >
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: isMobile ? "13px" : "clamp(14px, 1.2vw, 16px)", letterSpacing: "-0.01em", color: "#1a1a1a", margin: 0 }}>
+                {step.num} {step.title}
+              </p>
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: isMobile ? "12px" : "13px", lineHeight: "1.55", color: "#6E6E6E", margin: 0 }}>
+                {step.body}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Related Blogs ── */}
+      {relatedArticles.length > 0 && (
+        <section style={{ padding: isMobile ? "32px 20px 64px" : "40px 80px 100px", background: "#ffffff" }}>
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#888888", margin: "0 0 28px" }}>
+            Related Blogs
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "16px" : "20px" }}>
+            {relatedArticles.map((post, i) => (
+              <motion.div
+                key={getArticleId(post) + i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: i * 0.07, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                onClick={() => navigate(`/blog/post/${getArticleId(post)}`)}
+                style={{ width: isMobile ? "calc(50% - 8px)" : "calc(25% - 15px)", display: "flex", flexDirection: "column", gap: "10px", cursor: "pointer" }}
+              >
+                <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: "10px", overflow: "hidden", background: "#e0e0e0" }}>
+                  <img src={post.img} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                </div>
+                <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(13px, 1vw, 15px)", lineHeight: "1.3", color: "#1a1a1a", margin: 0 }}>
+                  {post.title}
+                </p>
+                <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(11px, 0.85vw, 13px)", lineHeight: "1.55", color: "#888888", margin: 0 }}>
+                  {post.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
       <Footer />
+      <ContactFormOverlay open={formOpen} onClose={() => setFormOpen(false)} />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { TopBar } from "./landing/FinalLayout";
 import { ContactFormOverlay } from "./ContactFormOverlay";
 import { SubscribePopup } from "./SubscribePopup";
 import { Footer } from "./Footer";
-import { fetchArticles, getArticleId, type Article } from "../lib/api";
+import { fetchArticles, getArticleId, fetchWorks, type Article, type Work } from "../lib/api";
 
 // Articles are fetched from MongoDB — see src/lib/api.ts
 export type { Article };
@@ -17,6 +17,7 @@ const CARDS_PER_PAGE = 6;
 export function BlogPage() {
   const navigate = useNavigate();
   const [articles, setArticles] = useState<Article[]>([]);
+  const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("ALL");
@@ -39,6 +40,10 @@ export function BlogPage() {
       .then(data => setArticles(data))
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchWorks().then(setWorks).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -92,7 +97,7 @@ export function BlogPage() {
 
         {/* Hero */}
         <section style={{ background: "#F7F8FA", padding: "48px 40px 52px" }}>
-          <h1 style={{ fontFamily: "'Inter', 'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(28px, 8vw, 42px)", lineHeight: "1.05", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#414141", margin: "0 0 20px" }}>
+          <h1 style={{ fontFamily: "'Cal Sans'", fontWeight: 400, fontSize: "clamp(28px, 8vw, 42px)", lineHeight: "1.05", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#414141", margin: "0 0 20px" }}>
             Ideas that help brands grow smarter and scale faster.
           </h1>
           <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", lineHeight: "160%", color: "#555555", margin: "0 0 28px" }}>
@@ -140,16 +145,16 @@ export function BlogPage() {
               <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", alignItems: "center" }}>
                 {/* View Case Study — Let's Talk animation */}
                 <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 36, display: "inline-flex" }}>
-                  <button onClick={() => navigate("/blog/case-study/0")} style={{ height: 36, paddingTop: 8, paddingRight: 24, paddingBottom: 8, paddingLeft: 12, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}>
+                  <button onClick={() => navigate("/blog/case-study/0")} style={{ height: 36, paddingTop: 8, paddingRight: 24, paddingBottom: 8, paddingLeft: 12, display: "inline-flex", alignItems: "center", background: "transparent", borderRadius: 42, border: "none", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}>
                     <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
                     <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
                     <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 11, height: "1em" }}>
-                      <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>View Case Study</motion.span>
-                      <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>View Case Study</motion.span>
+                      <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", whiteSpace: "nowrap" as const, color: "#414141" }}>View Case Study</motion.span>
+                      <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", whiteSpace: "nowrap" as const, color: "#ffffff" }}>View Case Study</motion.span>
                     </div>
                   </button>
-                  <motion.div variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -12, width: 36, height: 36, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
-                    <motion.svg width={14} height={14} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: '#ffffff' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M13 5l7 7-7 7" /></motion.svg>
+                  <motion.div variants={{ rest: { background: "transparent", borderColor: "#1a1a1a" }, hover: { background: "#02A884", borderColor: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -12, width: 36, height: 36, borderRadius: 50, borderWidth: 1.5, borderStyle: "solid", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+                    <motion.svg width={14} height={14} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: '#1a1a1a' }, hover: { stroke: '#000000' } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M13 5l7 7-7 7" /></motion.svg>
                   </motion.div>
                 </motion.div>
                 {/* Read Article — Let's Talk animation */}
@@ -270,17 +275,17 @@ export function BlogPage() {
             We can build a custom workshop or audit based on these ideas.
           </p>
           <div style={{ display: "flex", justifyContent: "center", position: "relative" as const }}>
-            <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 50, display: "inline-flex" }}>
-              <button onClick={() => setFormOpen(true)} style={{ height: 50, paddingTop: 12, paddingRight: 34, paddingBottom: 12, paddingLeft: 16, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "none", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}>
+            <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 46, display: "inline-flex" }}>
+              <button onClick={() => setFormOpen(true)} style={{ height: 46, paddingTop: 10, paddingRight: 32, paddingBottom: 10, paddingLeft: 16, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1.5px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}>
                 <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
                 <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
-                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 13, height: "1em" }}>
-                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#1a1a1a" }}>Become Client</motion.span>
-                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Become Client</motion.span>
+                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 15, height: "1em" }}>
+                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>Become Client</motion.span>
+                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Become Client</motion.span>
                 </div>
               </button>
-              <motion.div variants={{ rest: { background: "#000000", color: "#ffffff" }, hover: { background: "#02A884", color: "#000000" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -16, width: 50, height: 50, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
-                <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M13 5l7 7-7 7" /></svg>
+              <motion.div variants={{ rest: { background: "#060606", color: "#F7F8FA" }, hover: { background: "#02A884", color: "#000000" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 4, right: -16, width: 50, height: 50, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+                <svg width={26} height={26} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M13 5l7 7-7 7" /></svg>
               </motion.div>
             </motion.div>
           </div>
@@ -293,17 +298,17 @@ export function BlogPage() {
             A curated article or resource the team recommends.
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {articles.slice(1, 3).map((article, i) => (
-              <div key={article.title + i} onClick={() => navigate(`/blog/post/${getArticleId(article)}`)} style={{ display: "flex", alignItems: "flex-start", gap: "14px", background: "#ffffff", borderRadius: "12px", padding: "14px", cursor: "pointer", border: "1px solid #eeeeee" }}>
+            {works.slice(0, 2).map((work, i) => (
+              <div key={work._id + i} onClick={() => navigate(`/blog/case-study/${work._id}`)} style={{ display: "flex", alignItems: "flex-start", gap: "14px", background: "#ffffff", borderRadius: "12px", padding: "14px", cursor: "pointer", border: "1px solid #eeeeee" }}>
                 <div style={{ width: 100, height: 80, borderRadius: "8px", overflow: "hidden", flexShrink: 0, background: "#e0e0e0" }}>
-                  <img src={article.img} alt={article.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <img src={work.heroImage} alt={work.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "15px", lineHeight: "130%", letterSpacing: "-0.01em", color: "#414141", margin: "0 0 6px", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
-                    {article.title}
+                    {work.title}
                   </p>
                   <p style={{ fontFamily: "'Sora', sans-serif", fontSize: "12px", lineHeight: "155%", color: "#6E6E6E", margin: 0, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
-                    {article.description}
+                    {work.excerpt}
                   </p>
                 </div>
               </div>
@@ -345,11 +350,11 @@ export function BlogPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              fontFamily: "'Inter',  'Cal Sans', sans-serif",
-              fontWeight: 700,
+              fontFamily: "'Cal Sans', sans-serif",
+              fontWeight: 400,
               fontStyle: "normal",
-              fontSize: "45px",
-              lineHeight: "1.1",
+              fontSize: "36px",
+              lineHeight: "120%",
               letterSpacing: "-0.02em",
               textTransform: "uppercase",
               color: "#414141",
@@ -412,7 +417,10 @@ export function BlogPage() {
           style={{ padding: "0 0 40px" }}
         >
           {/* LATEST badge + image */}
-          <div style={{ position: "relative", borderRadius: "16px", overflow: "hidden", border: "1px solid #e0e0e0" }}>
+          <div
+            onClick={() => articles[0] && navigate(`/blog/post/${getArticleId(articles[0])}`)}
+            style={{ position: "relative", borderRadius: "16px", overflow: "hidden", border: "1px solid #e0e0e0", cursor: "pointer" }}
+          >
             <div
               style={{
                 position: "absolute",
@@ -515,7 +523,7 @@ export function BlogPage() {
                   <motion.div initial="rest" whileHover="hover" whileTap="hover" animate="rest" style={{ position: "relative", height: 28, display: "inline-flex" }}>
                     <button
                       onClick={() => navigate("/blog/case-study/0")}
-                      style={{ height: 28, paddingTop: 6, paddingRight: 24, paddingBottom: 6, paddingLeft: 12, display: "inline-flex", alignItems: "center", background: "transparent", borderRadius: 42, border: "1.5px solid #1a1a1a", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
+                      style={{ height: 28, paddingTop: 6, paddingRight: 24, paddingBottom: 6, paddingLeft: 12, display: "inline-flex", alignItems: "center", background: "transparent", borderRadius: 42, border: "none", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
                     >
                       <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
                       <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#1a1a1a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
@@ -524,8 +532,8 @@ export function BlogPage() {
                         <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 12, lineHeight: 1, fontWeight: 600, letterSpacing: "0.03em", whiteSpace: "nowrap" as const, color: "#ffffff" }}>View Case Study</motion.span>
                       </div>
                     </button>
-                    <motion.div variants={{ rest: { background: "#1a1a1a" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -6, width: 26, height: 26, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
-                      <motion.svg width={12} height={12} viewBox="0 0 12 12" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }}>
+                    <motion.div variants={{ rest: { background: "transparent", borderColor: "#1a1a1a" }, hover: { background: "#02A884", borderColor: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -6, width: 26, height: 26, borderRadius: 50, borderWidth: 1.5, borderStyle: "solid", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+                      <motion.svg width={12} height={12} viewBox="0 0 12 12" fill="none" variants={{ rest: { stroke: "#1a1a1a" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }}>
                         <path d="M1.5 6H10.5M10.5 6L6 1.5M10.5 6L6 10.5" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                       </motion.svg>
                     </motion.div>
@@ -533,17 +541,17 @@ export function BlogPage() {
                   <motion.div initial="rest" whileHover="hover" whileTap="hover" animate="rest" style={{ position: "relative", height: 28, display: "inline-flex" }}>
                     <button
                       onClick={() => articles[0] && navigate(`/blog/post/${getArticleId(articles[0])}`)}
-                      style={{ height: 28, paddingTop: 6, paddingRight: 24, paddingBottom: 6, paddingLeft: 12, display: "inline-flex", alignItems: "center", background: "#1a1a1a", borderRadius: 42, border: "1.5px solid #1a1a1a", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
+                      style={{ height: 28, paddingTop: 6, paddingRight: 24, paddingBottom: 6, paddingLeft: 12, display: "inline-flex", alignItems: "center", background: "transparent", borderRadius: 42, border: "1.5px solid #1a1a1a", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
                     >
                       <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
-                      <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
+                      <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#1a1a1a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
                       <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 12, height: "1em" }}>
-                        <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 12, lineHeight: 1, fontWeight: 600, letterSpacing: "0.03em", whiteSpace: "nowrap" as const, color: "#ffffff" }}>Read Article</motion.span>
-                        <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 12, lineHeight: 1, fontWeight: 600, letterSpacing: "0.03em", whiteSpace: "nowrap" as const, color: "#1a1a1a" }}>Read Article</motion.span>
+                        <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 12, lineHeight: 1, fontWeight: 600, letterSpacing: "0.03em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#1a1a1a" }}>Read Article</motion.span>
+                        <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 12, lineHeight: 1, fontWeight: 600, letterSpacing: "0.03em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Read Article</motion.span>
                       </div>
                     </button>
-                    <motion.div variants={{ rest: { background: "#ffffff" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -6, width: 26, height: 26, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
-                      <motion.svg width={12} height={12} viewBox="0 0 12 12" fill="none" variants={{ rest: { stroke: "#1a1a1a" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }}>
+                    <motion.div variants={{ rest: { background: "#1a1a1a" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -6, width: 26, height: 26, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+                      <motion.svg width={12} height={12} viewBox="0 0 12 12" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }}>
                         <path d="M1.5 6H10.5M10.5 6L6 1.5M10.5 6L6 10.5" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                       </motion.svg>
                     </motion.div>
@@ -796,17 +804,17 @@ export function BlogPage() {
           <motion.div initial="rest" whileHover="hover" whileTap="hover" animate="rest" style={{ position: "relative", height: 44, display: "inline-flex", marginTop: "8px" }}>
             <button
               onClick={() => setFormOpen(true)}
-              style={{ height: 44, paddingTop: 10, paddingRight: 30, paddingBottom: 10, paddingLeft: 26, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1.5px solid #1a1a1a", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
+              style={{ height: 44, paddingTop: 10, paddingRight: 30, paddingBottom: 10, paddingLeft: 26, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1.5px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
             >
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#1a1a1a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
-              <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 13, height: "1em" }}>
-                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, lineHeight: 1, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#1a1a1a" }}>Become Client</motion.span>
-                <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, lineHeight: 1, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Become Client</motion.span>
+              <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 15, height: "1em" }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>Become Client</motion.span>
+                <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Become Client</motion.span>
               </div>
             </button>
-            <motion.div variants={{ rest: { background: "#1a1a1a" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 2, right: -10, width: 32, height: 32, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
-              <motion.svg width={13} height={13} viewBox="0 0 14 14" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }}>
+            <motion.div variants={{ rest: { background: "#060606" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: -2, right: -12, width: 40, height: 40, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+              <motion.svg width={15} height={15} viewBox="0 0 14 14" fill="none" variants={{ rest: { stroke: "#F7F8FA" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }}>
                 <path d="M2 7H12M12 7L7 2M12 7L7 12" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </motion.svg>
             </motion.div>
@@ -967,11 +975,12 @@ export function BlogPage() {
             </h2>
           </div>
 
-          {/* Horizontal article cards */}
+          {/* Horizontal case study cards */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
-            {articles.slice(1, 3).map((article, i) => (
+            {works.slice(0, 2).map((work, i) => (
               <motion.div
-                key={article.title + i}
+                key={work._id + i}
+                onClick={() => navigate(`/blog/case-study/${work._id}`)}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
@@ -998,8 +1007,8 @@ export function BlogPage() {
                   }}
                 >
                   <img
-                    src={article.img}
-                    alt={article.title}
+                    src={work.heroImage}
+                    alt={work.title}
                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                   />
                 </div>
@@ -1019,7 +1028,7 @@ export function BlogPage() {
                       WebkitBoxOrient: "vertical",
                     }}
                   >
-                    {article.title}
+                    {work.title}
                   </p>
                   <p
                     style={{
@@ -1036,7 +1045,7 @@ export function BlogPage() {
                       WebkitBoxOrient: "vertical",
                     }}
                   >
-                    {article.description}
+                    {work.excerpt}
                   </p>
                 </div>
               </motion.div>
