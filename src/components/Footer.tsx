@@ -246,11 +246,11 @@ export function Footer() {
         }}
       >
         {/* Logo */}
-        <div style={{ overflow: "hidden", height: "58px", width: "170px", justifySelf: "start" }}>
+        <div style={{ height: "40px", display: "flex", alignItems: "center", justifySelf: "start" }}>
           <img
             src={xgLogo}
             alt="Xg Labs"
-            style={{ height: "150px", width: "150px", marginTop: "-46px", marginLeft: "-16px", display: "block" }}
+            style={{ height: "100%", width: "auto", display: "block" }}
           />
         </div>
 
