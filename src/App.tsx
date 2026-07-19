@@ -18,7 +18,7 @@ import { CaseStudyPage } from "./components/CaseStudyPage";
 import { ServicesPage } from "./components/ServicesPage";
 import { PrivacyPolicy } from "./components/PrivacyPolicy";
 import { TermsOfUse } from "./components/TermsOfUse";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { ContactFormProvider } from "./components/ContactFormContext";
 
@@ -26,11 +26,43 @@ function ScrollToTop() {
   const location = useLocation();
   const navigationType = useNavigationType();
 
+  // Continuously remember scroll position per path. Native browser scroll
+  // restoration on back/forward is unreliable here because several pages
+  // (Blog, Portfolio, Case Study...) fetch content after mount, so the page
+  // isn't tall enough yet at the moment the browser tries to restore scroll.
   useEffect(() => {
-    // Let the browser restore scroll position on back/forward navigation.
-    if (navigationType === "POP") return;
+    const key = `scrollY:${location.pathname}`;
+    const onScroll = () => sessionStorage.setItem(key, String(window.scrollY));
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [location.pathname]);
+
+  useEffect(() => {
     // These routes handle their own scroll target once the section mounts.
     if (location.state?.scrollToSection || location.state?.scrollToFooter) return;
+
+    if (navigationType === "POP") {
+      const saved = sessionStorage.getItem(`scrollY:${location.pathname}`);
+      if (!saved) return;
+      const targetY = parseInt(saved, 10);
+      let attempts = 0;
+      const tryRestore = () => {
+        attempts++;
+        window.scrollTo(0, targetY);
+        // Verify the scroll actually took (not just that there's room for it) — the home
+        // page keeps the body non-scrollable for a moment while its hero sequence settles,
+        // during which scrollTo silently no-ops.
+        const reachedTarget = Math.abs(window.scrollY - targetY) < 4;
+        const maxScroll = document.body.scrollHeight - window.innerHeight;
+        const reachedBottom = window.scrollY >= maxScroll - 4;
+        if (!reachedTarget && !reachedBottom && attempts < 40) {
+          setTimeout(tryRestore, 75);
+        }
+      };
+      tryRestore();
+      return;
+    }
+
     window.scrollTo(0, 0);
   }, [location.pathname, location.state, navigationType]);
 
@@ -39,10 +71,26 @@ function ScrollToTop() {
 
 function HomePage() {
   const location = useLocation();
+  const navigationType = useNavigationType();
   const [isLoading, setIsLoading] = useState(() => {
     if (location.state?.skipLoading) return false;
     return sessionStorage.getItem("xg-intro-played") !== "1";
   });
+  // Captures whether we skipped the loading screen from the very first render (logo click,
+  // direct nav, etc.) — as opposed to isLoading later flipping false via the natural
+  // LoadingScreen -> onComplete flow, where the intro animation should still play once.
+  const skipIntroRef = useRef(
+    Boolean(location.state?.skipLoading) || sessionStorage.getItem("xg-intro-played") === "1"
+  );
+  // The hero's horizontal carousel (scrollStep) keeps the real page scroll locked until
+  // it reaches its last step, and normally only advances via manual wheel/click input.
+  // If we're arriving here via browser Back or a deep link meant to land further down
+  // the page (footer, a section, a remembered scroll position), that carousel would
+  // otherwise force the user to manually scroll through it all over again before the
+  // page becomes scrollable — jump straight past it in those cases.
+  const jumpPastHeroRef = useRef(
+    navigationType === "POP" || Boolean(location.state?.scrollToFooter || location.state?.scrollToSection)
+  );
 
   useEffect(() => {
     const targetId = location.state?.scrollToFooter ? "footer" : location.state?.scrollToSection;
@@ -70,7 +118,7 @@ function HomePage() {
         />
       )}
       <div className="min-h-screen bg-white cursor-none">
-        <HeroSection startSequence={!isLoading} />
+        <HeroSection startSequence={!isLoading} skipIntro={skipIntroRef.current} jumpPastHero={jumpPastHeroRef.current} />
         <ServicesList />
         <SelectedWork />
         <NeedMoreProof />

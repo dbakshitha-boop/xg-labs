@@ -262,15 +262,15 @@ export function SelectedWork() {
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-3xl font-bold text-[#414141] font-space leading-tight mb-2 uppercase">
+                  <h3 className="text-3xl font-normal text-[#060606] font-['Cal_Sans',sans-serif] leading-tight mb-2 uppercase">
                     {project.title.join(" ")}
                   </h3>
                   <div className="flex flex-col">
-                    <span className="text-lg text-[#414141] font-sora">{project.client}</span>
-                    <span className="text-sm text-gray-500 font-sora">{project.type}</span>
+                    <span className="text-lg text-[#5F5F5F] font-['Sora',sans-serif]">{project.client}</span>
+                    <span className="text-sm text-[#9A9A9A] font-['Sora',sans-serif]">{project.type}</span>
                   </div>
                 </div>
-                <span className="text-xl text-gray-400 font-sora">{project.date}</span>
+                <span className="text-xl font-normal text-[#9A9A9A] font-['Cal_Sans',sans-serif]">{project.date}</span>
               </div>
 
               <div className="h-px w-full bg-gray-200" />
@@ -278,13 +278,13 @@ export function SelectedWork() {
               <p className="text-base text-[#414141] leading-relaxed font-sora">
                 {project.shortDescription}
               </p>
-               <p className="text-sm text-gray-500 leading-relaxed font-sora">
+               <p className="text-sm text-[#414141] leading-relaxed font-['Sora',sans-serif]">
                 {project.longDescription}
               </p>
 
               <div className="flex flex-wrap gap-2">
                 {project.tags.map((tag, idx) => (
-                  <span key={idx} className="text-xs font-bold text-gray-500 uppercase tracking-wider font-space bg-white px-3 py-1 rounded-full border border-gray-100">
+                  <span key={idx} className="text-xs font-bold text-[#6E6E6E] uppercase tracking-wider font-['Cal_Sans',sans-serif] bg-white px-3 py-1 rounded-full border border-gray-100">
                     {tag}
                   </span>
                 ))}
@@ -311,8 +311,9 @@ export function SelectedWork() {
             {/* Left Column: Title (top=image top), Short Desc + Index/Client (bottom=image bottom) */}
             <div className="w-full lg:flex-1 lg:max-w-[360px] xl:max-w-[480px] 2xl:max-w-[560px] flex flex-col justify-between h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-1 pb-6 xl:pb-8">
 
-              {/* Title — aligns with top margin of image */}
-              <div className="relative h-[180px] lg:h-[210px] xl:h-[240px] w-full overflow-hidden">
+              {/* Title — aligns with top margin of image. min-h (not a fixed clipping
+                  height) since some titles wrap to 3 lines at narrower breakpoints. */}
+              <div className="relative min-h-[180px] lg:min-h-[210px] xl:min-h-[240px] w-full overflow-visible">
                 {projects.map((project, index) => (
                   <motion.div
                     key={project.id}
@@ -321,7 +322,7 @@ export function SelectedWork() {
                     animate={getTextAnimation(index)}
                     transition={transition}
                   >
-                    <h3 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold text-[#414141] font-space leading-tight uppercase">
+                    <h3 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-normal text-[#060606] font-['Cal_Sans',sans-serif] leading-tight uppercase">
                       {project.title[0]}
                       <br />
                       {project.title[1]}
@@ -346,7 +347,7 @@ export function SelectedWork() {
                         {project.client}
                       </h4>
                       {project.type && (
-                        <p className="text-xs text-gray-400 font-['Sora',sans-serif] uppercase tracking-wide mt-1">
+                        <p className="text-xs text-[#9A9A9A] font-['Sora',sans-serif] uppercase tracking-wide mt-1">
                           {project.type}
                         </p>
                       )}
@@ -461,7 +462,7 @@ export function SelectedWork() {
                     animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 12 }}
                     transition={transition}
                   >
-                    <span className="text-[40px] font-bold font-['Sora',sans-serif]" style={{ color: "#9A9A9A" }}>
+                    <span className="text-[40px] font-normal font-['Cal_Sans',sans-serif]" style={{ color: "#9A9A9A" }}>
                       {project.date}
                     </span>
                   </motion.div>
@@ -478,7 +479,7 @@ export function SelectedWork() {
                     animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 20 }}
                     transition={transition}
                   >
-                    <p className="text-lg lg:text-xl xl:text-[22px] text-gray-600 leading-relaxed font-['Sora',sans-serif]">
+                    <p className="text-lg lg:text-xl xl:text-[22px] text-[#414141] leading-relaxed font-['Sora',sans-serif]">
                       {project.longDescription}
                     </p>
                   </motion.div>
@@ -487,13 +488,13 @@ export function SelectedWork() {
 
               {/* ROLE + Tags — aligned with bottom of card image */}
               <div className="mt-auto flex flex-col gap-2" style={{ marginBottom: "36px" }}>
-                <span className="text-base font-bold text-gray-400 uppercase tracking-widest font-space">Role</span>
+                <span className="text-base font-bold text-[#414141] uppercase tracking-widest font-['Sora',sans-serif]">Role</span>
                 <div className="relative" style={{ minHeight: "80px" }}>
                   {projects.map((project, index) => (
                     <motion.div
                       key={project.id}
-                      className="absolute top-0 left-0 w-full flex flex-col"
-                      style={{ rowGap: "8px" }}
+                      className="absolute top-0 left-0 w-full flex flex-row flex-wrap items-center"
+                      style={{ columnGap: "12px", rowGap: "8px" }}
                       initial={false}
                       animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 10 }}
                       transition={transition}

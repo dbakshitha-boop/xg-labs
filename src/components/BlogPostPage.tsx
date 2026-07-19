@@ -5,6 +5,7 @@ import { TopBar } from "./landing/FinalLayout";
 import { ContactFormOverlay } from "./ContactFormOverlay";
 import { fetchArticle, fetchArticles, getArticleId, type Article } from "../lib/api";
 import { Footer } from "./Footer";
+import { PercentLoader } from "./ui/PercentLoader";
 import csData from "../assets/Casestudy/b30ff235c69da552f698cd1e2529642679c62af5.jpg";
 import csCrowd from "../assets/Casestudy/c5bb2f8721d702665ed2c54c04e3a840f4ee80ec.jpg";
 import csCbarch from "../assets/Casestudy/6acebc26902290df1ec9cf1c48e8424f7f4aac7b.jpg";
@@ -68,13 +69,8 @@ export function BlogPostPage() {
   }, []);
 
   if (loading) return (
-    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-        style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid #e2e2e2", borderTopColor: "#414141" }}
-      />
-      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888" }}>Loading</p>
+    <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <PercentLoader loading={loading} />
     </div>
   );
   if (fetchError) return (

@@ -280,7 +280,7 @@ export function Footer() {
               onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.8)")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.3)")}
             >
-              Brandopedia
+              theBrandopedia.in
             </a>
           </span>
 

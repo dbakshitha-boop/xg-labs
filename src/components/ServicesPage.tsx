@@ -171,7 +171,7 @@ function AccordionRow({
         <span
           style={{
             fontFamily: "'Cal Sans', sans-serif",
-            fontWeight: 500,
+            fontWeight: 400,
             fontSize: labelSize,
             lineHeight: "1",
             letterSpacing: "0",
@@ -220,10 +220,11 @@ function AccordionRow({
           >
             <p
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 fontWeight: 400,
                 fontSize: "14px",
-                color: "#777777",
+                color: "#6E6E6E",
+                letterSpacing: "-0.04em",
                 lineHeight: "1.65",
                 paddingBottom: "20px",
                 margin: 0,
@@ -262,7 +263,7 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
       {/* Title */}
       <h2
         style={{
-          fontFamily: "'Cal Sans', sans-serif",
+          fontFamily: "'Cal Sans'",
           fontWeight: 400,
           fontSize: 28,
           letterSpacing: "-0.02em",
@@ -331,14 +332,14 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
             <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 11 }}>
               <motion.span
                 variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+                style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
               >
                 View Cases
               </motion.span>
               <motion.span
                 aria-hidden
                 variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
               >
                 View Cases
               </motion.span>
@@ -394,14 +395,14 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
             <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 11 }}>
               <motion.span
                 variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
               >
                 {"Let's Talk"}
               </motion.span>
               <motion.span
                 aria-hidden
                 variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
+                style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
               >
                 {"Let's Talk"}
               </motion.span>
@@ -544,12 +545,12 @@ function CardSlide({
           <div style={{ width: "280px", flexShrink: 0 }}>
             <h2
               style={{
-                fontFamily: "’Space Grotesk’, sans-serif",
-                fontWeight: 900,
+                fontFamily: "'Cal Sans', sans-serif",
+                fontWeight: 400,
                 fontSize: "clamp(22px, 2.2vw, 34px)",
-                letterSpacing: "-0.01em",
+                letterSpacing: "-0.02em",
                 textTransform: "uppercase",
-                color: "#1a1a1a",
+                color: "#414141",
                 margin: 0,
                 lineHeight: "1.1",
               }}
@@ -561,10 +562,11 @@ function CardSlide({
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "24px" }}>
             <p
               style={{
-                fontFamily: "’Space Grotesk’, sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 fontWeight: 400,
                 fontSize: "clamp(14px, 1.1vw, 17px)",
-                color: "#555555",
+                color: "#6E6E6E",
+                letterSpacing: "-0.04em",
                 lineHeight: "1.7",
                 margin: 0,
               }}
@@ -612,14 +614,14 @@ function CardSlide({
                   <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 13 }}>
                     <motion.span
                       variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                      style={{ display: "block", fontFamily: "’Cal Sans’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
                     >
                       View Cases
                     </motion.span>
                     <motion.span
                       aria-hidden
                       variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "’Cal Sans’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
                     >
                       View Cases
                     </motion.span>
@@ -675,14 +677,14 @@ function CardSlide({
                   <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 13 }}>
                     <motion.span
                       variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                      style={{ display: "block", fontFamily: "’Cal Sans’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
                     >
                       {"Let’s Talk"}
                     </motion.span>
                     <motion.span
                       aria-hidden
                       variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "’Cal Sans’, sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
                     >
                       {"Let’s Talk"}
                     </motion.span>
@@ -742,22 +744,22 @@ function GridServiceCard({ service }: { service: ServiceData }) {
       {/* Title + description + buttons */}
       <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
         <div style={{ width: "90px", flexShrink: 0 }}>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 900, fontSize: "10px", textTransform: "uppercase", color: "#1a1a1a", margin: 0, lineHeight: "1.3" }}>
+          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "10px", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#414141", margin: 0, lineHeight: "1.3" }}>
             {service.title}
           </p>
         </div>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "9px", color: "#666", lineHeight: "1.5", margin: 0 }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "9px", color: "#6E6E6E", letterSpacing: "-0.04em", lineHeight: "1.5", margin: 0 }}>
             {service.description}
           </p>
           <div style={{ display: "flex", gap: "5px" }}>
-            <button onClick={() => navigate("/blog/case-study/0")} style={{ display: "flex", alignItems: "center", gap: "5px", border: "1px solid #1a1a1a", borderRadius: "100px", background: "#fff", padding: "4px 8px 4px 11px", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "7.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#1a1a1a" }}>
+            <button onClick={() => navigate("/blog/case-study/0")} style={{ display: "flex", alignItems: "center", gap: "5px", border: "1px solid #1a1a1a", borderRadius: "100px", background: "#fff", padding: "4px 8px 4px 11px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "7.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#1a1a1a" }}>
               View Cases
               <div style={{ width: 14, height: 14, borderRadius: "50%", background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <svg width="6" height="6" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
             </button>
-            <button onClick={() => openContactForm()} style={{ display: "flex", alignItems: "center", gap: "5px", border: "none", borderRadius: "100px", background: "#1a1a1a", padding: "4px 8px 4px 11px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "7.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>
+            <button onClick={() => openContactForm()} style={{ display: "flex", alignItems: "center", gap: "5px", border: "none", borderRadius: "100px", background: "#1a1a1a", padding: "4px 8px 4px 11px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "7.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>
               {"Let's Talk"}
               <div style={{ width: 14, height: 14, borderRadius: "50%", background: "#02A884", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <svg width="6" height="6" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -779,7 +781,7 @@ function GridServiceCard({ service }: { service: ServiceData }) {
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
                 style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", gap: "4px" }}
               >
-                <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "8px", textTransform: "uppercase", color: "#5F5F5F", textAlign: "left" }}>
+                <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "8px", letterSpacing: "0", textTransform: "uppercase", color: "#5F5F5F", textAlign: "left" }}>
                   {item.label}
                 </span>
                 <span style={{ fontSize: "11px", color: "#9A9A9A", lineHeight: 1, flexShrink: 0 }}>{openIdx === i ? "−" : "+"}</span>
@@ -794,7 +796,7 @@ function GridServiceCard({ service }: { service: ServiceData }) {
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     style={{ overflow: "hidden" }}
                   >
-                    <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "7px", color: "#777", lineHeight: "1.5", margin: "0 0 5px" }}>
+                    <p style={{ fontFamily: "'Sora', sans-serif", fontSize: "7px", color: "#6E6E6E", letterSpacing: "-0.04em", lineHeight: "1.5", margin: "0 0 5px" }}>
                       {item.description}
                     </p>
                   </motion.div>

@@ -42,7 +42,7 @@ function isValidEmail(val: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 }
 
-export function ContactFormContent({ onClose, embedded = false }: { onClose?: () => void; embedded?: boolean }) {
+export function ContactFormContent({ onClose, embedded = false, onFieldInteract }: { onClose?: () => void; embedded?: boolean; onFieldInteract?: () => void }) {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
@@ -210,7 +210,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
             <div style={{ marginBottom: "8px" }}>
               <span style={labelStyle}>Who you are</span>
             </div>
-            <input className="cf-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="[ Your Name ]" style={inputStyle} />
+            <input className="cf-input" value={name} onChange={(e) => setName(e.target.value)} onFocus={onFieldInteract} placeholder="[ Your Name ]" style={inputStyle} />
           </div>
 
           <div style={fieldStyle}>
@@ -223,6 +223,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onBlur={() => setEmailTouched(true)}
+              onFocus={onFieldInteract}
               placeholder="[ Your Email ]"
               style={inputStyle}
             />
@@ -239,14 +240,14 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
               <span style={labelStyle}>Your Company</span>
               <span style={optionalStyle}>(optional)</span>
             </div>
-            <input className="cf-input" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="[ Company Name ]" style={inputStyle} />
+            <input className="cf-input" value={company} onChange={(e) => setCompany(e.target.value)} onFocus={onFieldInteract} placeholder="[ Company Name ]" style={inputStyle} />
           </div>
 
           <div style={fieldStyle}>
             <div style={{ marginBottom: "8px" }}>
               <span style={labelStyle}>Faster Replies</span>
             </div>
-            <input className="cf-input" type="tel" inputMode="numeric" value={phone} onChange={handlePhoneChange} placeholder="[ Your Phone Number ]" style={inputStyle} />
+            <input className="cf-input" type="tel" inputMode="numeric" value={phone} onChange={handlePhoneChange} onFocus={onFieldInteract} placeholder="[ Your Phone Number ]" style={inputStyle} />
           </div>
 
           {/* Row 3: Message full width + submit */}
@@ -260,6 +261,7 @@ export function ContactFormContent({ onClose, embedded = false }: { onClose?: ()
                 className="cf-input"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                  onFocus={onFieldInteract}
                 placeholder="[ Tell us briefly what you need — project, problem, or idea. ]"
                 rows={1}
                 style={{ ...inputStyle, resize: "none", display: "block", overflow: "hidden" }}

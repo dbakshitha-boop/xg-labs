@@ -21,7 +21,7 @@ import mImg_extra1   from "figma:asset/06355012afb0087b8c9bfc9843e66981c1b4fc10.
 import mImg_extra2   from "figma:asset/3928f5a725db8937d4474329e22213a3e4710bec.png";
 import mImg_extra3   from "figma:asset/83d4a69b3e9c8f0a9728fcee74adb0198bf260f8.png";
 
-export function LandingSequence({ startSequence }: { startSequence: boolean }) {
+export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero = false }: { startSequence: boolean; skipIntro?: boolean; jumpPastHero?: boolean }) {
     const navigate = useNavigate();
     const { open: openContactForm } = useContactForm();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -40,6 +40,7 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     const lastStepTime = useRef(0);       // when the last step fired (for throttle)
     const lastEventTime = useRef(0);      // when the last wheel event arrived (for gesture reset)
     const scrollDeltaAccumulator = useRef(0);
+    const gestureLocked = useRef(false);  // once a step fires, ignore the rest of this same trackpad gesture (momentum tail)
     const { scrollY } = useScroll();
     const transitionOpacity = useTransform(scrollY, [0, 800], [0, 1]);
     
@@ -74,57 +75,66 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
     useEffect(() => {
         if (containerExpanded) {
             // Wait for container to fully expand before showing logos (matches 0.6s duration)
-            const logoTimer = setTimeout(() => setShowLogos(true), 650);
+            const logoTimer = setTimeout(() => setShowLogos(true), skipIntro ? 0 : 650);
 
             // Enable overflow after logos have entered
-            const overflowTimer = setTimeout(() => setOverflowVisible(true), 1200);
+            const overflowTimer = setTimeout(() => setOverflowVisible(true), skipIntro ? 0 : 1200);
 
             return () => {
                 clearTimeout(overflowTimer);
                 clearTimeout(logoTimer);
             };
         }
-    }, [containerExpanded]);
+    }, [containerExpanded, skipIntro]);
 
     // 3. Slide logos almost immediately so they spring in while already sliding
     useEffect(() => {
         if (showLogos) {
-            const timer = setTimeout(() => setSlideLogos(true), 50);
+            const timer = setTimeout(() => setSlideLogos(true), skipIntro ? 0 : 50);
             return () => clearTimeout(timer);
         }
-    }, [showLogos]);
+    }, [showLogos, skipIntro]);
 
     // 4. After slide finishes, expand to full screen and focus
     useEffect(() => {
         if (slideLogos) {
-            const timer = setTimeout(() => setFullScreen(true), 2500); 
+            const timer = setTimeout(() => setFullScreen(true), skipIntro ? 0 : 2500);
             return () => clearTimeout(timer);
         }
-    }, [slideLogos]);
+    }, [slideLogos, skipIntro]);
 
     // 5. After full screen, start Layout Shift (Container Shrink + Move)
     useEffect(() => {
         if (fullScreen) {
-            const timer = setTimeout(() => setLayoutShift(true), 800);
+            const timer = setTimeout(() => setLayoutShift(true), skipIntro ? 0 : 800);
             return () => clearTimeout(timer);
         }
-    }, [fullScreen]);
+    }, [fullScreen, skipIntro]);
 
     // 6. After Layout Shift completes (1.2s duration), trigger Logo Exit
     useEffect(() => {
         if (layoutShift) {
-            const timer = setTimeout(() => setLogoExiting(true), 1200);
+            const timer = setTimeout(() => setLogoExiting(true), skipIntro ? 0 : 1200);
             return () => clearTimeout(timer);
         }
-    }, [layoutShift]);
+    }, [layoutShift, skipIntro]);
 
     // 7. After Logo Exit completes (0.5s duration), trigger Content Entry
     useEffect(() => {
         if (logoExiting) {
-            const timer = setTimeout(() => setShowContent(true), 500);
+            const timer = setTimeout(() => setShowContent(true), skipIntro ? 0 : 500);
             return () => clearTimeout(timer);
         }
-    }, [logoExiting]);
+    }, [logoExiting, skipIntro]);
+
+    // 8. Arriving via back-navigation or a deep link meant to land further down the page —
+    // jump straight past the horizontal carousel's last step so real page scroll unlocks
+    // immediately, instead of requiring the user to manually wheel through it again.
+    useEffect(() => {
+        if (showContent && skipIntro && jumpPastHero) {
+            setScrollStep(3);
+        }
+    }, [showContent, skipIntro, jumpPastHero]);
 
     // Lock Body Scroll when in Horizontal Mode
     useEffect(() => {
@@ -140,11 +150,21 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
         if (scrollStep < 3) {
              document.body.style.overflow = "hidden";
-        } else {
-             document.body.style.overflow = "auto";
+             return () => { document.body.style.overflow = "auto"; };
         }
 
-        return () => { document.body.style.overflow = "auto"; };
+        // Reaching the final step: keep scroll locked briefly so any leftover trackpad
+        // momentum from the gesture that just landed us on the contact form doesn't
+        // immediately carry straight through into the next section below.
+        document.body.style.overflow = "hidden";
+        const releaseTimer = setTimeout(() => {
+            document.body.style.overflow = "auto";
+        }, 700);
+
+        return () => {
+            clearTimeout(releaseTimer);
+            document.body.style.overflow = "auto";
+        };
     }, [showContent, scrollStep, isMobile]);
 
 
@@ -157,11 +177,18 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
 
             const now = Date.now();
 
-            // Reset accumulator when the user starts a fresh scroll gesture (>200ms gap)
+            // A fresh gesture (>200ms gap since the last wheel event) resets everything,
+            // including the lock — trackpad momentum fires with no gaps, so this only
+            // clears once the user has actually lifted their fingers and paused.
             if (now - lastEventTime.current > 200) {
                 scrollDeltaAccumulator.current = 0;
+                gestureLocked.current = false;
             }
             lastEventTime.current = now;
+
+            // Already stepped once during this gesture — ignore the rest of its momentum
+            // tail so one trackpad swipe can't cascade through multiple sections.
+            if (gestureLocked.current) return;
 
             scrollDeltaAccumulator.current += e.deltaY;
 
@@ -172,10 +199,12 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                 setScrollStep(prev => Math.min(prev + 1, 3));
                 scrollDeltaAccumulator.current = 0;
                 lastStepTime.current = now;
+                gestureLocked.current = true;
             } else if (scrollDeltaAccumulator.current < -120) {
                 setScrollStep(prev => Math.max(prev - 1, 0));
                 scrollDeltaAccumulator.current = 0;
                 lastStepTime.current = now;
+                gestureLocked.current = true;
             }
         };
 
@@ -643,11 +672,12 @@ export function LandingSequence({ startSequence }: { startSequence: boolean }) {
                                         window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
                                     }
                                 }}
+                                onFieldInteract={() => setScrollStep(3)}
                             />
                         </div>
                     </motion.div>
                 )}
-                
+
                 {showContent && (
                     <>
                         {/* Transition Gradient Screen - Fades in based on scroll */}

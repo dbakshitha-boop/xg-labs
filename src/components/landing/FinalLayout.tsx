@@ -62,7 +62,13 @@ function TextContainer() {
       data-name="Text Container"
     >
       <p className="font-['Sora',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
-      <p className="font-['Cal_Sans'] font-[400] leading-[1.1] tracking-[-0.02em] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center mt-[-12px]">From Vision<br />To Velocity</p>
+      <div
+        className="font-['Cal_Sans'] font-[900] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center mt-[-12px]"
+        style={{ WebkitTextStroke: "2.5px #060606", letterSpacing: "-0.02em" }}
+      >
+        <span style={{ display: "block", lineHeight: 0.85 }}>From Vision</span>
+        <span style={{ display: "block", lineHeight: 0.85, marginTop: "0.1em" }}>To Velocity</span>
+      </div>
       <p className="font-['Sora',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full text-center">
         We align strategy, creative, and performance
         <br />
@@ -119,7 +125,7 @@ function Frame4({ isVisible }: { isVisible?: boolean }) {
       setLanded(false);
       return;
     }
-    const timer = setTimeout(() => setLanded(true), 1200);
+    const timer = setTimeout(() => setLanded(true), 500);
     return () => clearTimeout(timer);
   }, [isVisible]);
 
@@ -141,7 +147,7 @@ function Frame4({ isVisible }: { isVisible?: boolean }) {
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.76, 0, 0.24, 1] }}
+            transition={{ duration: 0.3, delay: 0.15, ease: [0.76, 0, 0.24, 1] }}
             style={{ originX: 0 }}
             className="absolute inset-0 bg-[#00A88D]"
           />
@@ -566,7 +572,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                       rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
                       hover: { clipPath: "polygon(0% 35%, 100% 0%, 100% 100%, 0% 100%)" },
                     }}
-                    transition={{ duration: 0.2, ease: [0.65, 0, 0.35, 1] }}
+                    transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
                     style={{ position: "absolute", inset: 0, background: "#02A884", zIndex: 1 }}
                   />
                   {/* Black — trails, ends fully covering */}
@@ -576,17 +582,26 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                       rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
                       hover: { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" },
                     }}
-                    transition={{ duration: 0.26, ease: [0.65, 0, 0.35, 1], delay: 0.05 }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
                     style={{ position: "absolute", inset: 0, background: "#0a0a0a", zIndex: 2 }}
                   />
-                  <motion.span
-                    variants={{ rest: { color: dark ? "#9A9A9A" : "#414141" }, hover: { color: "#ffffff" } }}
-                    transition={{ duration: 0.1, ease: "easeOut", delay: 0.12 }}
-                    style={{ position: "relative", zIndex: 3, fontFamily: "'Cal Sans', sans-serif" }}
-                    className="text-sm font-semibold uppercase"
-                  >
-                    {item}
-                  </motion.span>
+                  <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1.2, height: "1.2em" }}>
+                    <motion.span
+                      variants={{ rest: { y: 0, transition: { duration: 0.1, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1], delay: 0.1 } } }}
+                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", color: dark ? "#9A9A9A" : "#414141", whiteSpace: "nowrap" }}
+                      className="text-sm font-semibold uppercase"
+                    >
+                      {item}
+                    </motion.span>
+                    <motion.span
+                      aria-hidden
+                      variants={{ rest: { y: "100%", transition: { duration: 0.1, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1], delay: 0.1 } } }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", color: "#ffffff", whiteSpace: "nowrap" }}
+                      className="text-sm font-semibold uppercase"
+                    >
+                      {item}
+                    </motion.span>
+                  </div>
                   <motion.svg
                     width="12" height="12" viewBox="0 0 12 12" fill="none"
                     style={{ position: "relative", zIndex: 3, flexShrink: 0, transform: isActive ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s ease" }}
@@ -641,7 +656,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                     rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
                     hover: { clipPath: "polygon(0% 35%, 100% 0%, 100% 100%, 0% 100%)" },
                   }}
-                  transition={{ duration: 0.2, ease: [0.65, 0, 0.35, 1] }}
+                  transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
                   style={{ position: "absolute", inset: 0, background: "#02A884", zIndex: 1 }}
                 />
                 {/* Black — trails 90 ms behind teal, ends fully covering */}
@@ -651,18 +666,27 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                     rest: { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)" },
                     hover: { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" },
                   }}
-                  transition={{ duration: 0.26, ease: [0.65, 0, 0.35, 1], delay: 0.05 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
                   style={{ position: "absolute", inset: 0, background: "#0a0a0a", zIndex: 2 }}
                 />
-                {/* Text turns white after black fill rises */}
-                <motion.span
-                  variants={{ rest: { color: dark ? "#9A9A9A" : "#414141" }, hover: { color: "#ffffff" } }}
-                  transition={{ duration: 0.1, ease: "easeOut", delay: 0.12 }}
-                  style={{ position: "relative", zIndex: 3, fontFamily: "'Cal Sans', sans-serif" }}
-                  className="text-sm font-medium uppercase"
-                >
-                  {item}
-                </motion.span>
+                {/* Text slides up and out, revealing white text sliding up from below */}
+                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1.2, height: "1.2em" }}>
+                  <motion.span
+                    variants={{ rest: { y: 0, transition: { duration: 0.1, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1], delay: 0.1 } } }}
+                    style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", color: dark ? "#9A9A9A" : "#414141", whiteSpace: "nowrap" }}
+                    className="text-sm font-medium uppercase"
+                  >
+                    {item}
+                  </motion.span>
+                  <motion.span
+                    aria-hidden
+                    variants={{ rest: { y: "100%", transition: { duration: 0.1, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1], delay: 0.1 } } }}
+                    style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", color: "#ffffff", whiteSpace: "nowrap" }}
+                    className="text-sm font-medium uppercase"
+                  >
+                    {item}
+                  </motion.span>
+                </div>
               </motion.div>
             );
           })}
@@ -678,7 +702,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
               <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, fontSize: 15, height: '1em' }}>
-                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: '0em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: dark ? '#ffffff' : (refinedLetsTalk ? '#9A9A9A' : '#414141') }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: '0em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: dark ? '#9A9A9A' : '#414141' }}>
                   Let's Talk
                 </motion.span>
                 <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: '0em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
@@ -838,13 +862,13 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
 
 // --- Contact Section ---
 
-export function ContactSection({ onClose }: { onClose?: () => void }) {
+export function ContactSection({ onClose, onFieldInteract }: { onClose?: () => void; onFieldInteract?: () => void }) {
   return (
     <div
       className="absolute h-[1080px] overflow-clip top-1/2 translate-y-[-50%]"
       style={{ left: "210vw", width: "100vw", background: "#0e0e0e", display: "flex", flexDirection: "column" }}
     >
-      <ContactFormContent embedded onClose={onClose} />
+      <ContactFormContent embedded onClose={onClose} onFieldInteract={onFieldInteract} />
     </div>
   );
 }

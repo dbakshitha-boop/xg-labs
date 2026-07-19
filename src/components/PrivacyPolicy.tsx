@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import xgLogo from "../assets/whatmakesus/1.png";
 
 const SECTIONS = [
   {
@@ -63,7 +64,7 @@ export function PrivacyPolicy() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ minHeight: "100vh", background: "#ffffff", fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#ffffff", fontFamily: "'Sora', sans-serif" }}>
       {/* Top bar */}
       <div
         style={{
@@ -72,10 +73,12 @@ export function PrivacyPolicy() {
           zIndex: 50,
           background: "#ffffff",
           borderBottom: "1px solid #e5e5e5",
-          padding: "16px 48px",
+          height: "56px",
+          padding: "0 48px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          overflow: "visible",
         }}
       >
         <button
@@ -87,7 +90,7 @@ export function PrivacyPolicy() {
             background: "none",
             border: "none",
             cursor: "pointer",
-            fontFamily: "'Space Grotesk', sans-serif",
+            fontFamily: "'Sora', sans-serif",
             fontSize: 14,
             fontWeight: 500,
             color: "#666",
@@ -101,7 +104,7 @@ export function PrivacyPolicy() {
           </svg>
           Back
         </button>
-        <span style={{ fontWeight: 700, fontSize: 16, color: "#0a0a0a", letterSpacing: "-0.01em" }}>Xg Labs</span>
+        <img src={xgLogo} alt="Xg Labs" style={{ height: 160, width: "auto", display: "block", flexShrink: 0 }} />
       </div>
 
       {/* Content */}

@@ -110,14 +110,14 @@ export function ServicesList() {
     >
       {/* Mobile/tablet header — lg:hidden so desktop is untouched */}
       <div className="lg:hidden px-6 pt-10 pb-8 flex flex-col gap-4">
-        <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "18px", lineHeight: "120%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#060606" }}>
+        <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "28px", lineHeight: "120%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#060606" }}>
           Everything your brand needs to grow built into one system
         </p>
         <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "24px", lineHeight: "100%", letterSpacing: "0%", color: "#5F5F5F" }}>
           Every service works together as one system, built to create clarity, momentum, and results.
         </p>
         <div className="flex items-start justify-between gap-4">
-          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "100%", letterSpacing: "0%", color: "#6E6E6E" }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "20px", lineHeight: "100%", letterSpacing: "0%", color: "#6E6E6E" }}>
             No noise. No guesswork.<br />Just structured creative and strategic execution.
           </p>
           <motion.div
@@ -128,10 +128,10 @@ export function ServicesList() {
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
               <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
-                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 400, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
                   View More
                 </motion.span>
-                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
+                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 400, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
                   View More
                 </motion.span>
               </div>
@@ -146,18 +146,18 @@ export function ServicesList() {
       </div>
 
       {/* Desktop header — hidden lg:flex so mobile is untouched */}
-      <div className="hidden lg:flex items-start justify-between gap-12" style={{ paddingLeft: "100px", paddingRight: "70px", paddingBottom: "40px" }}>
-        <div className="flex flex-col gap-3 max-w-[820px]">
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", lineHeight: "120%", letterSpacing: "0.04em", textTransform: "uppercase", color: "#060606" }}>
+      <div className="hidden lg:flex items-start justify-between gap-4" style={{ paddingLeft: "100px", paddingRight: "70px", paddingBottom: "40px" }}>
+        <div className="flex flex-col gap-3">
+          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "24px", lineHeight: "120%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#060606", whiteSpace: "nowrap" }}>
             Everything your brand needs to grow built into one system
           </p>
-          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(24px, 2.6vw, 34px)", lineHeight: "128%", letterSpacing: "0%", color: "#5F5F5F" }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(24px, 2.6vw, 34px)", lineHeight: "130%", letterSpacing: "0%", color: "#5F5F5F", maxWidth: "720px" }}>
             Every service works together as one system, built to create clarity, momentum, and results.
           </p>
         </div>
         <div className="flex flex-col items-start gap-4 shrink-0 pt-1">
-          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "140%", letterSpacing: "0%", color: "#6E6E6E", whiteSpace: "nowrap" }}>
-            No noise. No guesswork.<br />Just structured creative and strategic execution.
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "16px", lineHeight: "150%", letterSpacing: "0%", color: "#6E6E6E", whiteSpace: "nowrap" }}>
+            No noise. No guesswork.<br />Just structured creative and <br />strategic execution.
           </p>
           <motion.div
             initial="rest" whileHover="hover" animate="rest"
@@ -167,10 +167,10 @@ export function ServicesList() {
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: 'absolute', inset: 0, background: '#02A884', transformOrigin: 'left center', zIndex: 1, pointerEvents: 'none' }} />
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: 'absolute', inset: 0, background: '#0a0a0a', transformOrigin: 'left center', zIndex: 2, pointerEvents: 'none' }} />
               <div style={{ position: 'relative', zIndex: 3, overflow: 'hidden', lineHeight: 1, height: '1em' }}>
-                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: '-100%', transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 400, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#414141' }}>
                   View More
                 </motion.span>
-                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
+                <motion.span aria-hidden variants={{ rest: { y: '100%', transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: 'absolute', top: 0, left: 0, display: 'block', fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 400, letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap', color: '#ffffff' }}>
                   View More
                 </motion.span>
               </div>

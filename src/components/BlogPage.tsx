@@ -5,6 +5,7 @@ import { TopBar } from "./landing/FinalLayout";
 import { ContactFormOverlay } from "./ContactFormOverlay";
 import { SubscribePopup } from "./SubscribePopup";
 import { Footer } from "./Footer";
+import { PercentLoader } from "./ui/PercentLoader";
 import { fetchArticles, getArticleId, fetchWorks, type Article, type Work } from "../lib/api";
 
 // Articles are fetched from MongoDB — see src/lib/api.ts
@@ -69,7 +70,7 @@ export function BlogPage() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#F7F8FA", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <p style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#888" }}>Loading articles...</p>
+      <PercentLoader loading={loading} />
     </div>
   );
 
@@ -280,8 +281,8 @@ export function BlogPage() {
                 <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
                 <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
                 <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 15, height: "1em" }}>
-                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>Become Client</motion.span>
-                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Become Client</motion.span>
+                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>Become a Client</motion.span>
+                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Become a Client</motion.span>
                 </div>
               </button>
               <motion.div variants={{ rest: { background: "#060606", color: "#F7F8FA" }, hover: { background: "#02A884", color: "#000000" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 4, right: -16, width: 50, height: 50, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
@@ -809,8 +810,8 @@ export function BlogPage() {
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#1a1a1a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
               <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 15, height: "1em" }}>
-                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>Become Client</motion.span>
-                <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Become Client</motion.span>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>Become a Client</motion.span>
+                <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, lineHeight: 1, fontWeight: 400, letterSpacing: "0.07em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>Become a Client</motion.span>
               </div>
             </button>
             <motion.div variants={{ rest: { background: "#060606" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: -2, right: -12, width: 40, height: 40, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>

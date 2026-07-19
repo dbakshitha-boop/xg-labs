@@ -2,7 +2,8 @@
 
 @font-face {
   font-family: 'Sora';
-  src: url('./assets/fonts/Sora/Sora-VariableFont_wght.ttf') format('truetype');
+  src: url('./assets/fonts/Sora/Sora-VariableFont_wght.woff2') format('woff2'),
+       url('./assets/fonts/Sora/Sora-VariableFont_wght.ttf') format('truetype');
   font-weight: 100 800;
   font-style: normal;
   font-display: swap;
@@ -10,7 +11,8 @@
 
 @font-face {
   font-family: 'Cal Sans';
-  src: url('./assets/fonts/Cal_Sans/CalSans-Regular.ttf') format('truetype');
+  src: url('./assets/fonts/Cal_Sans/CalSans-Regular.woff2') format('woff2'),
+       url('./assets/fonts/Cal_Sans/CalSans-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;

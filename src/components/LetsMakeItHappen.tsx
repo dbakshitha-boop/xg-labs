@@ -165,12 +165,14 @@ export function LetsMakeItHappen() {
           >
             <p
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
-                fontSize: "13px",
-                letterSpacing: "0.16em",
+                fontFamily: "'Sora', sans-serif",
+                fontWeight: 600,
+                fontSize: "32px",
+                lineHeight: "120%",
+                letterSpacing: "-0.02em",
+                textAlign: "center",
                 textTransform: "uppercase",
-                color: "#414141",
+                color: "#000000",
                 margin: 0,
               }}
             >
@@ -179,11 +181,12 @@ export function LetsMakeItHappen() {
 
             <h2
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 300,
-                fontSize: "clamp(52px, 8vw, 112px)",
-                lineHeight: "1.05",
-                letterSpacing: "-0.03em",
+                fontFamily: "'Cal Sans', sans-serif",
+                fontWeight: 400,
+                fontSize: "92px",
+                lineHeight: "120%",
+                letterSpacing: "-0.02em",
+                textAlign: "center",
                 color: "#414141",
                 margin: 0,
               }}

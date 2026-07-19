@@ -76,7 +76,7 @@ export function BlogInsightsSection() {
               margin: 0,
             }}
           >
-            Data.&nbsp; Creative.&nbsp; Strategy.
+            Data. Creative. Strategy.
           </motion.p>
 
           <motion.h2
@@ -85,8 +85,8 @@ export function BlogInsightsSection() {
             viewport={{ once: true, margin: "-60px" }}
             transition={{ delay: 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             style={{
-              fontFamily: "'Cal Sans', 'Sora' sans-serif",
-              fontWeight: 700,
+              fontFamily: "'Cal Sans', sans-serif",
+              fontWeight: 400,
               fontSize: "46px",
               lineHeight: "1.2",
               letterSpacing: "-0.02em",
@@ -115,9 +115,9 @@ export function BlogInsightsSection() {
         >
           <p
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
+              fontFamily: "'Sora', sans-serif",
               fontWeight: 400,
-              fontSize: "clamp(13px, 1vw, 15px)",
+              fontSize: "clamp(15px, 1.3vw, 18px)",
               lineHeight: "1.6",
               color: "#777777",
               margin: 0,
@@ -169,7 +169,7 @@ export function BlogInsightsSection() {
                 <motion.span
                   variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
                   transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                  style={{ display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+                  style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#414141" }}
                 >
                   View Blogs
                 </motion.span>
@@ -177,7 +177,7 @@ export function BlogInsightsSection() {
                   aria-hidden
                   variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
                   transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                  style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Space Grotesk', sans-serif", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                  style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
                 >
                   View Blogs
                 </motion.span>
@@ -233,25 +233,46 @@ export function BlogInsightsSection() {
                   duration: 0.75,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                style={{ display: "flex", flexDirection: "column", gap: "12px", flexShrink: 0 }}
+                style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}
               >
-                {/* Number label */}
-                <p
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontWeight: 400,
-                    fontSize: "13px",
-                    letterSpacing: "0.06em",
-                    color: "#aaaaaa",
-                    margin: 0,
-                    paddingLeft: "2px",
-                  }}
-                >
-                  {pad(i + 1)}
-                </p>
-
-                {/* Card — image on top, white text panel below */}
+                {/* Lifts the card back up to y:0 (level with card 001) while it's expanded,
+                    instead of letting the expanded description push it further down. */}
                 <motion.div
+                  animate={{ y: hoveredCard === i ? -offset : 0 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+                >
+                  {/* Number + label row */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingLeft: "2px" }}>
+                    <p
+                      style={{
+                        fontFamily: "'Sora', sans-serif",
+                        fontWeight: 600,
+                        fontSize: "15px",
+                        letterSpacing: "0.06em",
+                        color: "#6E6E6E",
+                        margin: 0,
+                      }}
+                    >
+                      {pad(i + 1)}
+                    </p>
+                    <p
+                      style={{
+                        fontFamily: "'Cal Sans', sans-serif",
+                        fontWeight: 600,
+                        fontSize: "14px",
+                        letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                        color: "#9A9A9A",
+                        margin: 0,
+                      }}
+                    >
+                      {article.label}
+                    </p>
+                  </div>
+
+                  {/* Card — image on top, white text panel below */}
+                  <motion.div
                   onClick={() => navigate(`/blog/post/${getArticleId(article)}`)}
                   whileHover="hover"
                   onHoverStart={() => setHoveredCard(i)}
@@ -275,86 +296,71 @@ export function BlogInsightsSection() {
                       transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                     />
-                    <p
-                      style={{
-                        position: "absolute",
-                        bottom: "14px",
-                        left: "18px",
-                        fontFamily: "'Space Grotesk', sans-serif",
-                        fontWeight: 600,
-                        fontSize: "9px",
-                        letterSpacing: "0.14em",
-                        textTransform: "uppercase",
-                        color: "#ffffff",
-                        margin: 0,
-                        textShadow: "0 1px 6px rgba(0,0,0,0.55)",
-                      }}
-                    >
-                      {article.label}
-                    </p>
                   </div>
 
-                  {/* Title panel */}
-                  <motion.div
-                    animate={{
-                      backgroundColor: hoveredCard === i ? "#F2F2F2" : "#ffffff",
-                    }}
-                    transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ padding: "20px 18px 24px", border: "1px solid #9A9A9A", borderBottom: hoveredCard === i ? "none" : "1px solid #9A9A9A" }}
-                  >
-                    <p
-                      style={{
-                        fontFamily: "'Space Grotesk', sans-serif",
-                        fontWeight: 700,
-                        fontSize: "clamp(12px, 1vw, 14px)",
-                        lineHeight: "1.4",
-                        letterSpacing: "0.04em",
-                        textTransform: "uppercase",
-                        color: "#1a1a1a",
-                        margin: 0,
+                  {/* Title panel + description share a single, non-toggling border so
+                      there's no seam left behind when the description collapses. */}
+                  <div style={{ border: "1px solid #9A9A9A" }}>
+                    {/* Title panel */}
+                    <motion.div
+                      animate={{
+                        backgroundColor: hoveredCard === i ? "#F2F2F2" : "#ffffff",
                       }}
+                      transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ padding: "20px 18px 24px" }}
                     >
-                      {article.title}
-                    </p>
-                  </motion.div>
-
-                  {/* Description — expands below on hover */}
-                  <AnimatePresence initial={false}>
-                    {hoveredCard === i && (
-                      <motion.div
-                        key="desc"
-                        initial={{ height: 0 }}
-                        animate={{ height: "auto" }}
-                        exit={{ height: 0 }}
-                        transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+                      <p
                         style={{
-                          overflow: "hidden",
-                          background: "#F2F2F2",
-                          borderLeft: "1px solid #9A9A9A",
-                          borderRight: "1px solid #9A9A9A",
-                          borderBottom: "1px solid #9A9A9A",
+                          fontFamily: "'Sora', sans-serif",
+                          fontWeight: 700,
+                          fontSize: "clamp(12px, 1vw, 14px)",
+                          lineHeight: "1.4",
+                          letterSpacing: "0.04em",
+                          textTransform: "uppercase",
+                          color: "#1a1a1a",
+                          margin: 0,
                         }}
                       >
-                        <motion.p
-                          initial={{ y: 16, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          exit={{ y: 16, opacity: 0 }}
-                          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                        {article.title}
+                      </p>
+                    </motion.div>
+
+                    {/* Description — expands below on hover */}
+                    <AnimatePresence initial={false}>
+                      {hoveredCard === i && (
+                        <motion.div
+                          key="desc"
+                          initial={{ height: 0 }}
+                          animate={{ height: "auto" }}
+                          exit={{ height: 0 }}
+                          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
                           style={{
-                            fontFamily: "'Space Grotesk', sans-serif",
-                            fontWeight: 400,
-                            fontSize: "13px",
-                            lineHeight: "1.6",
-                            color: "#666666",
-                            margin: 0,
-                            padding: "3px 18px 20px",
+                            overflow: "hidden",
+                            background: "#F2F2F2",
                           }}
                         >
-                          {article.description}
-                        </motion.p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                          <motion.p
+                            initial={{ y: 16, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 16, opacity: 0 }}
+                            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                            style={{
+                              fontFamily: "'Space Grotesk', sans-serif",
+                              fontWeight: 400,
+                              fontSize: "13px",
+                              lineHeight: "1.6",
+                              color: "#666666",
+                              margin: 0,
+                              padding: "3px 18px 20px",
+                            }}
+                          >
+                            {article.description}
+                          </motion.p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
                 </motion.div>
               </motion.div>
             );
