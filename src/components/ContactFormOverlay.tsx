@@ -70,6 +70,9 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
     setPhone(filtered);
   };
 
+  // Allow letters, spaces, and basic punctuation only — no digits or symbols
+  const filterTextOnly = (value: string) => value.replace(/[^\p{L}\s.,'\-?!:;()&"]/gu, "");
+
   const inputStyle: React.CSSProperties = {
     background: "transparent",
     border: "none",
@@ -210,7 +213,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
             <div style={{ marginBottom: "8px" }}>
               <span style={labelStyle}>Who you are</span>
             </div>
-            <input className="cf-input" value={name} onChange={(e) => setName(e.target.value)} onFocus={onFieldInteract} placeholder="[ Your Name ]" style={inputStyle} />
+            <input className="cf-input" value={name} onChange={(e) => setName(filterTextOnly(e.target.value))} onFocus={onFieldInteract} placeholder="[ Your Name ]" style={inputStyle} />
           </div>
 
           <div style={fieldStyle}>
@@ -240,7 +243,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
               <span style={labelStyle}>Your Company</span>
               <span style={optionalStyle}>(optional)</span>
             </div>
-            <input className="cf-input" value={company} onChange={(e) => setCompany(e.target.value)} onFocus={onFieldInteract} placeholder="[ Company Name ]" style={inputStyle} />
+            <input className="cf-input" value={company} onChange={(e) => setCompany(filterTextOnly(e.target.value))} onFocus={onFieldInteract} placeholder="[ Company Name ]" style={inputStyle} />
           </div>
 
           <div style={fieldStyle}>
@@ -260,7 +263,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
               <textarea
                 className="cf-input"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => setMessage(filterTextOnly(e.target.value))}
                   onFocus={onFieldInteract}
                 placeholder="[ Tell us briefly what you need — project, problem, or idea. ]"
                 rows={1}
@@ -285,7 +288,9 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
               <LeftBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#F7F8FA"} />
               <motion.div variants={{ rest: { width: 46 }, hover: { width: 116 } }} transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }} style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}>
                 <motion.span variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }} transition={{ duration: 0.15 }} style={{ position: "absolute", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {submitted || submitting ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif", lineHeight: 1, color: submitted ? "#02A884" : "rgba(255,255,255,0.3)" }}>{submitted ? "✓" : "·"}</span> : <img src={arrowIcon} alt="" width={46} height={46} style={{ display: "block", filter: "brightness(0) invert(1)", opacity: 0.75 }} />}
+                  {submitted ? <span style={{ fontSize: "32px", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif", lineHeight: 1, color: "#02A884" }}>✓</span>
+                    : submitting ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif", lineHeight: 1, color: "rgba(255,255,255,0.3)" }}>·</span>
+                    : <img src={arrowIcon} alt="" width={46} height={46} style={{ display: "block", filter: "brightness(0) invert(1)", opacity: 0.75, transform: "rotate(-6deg)" }} />}
                 </motion.span>
                 {!submitting && !submitted && (
                   <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }} style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase" as const, color: "#02A884", whiteSpace: "nowrap" as const, position: "absolute" as const }}>ENTER</motion.span>

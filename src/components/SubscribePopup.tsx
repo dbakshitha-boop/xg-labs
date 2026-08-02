@@ -41,6 +41,7 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
     <AnimatePresence>
       {open && (
         <>
+          <style>{`.subscribe-popup-input::placeholder { font-family: 'Sora', sans-serif; font-weight: 400; color: #9A9A9A; }`}</style>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -108,10 +109,10 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
             {/* Subtitle */}
             <p
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 fontWeight: 400,
                 fontSize: "15px",
-                color: "#888888",
+                color: "#5F5F5F",
                 margin: "0 0 16px",
                 textAlign: "center",
               }}
@@ -122,12 +123,12 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
             {/* Heading */}
             <h2
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontWeight: 700,
+                fontFamily: "'Cal Sans', sans-serif",
+                fontWeight: 400,
                 fontSize: "clamp(22px, 2.8vw, 32px)",
                 lineHeight: "130%",
                 letterSpacing: "-0.02em",
-                color: "#1a1a1a",
+                color: "#414141",
                 margin: "0 0 32px",
                 textAlign: "center",
                 maxWidth: "440px",
@@ -154,6 +155,7 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
                 onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
                 placeholder="you@company.com"
                 disabled={submitting || submitted}
+                className="subscribe-popup-input"
                 style={{
                   flex: 1,
                   height: 48,
@@ -216,7 +218,7 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
                         hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } },
                         success: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1] } },
                       }}
-                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 17, lineHeight: 1, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#F7F8FA" }}
+                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 17, lineHeight: 1, fontWeight: 400, letterSpacing: "0.1em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#F7F8FA" }}
                     >
                       {submitting ? "..." : "Subscribe"}
                     </motion.span>
@@ -267,10 +269,10 @@ export function SubscribePopup({ open, onClose }: SubscribePopupProps) {
             {/* Footer note */}
             <p
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 fontWeight: 400,
                 fontSize: "13px",
-                color: "#888888",
+                color: "#6E6E6E",
                 margin: 0,
                 textAlign: "center",
               }}

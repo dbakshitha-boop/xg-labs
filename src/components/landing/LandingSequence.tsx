@@ -51,6 +51,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
     const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 1024 : false);
     const [isTablet, setIsTablet] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 768 && window.innerWidth < 1024 : false);
     const [talkHovered, setTalkHovered] = useState(false);
+    const [ordinaryLanded, setOrdinaryLanded] = useState(false);
     const whatMakesUsRef = useRef<HTMLDivElement>(null);
     const mobileFormPrevRef = useRef<HTMLDivElement>(null);
 
@@ -552,18 +553,9 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                         <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.04em", color: "#414141", margin: 0, textTransform: "uppercase" }}>
                             STRATEGY FIRST
                         </p>
-                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(22px, 6.5vw, 30px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#414141", margin: 0, textTransform: "uppercase", width: "100%", textAlign: "center", maxWidth: "320px" }}>
-                            A creative partner for brands who refuse to be{" "}
-                            <span style={{ position: "relative", display: "inline-block", padding: "0 8px", margin: "0 2px" }}>
-                                <span style={{ position: "relative", zIndex: 1, color: "#ffffff" }}>ordinary.</span>
-                                <motion.span
-                                    initial={{ scaleX: 0 }}
-                                    whileInView={{ scaleX: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.8, delay: 0.4, ease: [0.76, 0, 0.24, 1] }}
-                                    style={{ position: "absolute", inset: 0, background: "#00A88D", transformOrigin: "left center", zIndex: 0 }}
-                                />
-                            </span>
+                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(22px, 6.5vw, 30px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#060606", margin: 0, textTransform: "uppercase", width: "100%", textAlign: "center", maxWidth: "320px" }}>
+                            <span style={{ display: "block" }}>From Vision</span>
+                            <span style={{ display: "block" }}>To Velocity</span>
                         </h1>
                         <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 3.8vw, 17px)", lineHeight: "1.5", letterSpacing: "-0.01em", color: "#414141", margin: "4px 0 0", maxWidth: "300px" }}>
                             We align strategy, creative, and execution to drive measurable growth.
@@ -671,6 +663,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                     <motion.div
                         initial={{ opacity: 0, y: 24 }}
                         whileInView={{ opacity: 1, y: 0 }}
+                        onViewportEnter={() => setTimeout(() => setOrdinaryLanded(true), 500)}
                         viewport={{ once: true, amount: 0.3 }}
                         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                         style={{
@@ -682,7 +675,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                         <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: isTablet ? "clamp(30px, 4.2vw, 46px)" : "clamp(19px, 5vw, 26px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#414141", margin: 0, textTransform: "uppercase" }}>
                             A creative partner for brands who refuse to be{" "}
                             <span style={{ position: "relative", display: "inline-block", padding: "0 8px", margin: "0 2px" }}>
-                                <span style={{ position: "relative", zIndex: 1, color: "#ffffff" }}>ordinary.</span>
+                                <span style={{ position: "relative", zIndex: 1, color: ordinaryLanded ? "#ffffff" : "#414141", transition: "color 0.15s ease" }}>ordinary.</span>
                                 <motion.span
                                     initial={{ scaleX: 0 }}
                                     whileInView={{ scaleX: 1 }}

@@ -64,7 +64,7 @@ function TextContainer() {
       <p className="font-['Sora',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
       <div
         className="font-['Cal_Sans'] font-[900] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center mt-[-12px]"
-        style={{ WebkitTextStroke: "2.5px #060606", letterSpacing: "-0.02em" }}
+        style={{ WebkitTextStroke: "2.5px #060606", letterSpacing: "-0.005em" }}
       >
         <span style={{ display: "block", lineHeight: 0.85 }}>From Vision</span>
         <span style={{ display: "block", lineHeight: 0.85, marginTop: "0.1em" }}>To Velocity</span>
@@ -134,7 +134,7 @@ function Frame4({ isVisible }: { isVisible?: boolean }) {
       <div className="flex flex-col justify-center relative shrink-0 w-full text-center">
         <p className="font-['Sora',sans-serif] font-normal text-[32px] leading-[1.1] tracking-[-0.02em] uppercase text-[#5f5f5f]">WE'RE XG LABS</p>
       </div>
-      <p className="font-['Cal_Sans',sans-serif] font-normal not-italic relative shrink-0 text-[#414141] text-center w-full" style={{ fontSize: '60px', lineHeight: '1.1', letterSpacing: '-0.02em' }}>
+      <p className="font-['Cal_Sans',sans-serif] font-normal not-italic relative shrink-0 text-[#414141] text-center w-full uppercase" style={{ fontSize: '50px', lineHeight: '1.1', letterSpacing: '-0.02em' }}>
         A creative partner for brands<br />who refuse to be{" "}
         <span className="relative inline-block mx-1 px-4">
           <span
@@ -161,7 +161,7 @@ function Frame5({ isVisible }: { isVisible?: boolean }) {
   return (
     <div className="absolute flex flex-col gap-[28px] items-center left-1/2 text-center -translate-x-1/2 -translate-y-1/2 z-10" style={{ top: 'calc(50% - 48px)', width: "min(900px, calc(100% - 20px))" }}>
       <Frame4 isVisible={isVisible} />
-      <p className="font-['Sora',sans-serif] font-normal text-center relative shrink-0 text-[#6e6e6e] mx-auto" style={{ fontSize: '20px', lineHeight: '1.5', letterSpacing: '0', maxWidth: '650px' }}>We turn ideas into visuals that move people — and move brands forward. Every piece we create is intentional, expressive, and designed to hit with purpose.</p>
+      <p className="font-['Sora',sans-serif] font-normal text-center relative shrink-0 text-[#6e6e6e] mx-auto" style={{ fontSize: '20px', lineHeight: '1.5', letterSpacing: '0', maxWidth: '650px', marginTop: '28px' }}>We turn ideas into visuals that move people — and move brands forward. Every piece we create is intentional, expressive, and designed to hit with purpose.</p>
     </div>
   );
 }
@@ -234,7 +234,7 @@ export function AboutSection({ scrollStep }: { scrollStep: number }) {
 
       {/* Scattered Card Images — same tight overlapping pile as the mobile version, scaled up to match this section's 900px circle */}
       <div className="absolute inset-0 pointer-events-none">
-        <CardImages isVisible={isVisible} scale={2.74} top={555} />
+        <CardImages isVisible={isVisible} scale={1.7} top={720} />
       </div>
 
       {/* Text Content */}

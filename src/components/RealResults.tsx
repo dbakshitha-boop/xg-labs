@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "motion/react";
+import { useNavigate } from "react-router-dom";
 import imgLogo from "figma:asset/e41dee190168d7591c7b7b8c43b6c0799cb1032a.png";
 import imgRectangle from "figma:asset/192d853c9f27ed907c5b4d6ebe963ebe82df6c24.png";
 import imgLogo1 from "../assets/3.png";
@@ -83,6 +84,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
     const stackLeft = 746.5;
     const stackTop = 75;
     const { setVariant, setText } = useCursor();
+    const navigate = useNavigate();
 
     const cardsData = [
         {
@@ -169,7 +171,8 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
                 {cardsData.map((card, index) => (
                     <div
                         key={card.id}
-                        className="snap-start shrink-0 w-[85vw] md:w-[42vw] first:ml-0 last:mr-4"
+                        onClick={() => navigate('/portfolio')}
+                        className="snap-start shrink-0 w-[85vw] md:w-[42vw] first:ml-0 last:mr-4 cursor-pointer"
                     >
                          <card.component isMobile={true} quote={card.quote} name={card.name} role={card.role} logo={card.logo} logoSize={card.logoSize} logoMobileMarginTop={card.logoMobileMarginTop} logoMobileMarginLeft={card.logoMobileMarginLeft} />
                     </div>
@@ -201,12 +204,13 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
                         delay: card.delay * 0.5 // Faster stagger
                     }}
                     style={{ zIndex: card.zIndex }}
-                    whileHover={{ 
-                        scale: 1.05, 
+                    whileHover={{
+                        scale: 1.05,
                         zIndex: 100,
                         rotate: 0,
                         transition: { duration: 0.2 }
                     }}
+                    onClick={() => navigate('/portfolio')}
                     onMouseEnter={() => {
                         setVariant('button');
                         setText('READ');

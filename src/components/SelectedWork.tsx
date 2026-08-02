@@ -235,19 +235,19 @@ export function SelectedWork() {
       id="selected-work"
       ref={containerRef}
       className="w-full bg-[#F7F8FA] relative"
-      style={{ height: isDesktop ? `${projects.length * 100}vh` : 'auto' }}
+      style={{ height: isDesktop ? `${projects.length * 160}vh` : 'auto' }}
     >
       {/* Mobile/Tablet View (< 1024px) */}
       <div
-        className="lg:hidden w-full px-4 md:px-8"
-        style={{ paddingTop: 24, paddingBottom: 64, display: "flex", flexDirection: "column", gap: 28 }}
+        className="flex flex-col lg:hidden w-full px-4 md:px-8"
+        style={{ paddingTop: 24, paddingBottom: 64, gap: 28 }}
       >
         {/* Mobile Header */}
         <div className="flex justify-between items-center" style={{ marginTop: 12, marginBottom: 4 }}>
           <h2 className="text-2xl font-bold uppercase tracking-tight text-black font-space">
             Selected Work
           </h2>
-          <AnimatedViewButton label="View All" onClick={() => navigate('/portfolio')} />
+          <AnimatedViewButton label="View Cases" onClick={() => navigate('/portfolio')} />
         </div>
 
         {projects.map((project, i) => (
@@ -304,11 +304,22 @@ export function SelectedWork() {
             <h2 className="text-xl md:text-2xl font-bold uppercase tracking-tight text-black font-space">
               Selected Work
             </h2>
-            <AnimatedViewButton label="View Work" onClick={() => navigate('/portfolio')} />
+            <AnimatedViewButton label="View Cases" onClick={() => navigate('/portfolio')} />
           </div>
 
           {/* Main Content Grid */}
-          <div className="flex flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-[40px] 2xl:gap-[60px]">
+          <div
+            className="flex flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-[40px] 2xl:gap-[60px] cursor-pointer"
+            onClick={() => navigate('/portfolio')}
+            onMouseEnter={() => {
+              setVariant('button');
+              setText('VIEW');
+            }}
+            onMouseLeave={() => {
+              setVariant('default');
+              setText(null);
+            }}
+          >
             
             {/* Left Column: Title (top=image top), Short Desc + Index/Client (bottom=image bottom) */}
             <div className="w-full lg:flex-1 lg:max-w-[360px] xl:max-w-[480px] 2xl:max-w-[560px] flex flex-col justify-between h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-1 pb-6 xl:pb-8">
@@ -376,18 +387,7 @@ export function SelectedWork() {
             </div>
 
             {/* Center Column: Image Stack */}
-            <div
-                className="lg:flex-1 lg:min-w-[280px] lg:max-w-[400px] xl:max-w-[480px] flex justify-center items-center order-2 h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] cursor-pointer"
-                onClick={() => navigate('/portfolio')}
-                onMouseEnter={() => {
-                    setVariant('button');
-                    setText('VIEW');
-                }}
-                onMouseLeave={() => {
-                    setVariant('default');
-                    setText(null);
-                }}
-            >
+            <div className="lg:flex-1 lg:min-w-[280px] lg:max-w-[400px] xl:max-w-[480px] flex justify-center items-center order-2 h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px]">
               <div className="relative w-full aspect-[480/665] max-h-full max-w-full rounded-[12px]">
                 {projects.map((project, index) => {
                   const relativeIndex = index - activeIndex;

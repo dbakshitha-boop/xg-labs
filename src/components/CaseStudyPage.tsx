@@ -179,6 +179,9 @@ function EmbeddedContactForm({ px }: { px: string }) {
 
   const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
+  // Allow letters, spaces, and basic punctuation only — no digits or symbols
+  const filterTextOnly = (value: string) => value.replace(/[^\p{L}\s.,'\-?!:;()&"]/gu, "");
+
   const handleSubmit = async () => {
     if (!email || !isValidEmail(email)) return;
     setSubmitting(true);
@@ -215,7 +218,7 @@ function EmbeddedContactForm({ px }: { px: string }) {
       <style>{`.ecf-input::placeholder { color: #6F6F6F; font-family: 'Poppins', sans-serif; font-weight: 600; }`}</style>
 
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "24px" : "72px", marginBottom: isMobile ? "28px" : "64px", alignItems: "start" }}>
-        <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1.08, letterSpacing: "-0.04em", color: "#414141", margin: 0 }}>
+        <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1.08, letterSpacing: "-0.04em", color: "#414141", margin: 0 }}>
           Let's create work that drives real growth.
         </h2>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1.2vw, 18px)", lineHeight: 1.3, color: "#474747", margin: 0, paddingTop: "8px" }}>
@@ -226,11 +229,11 @@ function EmbeddedContactForm({ px }: { px: string }) {
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "72px", rowGap: isMobile ? "32px" : "48px" }}>
         <div style={fieldStyle}>
           <p style={labelStyle}>Who you are</p>
-          <input className="ecf-input" value={name} onChange={e => setName(e.target.value)} placeholder="[ Your Name ]" style={inputStyle} />
+          <input className="ecf-input" value={name} onChange={e => setName(filterTextOnly(e.target.value))} placeholder="[ Your Name ]" style={inputStyle} />
         </div>
         <div style={fieldStyle}>
           <p style={labelStyle}>Your Company</p>
-          <input className="ecf-input" value={company} onChange={e => setCompany(e.target.value)} placeholder="[ Company Name ]" style={inputStyle} />
+          <input className="ecf-input" value={company} onChange={e => setCompany(filterTextOnly(e.target.value))} placeholder="[ Company Name ]" style={inputStyle} />
         </div>
         <div style={fieldStyle}>
           <p style={labelStyle}>How do we reach you</p>
@@ -243,7 +246,7 @@ function EmbeddedContactForm({ px }: { px: string }) {
         <div style={{ ...fieldStyle, gridColumn: "1 / -1", display: "flex", alignItems: "flex-end", gap: "24px" }}>
           <div style={{ flex: 1 }}>
             <p style={labelStyle}>How can we help?</p>
-            <input className="ecf-input" value={message} onChange={e => setMessage(e.target.value)} placeholder="[ Tell us briefly what you need ]" style={inputStyle} />
+            <input className="ecf-input" value={message} onChange={e => setMessage(filterTextOnly(e.target.value))} placeholder="[ Tell us briefly what you need ]" style={inputStyle} />
           </div>
           <motion.button
             disabled={submitting || submitted}
@@ -261,9 +264,9 @@ function EmbeddedContactForm({ px }: { px: string }) {
               style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}
             >
               <motion.span variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }} transition={{ duration: 0.15 }} style={{ position: "absolute" }}>
-                {submitted ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "'Space Grotesk',sans-serif", color: "#02A884" }}>✓</span>
+                {submitted ? <span style={{ fontSize: "32px", fontWeight: 600, fontFamily: "'Space Grotesk',sans-serif", color: "#02A884" }}>✓</span>
                   : submitting ? <span style={{ fontSize: "22px", fontFamily: "'Space Grotesk',sans-serif", color: "rgba(0,0,0,0.25)" }}>·</span>
-                  : <img src={arrowIcon} alt="" width={36} height={36} style={{ display: "block" }} />}
+                  : <img src={arrowIcon} alt="" width={36} height={36} style={{ display: "block", transform: "rotate(-6deg)" }} />}
               </motion.span>
               {!submitting && !submitted && (
                 <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }}
@@ -587,10 +590,10 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               {label}
             </p>
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
               {body}
             </p>
           </motion.div>
@@ -612,11 +615,11 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               THE SOLUTION
             </p>
             <div className="cs-solution-col" style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
+              <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
                 {(study as any).solution}
               </p>
               {(study as any).solutionImg && (
@@ -654,12 +657,12 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p className="cs-role-label" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p className="cs-role-label" style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               ROLE & DELIVERABLES
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0 24px" }}>
               {(study as any).deliverables.map((d: string, i: number) => (
-                <p key={i} style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.6", color: "rgba(255,255,255,0.45)", margin: 0 }}>
+                <p key={i} style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.6", color: "rgba(255,255,255,0.45)", margin: 0 }}>
                   {d}
                 </p>
               ))}
@@ -683,10 +686,10 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               TIMELINE
             </p>
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
               {(study as any).timeline}
             </p>
           </motion.div>
@@ -707,10 +710,10 @@ export function CaseStudyPage({ id }: { id?: string }) {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             style={{ display: "flex", flexDirection: "column", gap: "28px", justifyContent: "flex-start", height: "100%", paddingTop: "40px", paddingBottom: "48px" }}
           >
-            <h2 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "clamp(18px, 1.5vw, 24px)", letterSpacing: "0.1em", textTransform: "uppercase", color: "#ffffff", margin: 0 }}>
+            <h2 style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: "clamp(18px, 1.5vw, 24px)", letterSpacing: "0.1em", textTransform: "uppercase", color: "#ffffff", margin: 0 }}>
               BRAND DIRECTION
             </h2>
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.15vw, 18px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.15vw, 18px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
               We created a minimal, friendly identity system that supports product clarity across marketing and the app. The visual language emphasises motion, simple shapes, and a confident typographic voice.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px 32px", marginTop: "auto" }}>
@@ -720,8 +723,8 @@ export function CaseStudyPage({ id }: { id?: string }) {
                 { label: "TYPOGRAPHY", body: "Headline, UI, microcopy scale — built for clarity at every size" },
               ].map(({ label, body }, i) => (
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: "8px", gridColumn: i === 2 ? "1 / -1" : "auto" }}>
-                  <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>{label}</p>
-                  <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1vw, 15px)", lineHeight: "1.6", color: "rgba(255,255,255,0.4)", margin: 0 }}>{body}</p>
+                  <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>{label}</p>
+                  <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1vw, 15px)", lineHeight: "1.6", color: "rgba(255,255,255,0.4)", margin: 0 }}>{body}</p>
                 </div>
               ))}
             </div>
@@ -789,11 +792,11 @@ export function CaseStudyPage({ id }: { id?: string }) {
         >
           <p
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontWeight: 700,
+              fontFamily: "'Cal Sans', sans-serif",
+              fontWeight: 400,
               fontSize: "clamp(22px, 2.8vw, 40px)",
               lineHeight: "1.15",
-              letterSpacing: "-0.03em",
+              letterSpacing: "0.01em",
               color: "#A3A3A3",
               margin: "0 auto",
             }}
@@ -827,7 +830,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               key={i}
               className="cs-bullet-item"
               style={{
-                fontFamily: "'Space Grotesk', sans-serif",
+                fontFamily: "'Sora', sans-serif",
                 fontWeight: 400,
                 fontSize: "clamp(15px, 1.1vw, 18px)",
                 lineHeight: "1.55",
@@ -860,13 +863,13 @@ export function CaseStudyPage({ id }: { id?: string }) {
       </section>
 
       {/* ── Process Overview ── */}
-      <section style={{ background: "#0f0f0f", paddingTop: "80px", paddingBottom: "88px", paddingLeft: px, paddingRight: px }}>
+      <section style={{ background: "#0f0f0f", paddingTop: "48px", paddingBottom: "44px", paddingLeft: px, paddingRight: px }}>
         {/* Header row */}
-        <div className="cs-content-grid" style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "48px", marginBottom: "48px" }}>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+        <div className="cs-content-grid" style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "48px", marginBottom: "32px" }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
             PROCESS OVERVIEW
           </p>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(16px, 1.3vw, 20px)", lineHeight: "1.65", color: "rgba(255,255,255,0.45)", margin: 0 }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(16px, 1.3vw, 20px)", lineHeight: "1.65", color: "rgba(255,255,255,0.45)", margin: 0 }}>
             We followed a structured, four-step approach that aligned brand, product, and strategy — moving from insight to execution with clarity and intention.
           </p>
         </div>
@@ -895,16 +898,16 @@ export function CaseStudyPage({ id }: { id?: string }) {
               style={{
                 background: "#1a1a1a",
                 borderRadius: "12px",
-                padding: "28px 24px",
+                padding: "24px 22px",
                 display: "flex",
                 flexDirection: "column",
-                gap: "20px",
+                gap: "14px",
               }}
             >
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "clamp(20px, 1.8vw, 28px)", letterSpacing: "-0.01em", color: "#ffffff", margin: 0 }}>
+              <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: "clamp(16px, 1.3vw, 22px)", letterSpacing: "-0.01em", color: "#ffffff", margin: 0 }}>
                 {step.num} {step.title}
               </p>
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.1vw, 17px)", lineHeight: "1.65", color: "rgba(255,255,255,0.4)", margin: 0 }}>
+              <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1vw, 15px)", lineHeight: "1.55", color: "rgba(255,255,255,0.4)", margin: 0 }}>
                 {step.body}
               </p>
             </motion.div>
@@ -913,23 +916,23 @@ export function CaseStudyPage({ id }: { id?: string }) {
       </section>
 
       {/* ── Overall Impact ── */}
-      <section style={{ background: "#0f0f0f", paddingTop: "80px", paddingBottom: "96px", paddingLeft: px, paddingRight: px, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+      <section style={{ background: "#0f0f0f", paddingTop: "36px", paddingBottom: "56px", paddingLeft: px, paddingRight: px }}>
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{ textAlign: "center", marginBottom: "64px" }}
+          style={{ textAlign: "center", marginBottom: "36px" }}
         >
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "24px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#D6D6D6", margin: "0 0 20px" }}>
-            OVER ALL IMPACT
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "20px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#D6D6D6", margin: "0 0 16px" }}>
+            OVERALL IMPACT
           </p>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(18px, 1.6vw, 26px)", lineHeight: "1.55", color: "rgba(255,255,255,0.55)", margin: "0 auto", maxWidth: "660px" }}>
+          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.2vw, 18px)", lineHeight: "1.55", color: "rgba(255,255,255,0.55)", margin: "0 auto", maxWidth: "660px" }}>
             The work led to improved sign-ups, better onboarding flow completion, and a notable lift in active users.
           </p>
         </motion.div>
 
-        <div className="cs-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="cs-stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0" }}>
           {(work?.impactStats?.length
             ? work.impactStats.map((s, i) => ({ value: s.value, label: s.label, bold: i === work.impactStats.length - 2 }))
             : [
@@ -945,12 +948,12 @@ export function CaseStudyPage({ id }: { id?: string }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ delay: i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              style={{ padding: "48px 0 0", display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}
+              style={{ padding: "24px 0 0", display: "flex", flexDirection: "column", gap: "10px", alignItems: "center" }}
             >
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "clamp(48px, 6vw, 96px)", lineHeight: 1, letterSpacing: "-0.03em", color: "#ffffff", margin: 0 }}>
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "clamp(40px, 4.6vw, 72px)", lineHeight: 1, letterSpacing: "-0.03em", color: "#ffffff", margin: 0 }}>
                 {stat.value}
               </p>
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: stat.bold ? 700 : 400, fontSize: "clamp(15px, 1.1vw, 18px)", color: "rgba(255,255,255,0.45)", margin: 0, textAlign: "center" }}>
+              <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1vw, 16px)", color: "#6E6E6E", margin: 0, textAlign: "center" }}>
                 {stat.label}
               </p>
             </motion.div>

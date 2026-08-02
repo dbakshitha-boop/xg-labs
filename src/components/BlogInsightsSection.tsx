@@ -227,9 +227,19 @@ export function BlogInsightsSection() {
               transition={{ duration: 0.3 }}
               style={{ position: "absolute", top: 0, right: isMobile ? -9 : -13, width: isMobile ? 30 : 42, height: isMobile ? 30 : 42, borderRadius: 42, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
             >
-              <svg width={isMobile ? 16 : 14} height={isMobile ? 16 : 14} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+              <motion.svg
+                width={isMobile ? 20 : 20}
+                height={isMobile ? 20 : 20}
+                viewBox="0 0 24 24"
+                fill="none"
+                variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#0a0a0a" } }}
+                transition={{ duration: 0.2 }}
+                strokeWidth={2.2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
-              </svg>
+              </motion.svg>
             </motion.div>
           </motion.div>
         </motion.div>
@@ -303,19 +313,21 @@ export function BlogInsightsSection() {
                     >
                       {pad(i + 1)}
                     </p>
-                    <p
+                    <motion.p
+                      animate={{ opacity: hoveredCard === i ? 1 : 0 }}
+                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                       style={{
                         fontFamily: "'Space Grotesk', sans-serif",
                         fontWeight: 600,
                         fontSize: "14px",
-                        letterSpacing: "0.14em",
+                        letterSpacing: "0.06em",
                         textTransform: "uppercase",
                         color: "#9A9A9A",
                         margin: 0,
                       }}
                     >
                       {article.label}
-                    </p>
+                    </motion.p>
                   </div>
 
                   {/* Card — image on top, white text panel below */}
@@ -347,7 +359,7 @@ export function BlogInsightsSection() {
                   </div>
 
                   {/* Title panel */}
-                  <div style={{ border: "1px solid #9A9A9A" }}>
+                  <div style={{ border: "1px solid #9A9A9A", borderBottom: hoveredCard === i ? "none" : "1px solid #9A9A9A" }}>
                     <motion.div
                       animate={{
                         backgroundColor: hoveredCard === i ? "#F2F2F2" : "#ffffff",

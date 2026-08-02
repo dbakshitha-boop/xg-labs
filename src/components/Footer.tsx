@@ -100,9 +100,10 @@ export function Footer() {
       <style>{`
         @media (max-width: 767px) {
           .footer-headline { padding: 32px 20px 10px !important; overflow: hidden !important; }
-          .footer-headline-text { font-size: 14vw !important; white-space: normal !important; transform: none !important; text-align: center !important; }
+          .footer-headline-text { font-size: 14vw !important; letter-spacing: -0.01em !important; white-space: normal !important; transform: none !important; text-align: center !important; }
           .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 16px 20px !important; }
           .footer-grid > div:first-child { grid-column: 1 / -1 !important; padding-bottom: 12px !important; margin-bottom: 4px !important; }
+          .footer-shift-col { margin-left: 0 !important; }
           .footer-col-head { letter-spacing: 0.06em !important; }
           .footer-bottom-bar { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; padding: 24px 20px !important; }
           .footer-center-block { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; width: 100% !important; margin-left: 0 !important; text-align: left !important; }
@@ -120,7 +121,7 @@ export function Footer() {
       <div
         className="footer-headline"
         style={{
-          padding: "32px 48px 24px",
+          padding: "16px 48px 24px",
           overflow: "hidden",
         }}
       >
@@ -129,9 +130,9 @@ export function Footer() {
           style={{
             fontFamily: "'Humane', sans-serif",
             fontWeight: 700,
-            fontSize:  "clamp(72px, 8vw, 160px)",
+            fontSize:  "clamp(84px, 9.2vw, 176px)",
             lineHeight: "0.88",
-            letterSpacing: "-0.01em",
+            letterSpacing: "0.05em",
             textTransform: "uppercase",
             color: "#D9D9D9",
             margin: 0,
@@ -139,7 +140,7 @@ export function Footer() {
             textAlign: "center",
             width: "100%",
             display: "block",
-            transform: "scaleX(0.92)",
+            transform: "scaleX(1.02)",
             transformOrigin: "center",
           }}
         >
@@ -199,7 +200,7 @@ export function Footer() {
         </div>
 
         {/* Menu */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className="footer-shift-col" style={{ display: "flex", flexDirection: "column", gap: "10px", marginLeft: "56px" }}>
           <p className="footer-col-head" style={colHeadStyle}>Menu</p>
           <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {MENU_LINKS.map((item) => (
@@ -217,7 +218,7 @@ export function Footer() {
         </div>
 
         {/* Services */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className="footer-shift-col" style={{ display: "flex", flexDirection: "column", gap: "10px", marginLeft: "16px" }}>
           <p className="footer-col-head" style={colHeadStyle}>Services</p>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {SERVICES.map((s) => (

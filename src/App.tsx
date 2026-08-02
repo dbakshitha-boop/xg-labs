@@ -46,6 +46,7 @@ function ScrollToTop() {
       if (!saved) return;
       const targetY = parseInt(saved, 10);
       let attempts = 0;
+      let lastHeight = -1;
       const tryRestore = () => {
         attempts++;
         window.scrollTo(0, targetY);
@@ -53,9 +54,16 @@ function ScrollToTop() {
         // page keeps the body non-scrollable for a moment while its hero sequence settles,
         // during which scrollTo silently no-ops.
         const reachedTarget = Math.abs(window.scrollY - targetY) < 4;
-        const maxScroll = document.body.scrollHeight - window.innerHeight;
+        const currentHeight = document.body.scrollHeight;
+        const maxScroll = currentHeight - window.innerHeight;
         const reachedBottom = window.scrollY >= maxScroll - 4;
-        if (!reachedTarget && !reachedBottom && attempts < 40) {
+        // Only trust "reached bottom" as a genuine stop condition once the page's height
+        // has stopped growing between two checks — async content (images, fetched cards)
+        // can still be inflating document height, and bailing out the moment we hit
+        // whatever the bottom happens to be *right now* leaves us short of the real target.
+        const heightStable = currentHeight === lastHeight;
+        lastHeight = currentHeight;
+        if (!reachedTarget && !(reachedBottom && heightStable) && attempts < 40) {
           setTimeout(tryRestore, 75);
         }
       };
