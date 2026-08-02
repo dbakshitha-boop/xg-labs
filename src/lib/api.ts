@@ -27,6 +27,12 @@ export interface Article {
     paragraphs: string[];
     blockquote?: string;
   }>;
+  infoBar: { role: string; timeline: string };
+  quoteText: string;
+  process: { number?: string; title: string; description: string }[];
+  customSections: { title: string; items: { label: string; value: string }[] }[];
+  impactStats: { value: string; label: string }[];
+  caseStudies: { title: string; image: string; description: string }[];
 }
 
 // Raw shape returned by the admin-panel backend
@@ -43,6 +49,12 @@ interface RawArticle {
   content?: string;
   tags?: string;
   createdAt?: string;
+  infoBar?: { role?: string; timeline?: string };
+  quote?: { text?: string };
+  process?: { step?: string; title?: string; description?: string }[];
+  customSections?: { title?: string; items?: { label?: string; value?: string }[] }[];
+  impact?: { stats?: { value?: string; label?: string }[] };
+  caseStudies?: { title?: string; image?: string; description?: string }[];
   [key: string]: unknown;
 }
 
@@ -114,6 +126,15 @@ function transformArticle(raw: RawArticle): Article {
       initial: authorName.charAt(0).toUpperCase(),
     },
     content: parseMarkdownToSections(raw.content ?? ""),
+    infoBar: { role: raw.infoBar?.role ?? "", timeline: raw.infoBar?.timeline ?? "" },
+    quoteText: raw.quote?.text ?? "",
+    process: (raw.process ?? []).map((p) => ({ number: p.step, title: p.title ?? "", description: p.description ?? "" })),
+    customSections: (raw.customSections ?? []).map((s) => ({
+      title: s.title ?? "",
+      items: (s.items ?? []).map((it) => ({ label: it.label ?? "", value: it.value ?? "" })),
+    })),
+    impactStats: (raw.impact?.stats ?? []).map((s) => ({ value: s.value ?? "", label: s.label ?? "" })),
+    caseStudies: (raw.caseStudies ?? []).map((c) => ({ title: c.title ?? "", image: c.image ?? "", description: c.description ?? "" })),
   };
 }
 

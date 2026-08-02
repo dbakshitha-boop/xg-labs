@@ -178,6 +178,34 @@ export function BlogPostPage() {
         </div>
       )}
 
+      {/* Info Bar */}
+      {(article.infoBar?.role || article.infoBar?.timeline) && (
+        <div style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "24px 40px 0" : "32px 0 0" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "20px" : "48px", borderTop: "1px solid #e0e0e0", paddingTop: "24px" }}>
+            {article.infoBar.role && (
+              <div>
+                <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.06em", textTransform: "uppercase" as const, color: "#414141", margin: "0 0 8px" }}>
+                  Role & Deliverables
+                </p>
+                <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: "1.6", color: "#6E6E6E", margin: 0 }}>
+                  {article.infoBar.role}
+                </p>
+              </div>
+            )}
+            {article.infoBar.timeline && (
+              <div>
+                <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.06em", textTransform: "uppercase" as const, color: "#414141", margin: "0 0 8px" }}>
+                  Timeline
+                </p>
+                <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: "1.6", color: "#6E6E6E", margin: 0 }}>
+                  {article.infoBar.timeline}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Content — paired columns */}
       <motion.main
         initial={{ opacity: 0, y: 20 }}
@@ -297,13 +325,19 @@ export function BlogPostPage() {
               margin: "0 auto",
             }}
           >
-            We aligned product messaging with performance
-            <br />
-            creative so campaigns matched the app experience —
-            <br />
-            <span style={{ color: "#636363" }}>
-              reducing drop-off and increasing conversion efficiency.
-            </span>
+            {article.quoteText ? (
+              article.quoteText
+            ) : (
+              <>
+                We aligned product messaging with performance
+                <br />
+                creative so campaigns matched the app experience —
+                <br />
+                <span style={{ color: "#636363" }}>
+                  reducing drop-off and increasing conversion efficiency.
+                </span>
+              </>
+            )}
           </p>
         </motion.div>
 
@@ -344,7 +378,14 @@ export function BlogPostPage() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: "12px" }}>
-          {PROCESS_STEPS.map((step, i) => (
+          {(article.process?.length
+            ? article.process.map((p, i) => ({
+                num: p.number ?? String(i + 1).padStart(2, "0"),
+                title: (p.title || "").toUpperCase(),
+                body: p.description,
+              }))
+            : PROCESS_STEPS
+          ).map((step, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
@@ -363,6 +404,56 @@ export function BlogPostPage() {
           ))}
         </div>
       </section>
+
+      {/* ── Custom Sections ── */}
+      {article.customSections?.map((section, si) => (
+        <section key={si} style={{ background: "#ffffff", paddingTop: isMobile ? "8px" : "16px", paddingBottom: isMobile ? "28px" : "40px", paddingLeft: sidePad, paddingRight: sidePad }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "220px 1fr", gap: isMobile ? "12px" : "48px" }}>
+            <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.04em", textTransform: "uppercase" as const, color: "#414141", margin: 0 }}>
+              {section.title}
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(2, 1fr)", gap: "20px 32px" }}>
+              {section.items.map((item, ii) => (
+                <div key={ii}>
+                  <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "12px", letterSpacing: "0.04em", textTransform: "uppercase" as const, color: "#6E6E6E", margin: "0 0 6px" }}>
+                    {item.label}
+                  </p>
+                  <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: "1.6", color: "#414141", margin: 0 }}>
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      ))}
+
+      {/* ── Overall Impact ── */}
+      {article.impactStats && article.impactStats.length > 0 && (
+        <section style={{ background: "#F7F8FA", paddingTop: isMobile ? "40px" : "64px", paddingBottom: isMobile ? "40px" : "64px", paddingLeft: sidePad, paddingRight: sidePad }}>
+          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(24px, 2.6vw, 32px)", letterSpacing: "0.04em", textTransform: "uppercase" as const, color: "#414141", textAlign: "center" as const, margin: "0 0 32px" }}>
+            Overall Impact
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : `repeat(${Math.min(article.impactStats.length, 4)}, 1fr)`, gap: "24px", textAlign: "center" as const, maxWidth: isMobile ? undefined : `${Math.min(article.impactStats.length, 4) * 220}px`, margin: isMobile ? undefined : "0 auto" }}>
+            {article.impactStats.map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ delay: i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(32px, 4vw, 56px)", lineHeight: 1, color: "#414141", margin: "0 0 8px" }}>
+                  {stat.value}
+                </p>
+                <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", color: "#6E6E6E", margin: 0 }}>
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ── Related Blogs ── */}
       {relatedArticles.length > 0 && (
@@ -388,7 +479,7 @@ export function BlogPostPage() {
                   <img src={post.img} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "8px" : "10px", minWidth: 0 }}>
-                  <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: isMobile ? "16px" : "clamp(13px, 1vw, 15px)", lineHeight: "1.3", color: "#1a1a1a", margin: 0 }}>
+                  <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: isMobile ? "16px" : "clamp(16px, 1.3vw, 19px)", lineHeight: "1.3", color: "#1a1a1a", margin: 0 }}>
                     {post.title}
                   </p>
                   <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: isMobile ? "14px" : "clamp(11px, 0.85vw, 13px)", lineHeight: "1.55", color: "#888888", margin: 0 }}>
