@@ -6,37 +6,56 @@ import imgImage3 from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png"
 import imgImage4 from "figma:asset/fad7be819dbbdd4aa88e7779ed4b7c2a87bf23e6.png";
 import imgImage5 from "figma:asset/d1e53c97c1810297d3642b6fa789643c8fe962af.png";
 
-const CARD_W = 312.893;
-const CARD_H = 337.434;
+// Base card size at scale=1. Positions/sizes below are the single canonical
+// collage layout — every breakpoint renders the exact same arrangement and
+// just scales it up or down via the `scale` prop, rather than reflowing to a
+// different layout per breakpoint.
+const CARD_W = 175;
+const CARD_H = 189;
 
-// Positions are relative to the group wrapper (1316.43 x 476.15)
-// Each entry: bounding-box left/top/w/h of the rotated card, plus the rotation
-// Left positions are evenly spaced (185px gaps) so every card stays visible —
-// the previous uneven spacing (down to a 70px gap near the end) buried the last card.
+// z rises to a single peak at the Ash cup (center card) then falls back down —
+// a "unimodal" sequence. This is safe for the same reason strict monotonic is:
+// every card left of the peak has strictly lower z than everything to its
+// right up to the peak (so its left side is never covered), and every card
+// right of the peak has strictly lower z than everything to its left down to
+// the peak (so its right side is never covered). The peak card itself has
+// both neighbours lower, so it's fully visible — centered AND prominent.
 const CARDS = [
-  { src: imgImage1, left: 0,   top: 44,  bw: 394.942, bh: 411.618, rotate: -14, z: 1 },
-  { src: imgImage4, left: 185, top: 10,  bw: 389.24,  bh: 406.633, rotate:  12, z: 4 },
-  { src: imgImage3, left: 370, top: 0,   bw: 362.404, bh: 382.746, rotate:  -8, z: 5 },
-  { src: imgImage2, left: 555, top: 14,  bw: 350.144, bh: 371.652, rotate:   7, z: 3 },
-  { src: imgImage,  left: 740, top: 40,  bw: 359.11,  bh: 379.776, rotate:  -9, z: 0 },
-  { src: imgImage5, left: 925, top: 58,  bw: 391.425, bh: 408.548, rotate:  13, z: 2 },
+  { src: imgImage1, left: 0,   top: 10, rotate: -9, z: 1 },
+  { src: imgImage2, left: 55,  top: 6,  rotate:  5, z: 3 },
+  { src: imgImage3, left: 110, top: 0,  rotate: -6, z: 5 }, // Ash cup (Andhra Spicy House) — center, most prominent
+  { src: imgImage4, left: 165, top: 4,  rotate:  8, z: 4 }, // Go Wheels business card
+  { src: imgImage,  left: 220, top: 8,  rotate: -7, z: 2 }, // mahaspeakss sign
+  { src: imgImage5, left: 275, top: 12, rotate: 10, z: 0 }, // Go Wheels "GO!" badge
 ];
 
-export default function CardImages({ isVisible }: { isVisible?: boolean }) {
+const GROUP_W = 275 + CARD_W;
+const GROUP_H = 12 + CARD_H;
+
+export default function CardImages({
+  isVisible,
+  scale = 1,
+  top = 0,
+}: {
+  isVisible?: boolean;
+  /** Scales the whole collage (size + spacing together) so it can be reused at any breakpoint without reflowing. */
+  scale?: number;
+  /** Vertical offset (px) for the collage wrapper. */
+  top?: number;
+}) {
   return (
-    // Group wrapper: top 800px in the 1080px container, centered horizontally
     <div
       style={{
         position: "absolute",
-        top: 740,
+        top,
         left: "50%",
-        width: 1316.43,
-        height: 476.15,
-        transform: "translateX(-50%) scale(0.78)",
-        transformOrigin: "top center",
+        width: GROUP_W * scale,
+        height: GROUP_H * scale,
+        transform: "translateX(-50%)",
+        pointerEvents: "auto",
       }}
     >
-      {CARDS.map(({ src, left, top, bw, bh, rotate, z }, i) => (
+      {CARDS.map(({ src, left, top: cardTop, rotate, z }, i) => (
         <motion.div
           key={i}
           initial={{ opacity: 0, y: 40 }}
@@ -44,25 +63,21 @@ export default function CardImages({ isVisible }: { isVisible?: boolean }) {
           transition={{ delay: 0.15 + i * 0.08, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           style={{
             position: "absolute",
-            left,
-            top,
-            width: bw,
-            height: bh,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            left: left * scale,
+            top: cardTop * scale,
+            width: CARD_W * scale,
+            height: CARD_H * scale,
             zIndex: z,
           }}
         >
           <div
             style={{
-              width: CARD_W,
-              height: CARD_H,
-              flexShrink: 0,
+              width: "100%",
+              height: "100%",
               transform: `rotate(${rotate}deg)`,
-              borderRadius: 4,
+              borderRadius: 10,
               overflow: "hidden",
-              boxShadow: "0px 4px 10px 0px rgba(0,0,0,0.1)",
+              boxShadow: "0 10px 26px rgba(0,0,0,0.18)",
             }}
           >
             <img

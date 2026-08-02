@@ -232,9 +232,9 @@ export function AboutSection({ scrollStep }: { scrollStep: number }) {
         </svg>
       </div>
 
-      {/* Scattered Card Images */}
+      {/* Scattered Card Images — same tight overlapping pile as the mobile version, scaled up to match this section's 900px circle */}
       <div className="absolute inset-0 pointer-events-none">
-        <CardImages isVisible={isVisible} />
+        <CardImages isVisible={isVisible} scale={2.74} top={555} />
       </div>
 
       {/* Text Content */}
@@ -431,6 +431,9 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
   const [hoveredSlug, setHoveredSlug] = useState<string>("performance-marketing");
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("xg-mobile-menu", { detail: { open: mobileMenuOpen } }));
+  }, [mobileMenuOpen]);
   const { open: openContactForm } = useContactForm();
 
   useEffect(() => {
@@ -442,7 +445,16 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
 
   return (
     <>
-      {/* ── Mobile full-screen menu ── */}
+      <style>{`
+        @media (max-width: 1023px) {
+          .topbar-row { height: 56px !important; }
+          .topbar-logo { height: 42px !important; }
+          .topbar-hamburger { width: 40px !important; height: 40px !important; gap: 4px !important; }
+          .topbar-hamburger-bar { width: 16px !important; }
+          .topbar-hamburger-bar-short { width: 11px !important; }
+        }
+      `}</style>
+      {/* ── Mobile full-screen menu — sits behind the floating pill bar (which stays visible, hamburger morphed to X) ── */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -450,22 +462,10 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[200] flex flex-col lg:hidden"
-            style={{ background: "#0a0a0a" }}
+            className="fixed inset-0 z-40 flex flex-col lg:hidden"
+            style={{ background: dark ? "#2A2A2A" : "#ffffff" }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              {logoSrc ? (
-                <img alt="Xg Labs" src={logoSrc} style={{ height: "40px", width: "auto", display: "block" }} />
-              ) : (
-                <img alt="Xg Labs" src={imgImage12} style={{ height: "42px", width: "auto", display: "block" }} />
-              )}
-              <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" style={{ color: "#fff", background: "none", border: "none", cursor: "pointer", padding: "8px" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </button>
-            </div>
-            <nav style={{ display: "flex", flexDirection: "column", padding: "24px", flex: 1, overflowY: "auto" }}>
+            <nav style={{ display: "flex", flexDirection: "column", padding: "88px 24px 40px", flex: 1, overflowY: "auto" }}>
               {["Our Edge", "Service", "Portfolio", "Blog", "Contact"].map((item, i) => (
                 <motion.button
                   key={item}
@@ -487,20 +487,60 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                       else navigate("/", { state: { skipLoading: true, scrollToFooter: true } });
                     }
                   }}
-                  style={{ width: "100%", textAlign: "left", padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", color: "#fff", background: "none", border: "none", borderBottomStyle: "solid", borderBottomWidth: "1px", borderBottomColor: "rgba(255,255,255,0.08)", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 500, fontSize: "clamp(22px, 6vw, 28px)", textTransform: "uppercase", letterSpacing: "0.02em" }}
+                  style={{ width: "100%", textAlign: "left", padding: "12px 0", border: "none", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(19px, 5vw, 23px)", textTransform: "uppercase", letterSpacing: "0.02em", color: dark ? "#9A9A9A" : "#414141", background: "none" }}
                 >
                   {item}
                 </motion.button>
               ))}
+
+              <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(30px, 8.5vw, 40px)", lineHeight: 1.15, letterSpacing: "-0.01em", color: dark ? "#D6D6D6" : "#9A9A9A", margin: "40px 0 0" }}>
+                We Build Brands That Perform
+              </p>
+
+              <div style={{ marginTop: "auto", paddingTop: "32px" }}>
+                <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "16px", letterSpacing: "0.03em", textTransform: "uppercase", color: dark ? "#9A9A9A" : "#414141", margin: "0 0 10px" }}>
+                  Connect With
+                </p>
+                <a href="tel:+916369974530" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: dark ? "#F7F8FA" : "#6E6E6E", textDecoration: "none" }}>
+                  +91 63699 74530
+                </a>
+                <a href="mailto:xglabs@thebrandopedia.in" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: dark ? "#F7F8FA" : "#6E6E6E", textDecoration: "none" }}>
+                  xglabs@thebrandopedia.in
+                </a>
+                <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: dark ? "#F7F8FA" : "#6E6E6E", margin: 0 }}>
+                  Chennai, Tamil Nadu, India
+                </p>
+
+                <motion.div
+                  initial="rest"
+                  whileHover="hover"
+                  whileTap="hover"
+                  animate="rest"
+                  style={{ position: "relative", height: 38, display: "inline-flex", marginTop: "18px", cursor: "pointer" }}
+                >
+                  <button
+                    onClick={() => { setMobileMenuOpen(false); openContactForm(); }}
+                    style={{ height: 38, paddingTop: 6, paddingRight: 24, paddingBottom: 6, paddingLeft: 16, display: "inline-flex", alignItems: "center", background: dark ? "transparent" : "#ffffff", borderRadius: 38, border: "1px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box", position: "relative", overflow: "hidden" }}
+                  >
+                    <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
+                    <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
+                    <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 13, height: "1em" }}>
+                      <motion.span variants={{ rest: { y: 0, transition: { duration: 0.1, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1], delay: 0.1 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, lineHeight: 1, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap", color: dark ? "#9A9A9A" : "#414141" }}>
+                        Let's Talk
+                      </motion.span>
+                      <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.1, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1], delay: 0.1 } } }} style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, lineHeight: 1, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}>
+                        Let's Talk
+                      </motion.span>
+                    </div>
+                  </button>
+                  <motion.div variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 1, right: -12, width: 32, height: 32, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+                    <motion.svg width={16} height={16} viewBox="0 0 24 24" style={{ display: "block" }} fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+                    </motion.svg>
+                  </motion.div>
+                </motion.div>
+              </div>
             </nav>
-            <div style={{ padding: "16px 24px 40px" }}>
-              <button
-                onClick={() => { setMobileMenuOpen(false); openContactForm(); }}
-                style={{ width: "100%", padding: "16px", background: "#fff", color: "#414141", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
-              >
-                Let's Talk
-              </button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -511,7 +551,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
       animate={{
         y: 0,
         opacity: 1,
-        boxShadow: dark
+        boxShadow: dark || mobileMenuOpen
           ? "none"
           : scrolled
             ? "0px 4px 24px 0px rgba(0,0,0,0.10)"
@@ -523,8 +563,11 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
         boxShadow: { duration: 0.3, ease: "easeInOut" },
       }}
       onMouseLeave={() => setServiceOpen(false)}
-      className={`fixed flex flex-col top-[40px] z-50 pointer-events-auto rounded-[8px] ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
+      className={`fixed flex flex-col ${mobileMenuOpen ? "top-0" : "top-[40px]"} z-50 pointer-events-auto ${mobileMenuOpen ? "rounded-none" : "rounded-[8px]"} ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
       style={(() => {
+        if (mobileMenuOpen) {
+          return { left: "0px", width: "100%", ...(dark ? { background: "#2A2A2A" } : {}) };
+        }
         const w = containerWidth ?? "100vw";
         const pad = containerWidth ? "40px" : "80px";
         const minW = containerWidth ? "1200px" : "1224px";
@@ -538,12 +581,12 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
       })()}
     >
       {/* Main bar row */}
-      <div className="flex items-center justify-between px-[24px] py-[8px]" style={{ height: barHeight }}>
+      <div className="topbar-row flex items-center justify-between px-[24px] py-[8px]" style={{ height: barHeight, ...(mobileMenuOpen ? { paddingLeft: 16, paddingRight: 16 } : {}) }}>
         <div className="shrink-0 cursor-pointer" onClick={() => navigate("/", { state: { skipLoading: true } })} onMouseEnter={() => setServiceOpen(false)}>
           {logoSrc ? (
-            <img alt="Xg Labs" src={logoSrc} style={{ height: "44px", width: "auto", display: "block" }} />
+            <img alt="Xg Labs" className="topbar-logo" src={logoSrc} style={{ height: "44px", width: "auto", display: "block" }} />
           ) : (
-            <img alt="Xg Labs" src={imgImage12} style={{ height: "54px", width: "auto", display: "block" }} />
+            <img alt="Xg Labs" className="topbar-logo" src={imgImage12} style={{ height: "54px", width: "auto", display: "block" }} />
           )}
         </div>
 
@@ -717,24 +760,32 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
             </motion.div>
           </motion.div>
         </div>
-        {/* Hamburger — visible only on mobile (<lg), styled as black circle */}
+        {/* Hamburger — visible only on mobile (<lg), styled as black circle; morphs into an X while the menu is open */}
         <button
-          className="lg:hidden flex flex-col items-center justify-center shrink-0"
-          onClick={() => setMobileMenuOpen(true)}
-          aria-label="Open menu"
+          className="topbar-hamburger lg:hidden flex flex-col items-center justify-center shrink-0"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           style={{
             width: 44,
             height: 44,
-            borderRadius: "50%",
+            borderRadius: mobileMenuOpen ? "12px" : "50%",
             background: "#0a0a0a",
             gap: 5,
             border: "none",
             cursor: "pointer",
           }}
         >
-          <span style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
-          <span style={{ display: "block", width: 14, height: 2, borderRadius: 99, background: "#fff" }} />
-          <span style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
+          {mobileMenuOpen ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <>
+              <span className="topbar-hamburger-bar" style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
+              <span className="topbar-hamburger-bar-short" style={{ display: "block", width: 14, height: 2, borderRadius: 99, background: "#fff" }} />
+              <span className="topbar-hamburger-bar" style={{ display: "block", width: 20, height: 2, borderRadius: 99, background: "#fff" }} />
+            </>
+          )}
         </button>
       </div>
 

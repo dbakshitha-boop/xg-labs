@@ -36,13 +36,13 @@ export function NeedMoreProof() {
 
   // Final Position Spread (X for Desktop, Y for Mobile)
   const needX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-220px"]);
-  const needY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "-50px" : "0px"]);
+  const needY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "-65px" : "0px"]);
 
   const moreX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "-35px"]);
   const moreY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "0px"]);
 
   const proofX = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "0px" : "190px"]);
-  const proofY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "50px" : "0px"]);
+  const proofY = useTransform(scrollYProgress, [0.85, 1.0], ["0px", isMobile ? "65px" : "0px"]);
 
   return (
     <section ref={containerRef} className="relative h-[400vh] w-full">

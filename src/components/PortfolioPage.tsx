@@ -237,10 +237,10 @@ export function PortfolioPage() {
           <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "140%", color: "#414141", margin: "0 0 24px" }}>
             Creative, digital, and performance work built to move brands forward.
           </p>
-          <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 44, display: "inline-flex" }}>
+          <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 36, display: "inline-flex" }}>
             <button
               onClick={() => openContactForm()}
-              style={{ height: 44, paddingTop: 10, paddingRight: 30, paddingBottom: 10, paddingLeft: 16, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
+              style={{ height: 36, paddingTop: 8, paddingRight: 24, paddingBottom: 8, paddingLeft: 14, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 42, border: "1px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box" as const, position: "relative" as const, overflow: "hidden" as const }}
             >
               {/* Teal fill — leads left to right */}
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
@@ -248,17 +248,17 @@ export function PortfolioPage() {
               <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
               {/* Text slides up on hover, sequenced to appear after the fill lands */}
               <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: "1em" }}>
-                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>
+                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#414141" }}>
                   Become a Client
                 </motion.span>
-                <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>
+                <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute" as const, top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const, whiteSpace: "nowrap" as const, color: "#ffffff" }}>
                   Become a Client
                 </motion.span>
               </div>
             </button>
             {/* Circle arrow — black → teal on hover */}
-            <motion.div variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
-              <motion.svg width={18} height={18} viewBox="0 0 24 24" style={{ display: "block" }} fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <motion.div variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: "50%", right: -10, width: 32, height: 32, borderRadius: 32, transform: "translateY(-50%)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+              <motion.svg width={16} height={16} viewBox="0 0 24 24" style={{ display: "block" }} fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
               </motion.svg>
             </motion.div>
@@ -283,13 +283,13 @@ export function PortfolioPage() {
         ))}
 
         {/* Project cards */}
-        <div style={{ padding: "40px 40px 80px" }}>
+        <div style={{ padding: "24px 40px 80px" }}>
           {/* Filter pills — horizontal scroll */}
           <div style={{ display: "flex", gap: "8px", overflowX: "auto", marginBottom: "32px", paddingBottom: "4px", scrollbarWidth: "none" as any }}>
             {FILTERS.map(f => {
               const active = activeFilter === f;
               return (
-                <button key={f} onClick={() => setActiveFilter(f)} style={{ flexShrink: 0, padding: "8px 18px", borderRadius: "100px", border: active ? "none" : "1.5px solid #414141", background: active ? "#060606" : "transparent", color: active ? "#ffffff" : "#414141", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase" as const, cursor: "pointer" }}>
+                <button key={f} onClick={() => setActiveFilter(f)} style={{ flexShrink: 0, padding: "8px 18px", borderRadius: "10px", border: active ? "none" : "1.5px solid #414141", background: active ? "#060606" : "transparent", color: active ? "#ffffff" : "#414141", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "13px", letterSpacing: "0.06em", textTransform: "uppercase" as const, cursor: "pointer" }}>
                   {f}
                 </button>
               );

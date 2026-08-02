@@ -238,9 +238,12 @@ export function SelectedWork() {
       style={{ height: isDesktop ? `${projects.length * 100}vh` : 'auto' }}
     >
       {/* Mobile/Tablet View (< 1024px) */}
-      <div className="lg:hidden w-full px-4 md:px-8 py-16 flex flex-col gap-24">
+      <div
+        className="lg:hidden w-full px-4 md:px-8"
+        style={{ paddingTop: 24, paddingBottom: 64, display: "flex", flexDirection: "column", gap: 28 }}
+      >
         {/* Mobile Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center" style={{ marginTop: 12, marginBottom: 4 }}>
           <h2 className="text-2xl font-bold uppercase tracking-tight text-black font-space">
             Selected Work
           </h2>
@@ -248,21 +251,33 @@ export function SelectedWork() {
         </div>
 
         {projects.map((project, i) => (
-          <div key={project.id} className="flex flex-col gap-6 cursor-pointer" onClick={() => navigate('/portfolio')}>
+          <motion.div
+            key={project.id}
+            className="flex flex-col gap-6 cursor-pointer"
+            onClick={() => navigate('/portfolio')}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          >
             {/* Mobile Image */}
-            <div className="w-full aspect-[4/5] rounded-[12px] overflow-hidden shadow-lg">
-              <img 
-                src={project.image} 
-                alt={project.client} 
+            <motion.div
+              className="rounded-[12px] overflow-hidden shadow-lg"
+              style={{ width: "55%", margin: "0 auto", aspectRatio: "4 / 5" }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <img
+                src={project.image}
+                alt={project.client}
                 className="w-full h-full object-cover"
               />
-            </div>
-            
+            </motion.div>
+
             {/* Mobile Content */}
             <div className="flex flex-col gap-4">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start gap-3">
                 <div>
-                  <h3 className="text-3xl font-normal text-[#060606] font-['Cal_Sans',sans-serif] leading-tight mb-2 uppercase">
+                  <h3 className="text-2xl font-normal text-[#060606] font-['Cal_Sans',sans-serif] leading-tight mb-2 uppercase">
                     {project.title.join(" ")}
                   </h3>
                   <div className="flex flex-col">
@@ -270,27 +285,14 @@ export function SelectedWork() {
                     <span className="text-sm text-[#9A9A9A] font-['Sora',sans-serif]">{project.type}</span>
                   </div>
                 </div>
-                <span className="text-xl font-normal text-[#9A9A9A] font-['Cal_Sans',sans-serif]">{project.date}</span>
+                <span className="text-xl font-normal text-[#9A9A9A] font-['Cal_Sans',sans-serif] whitespace-nowrap shrink-0">{project.date}</span>
               </div>
 
-              <div className="h-px w-full bg-gray-200" />
-
-              <p className="text-base text-[#414141] leading-relaxed font-sora">
-                {project.shortDescription}
-              </p>
-               <p className="text-sm text-[#414141] leading-relaxed font-['Sora',sans-serif]">
+              <p className="text-sm text-[#414141] leading-relaxed font-['Sora',sans-serif]">
                 {project.longDescription}
               </p>
-
-              <div className="flex flex-wrap gap-2">
-                {project.tags.map((tag, idx) => (
-                  <span key={idx} className="text-xs font-bold text-[#6E6E6E] uppercase tracking-wider font-['Cal_Sans',sans-serif] bg-white px-3 py-1 rounded-full border border-gray-100">
-                    {tag}
-                  </span>
-                ))}
-              </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 

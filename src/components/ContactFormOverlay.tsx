@@ -74,7 +74,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
     background: "transparent",
     border: "none",
     outline: "none",
-    fontFamily: "’Space Grotesk’, sans-serif",
+    fontFamily: "'Space Grotesk', sans-serif",
     fontWeight: 300,
     fontSize: "clamp(18px, 2.2vw, 32px)",
     lineHeight: 1,
@@ -86,7 +86,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
   };
 
   const labelStyle: React.CSSProperties = {
-    fontFamily: "’Cal Sans’, sans-serif",
+    fontFamily: "'Cal Sans', sans-serif",
     fontWeight: 400,
     fontSize: "11px",
     letterSpacing: "0.14em",
@@ -97,7 +97,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
   };
 
   const optionalStyle: React.CSSProperties = {
-    fontFamily: "’Space Grotesk’, sans-serif",
+    fontFamily: "'Space Grotesk', sans-serif",
     fontWeight: 400,
     fontSize: "11px",
     letterSpacing: "0.08em",
@@ -158,14 +158,14 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
         <div className="cf-header" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "72px", marginBottom: embedded ? "0" : "80px" }}>
           <h2
             className="cf-title"
-            style={{ fontFamily: "’Cal Sans’, sans-serif", fontWeight: 400, fontStyle: "normal", fontSize: "80px", color: "#6E6E6E", margin: 0, letterSpacing: "-0.04em", lineHeight: "120%" }}
+            style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontStyle: "normal", fontSize: "80px", color: "#6E6E6E", margin: 0, letterSpacing: "-0.04em", lineHeight: "120%" }}
           >
             {"Let’s Talk"}
           </h2>
 
           <div className="cf-header-right" style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "24px", paddingTop: "20px" }}>
             <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "18px", color: "#6E6E6E", margin: 0, lineHeight: 1.6, maxWidth: "240px" }}>
-              {"We’d love to hear what you’re building."}
+              {"We’d love to understand what you’re building."}
             </p>
             <motion.button
               onClick={() => onClose?.()}
@@ -228,7 +228,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
               style={inputStyle}
             />
             {emailError && (
-              <p style={{ fontFamily: "’Space Grotesk’, sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "6px 0 0", letterSpacing: "0.04em" }}>
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "6px 0 0", letterSpacing: "0.04em" }}>
                 Please enter a valid email address.
               </p>
             )}
@@ -285,10 +285,10 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
               <LeftBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#F7F8FA"} />
               <motion.div variants={{ rest: { width: 46 }, hover: { width: 116 } }} transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }} style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}>
                 <motion.span variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }} transition={{ duration: 0.15 }} style={{ position: "absolute", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {submitted || submitting ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "’Space Grotesk’, sans-serif", lineHeight: 1, color: submitted ? "#02A884" : "rgba(255,255,255,0.3)" }}>{submitted ? "✓" : "·"}</span> : <img src={arrowIcon} alt="" width={46} height={46} style={{ display: "block", filter: "brightness(0) invert(1)", opacity: 0.75 }} />}
+                  {submitted || submitting ? <span style={{ fontSize: "22px", fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif", lineHeight: 1, color: submitted ? "#02A884" : "rgba(255,255,255,0.3)" }}>{submitted ? "✓" : "·"}</span> : <img src={arrowIcon} alt="" width={46} height={46} style={{ display: "block", filter: "brightness(0) invert(1)", opacity: 0.75 }} />}
                 </motion.span>
                 {!submitting && !submitted && (
-                  <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }} style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase" as const, color: "#02A884", whiteSpace: "nowrap" as const, position: "absolute" as const }}>ENTER</motion.span>
+                  <motion.span variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }} transition={{ duration: 0.2, delay: 0.18 }} style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase" as const, color: "#02A884", whiteSpace: "nowrap" as const, position: "absolute" as const }}>ENTER</motion.span>
                 )}
               </motion.div>
               <RightBracket color={submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#F7F8FA"} />
@@ -311,7 +311,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
             {/* Submit */}
             <motion.button disabled={submitting || submitted} onClick={handleSubmit} initial="rest" whileHover={!submitting && !submitted ? "hover" : "rest"} style={{ background: "none", border: "none", cursor: submitting || submitted ? "default" : "pointer", padding: 0, height: "52px", display: "flex", alignItems: "center", gap: "4px" }}>
               <LeftBracket height={40} arm={8} color={submitted ? "#02A884" : "#F7F8FA"} />
-              <span style={{ fontFamily: "’Space Grotesk’, sans-serif", fontWeight: 600, fontSize: "20px", letterSpacing: "0.1em", textTransform: "uppercase", color: submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#ffffff" }}>
+              <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "20px", letterSpacing: "0.1em", textTransform: "uppercase", color: submitted ? "#02A884" : submitting ? "rgba(255,255,255,0.3)" : "#ffffff" }}>
                 {submitted ? "✓ Sent" : submitting ? "···" : "Send"}
               </span>
               <RightBracket height={40} arm={8} color={submitted ? "#02A884" : "#F7F8FA"} />
@@ -319,7 +319,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
           </div>
 
           {submitError && (
-            <p style={{ gridColumn: "1 / -1", fontFamily: "’Space Grotesk’, sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "8px 0 0", letterSpacing: "0.04em" }}>
+            <p style={{ gridColumn: "1 / -1", fontFamily: "'Space Grotesk', sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "8px 0 0", letterSpacing: "0.04em" }}>
               {submitError}
             </p>
           )}

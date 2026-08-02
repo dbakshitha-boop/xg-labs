@@ -24,8 +24,47 @@ export function BlogInsightsSection() {
   const navigate = useNavigate();
   const isMobile = useIsMobile(768);
   const trackRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [overlayRect, setOverlayRect] = useState<{ left: number; top: number; width: number } | null>(null);
   const [cards, setCards] = useState<Article[]>([]);
+
+  // Measures the hovered card's title panel relative to the section, so the
+  // expanding description overlay (rendered outside the horizontally-scrolling
+  // strip) can be positioned to line up underneath it without ever being a
+  // descendant of that strip — a descendant would get clipped, since a
+  // horizontally-scrolling element (overflow-x: auto) forces vertical overflow
+  // to clip too, no matter what overflow-y is set to.
+  const measureOverlay = (i: number) => {
+    const cardEl = cardRefs.current[i];
+    const sectionEl = trackRef.current;
+    if (!cardEl || !sectionEl) return;
+    const cardRect = cardEl.getBoundingClientRect();
+    const sectionRect = sectionEl.getBoundingClientRect();
+    setOverlayRect({
+      left: cardRect.left - sectionRect.left,
+      top: cardRect.bottom - sectionRect.top,
+      width: cardRect.width,
+    });
+  };
+
+  // The card animates upward on hover (to level with card 001), so a one-off
+  // measurement taken right as the hover starts captures the stale pre-shift
+  // position. Tracking every frame for as long as a card is hovered keeps the
+  // overlay glued to the card regardless of that animation, horizontal
+  // scrolling, or anything else moving it.
+  useEffect(() => {
+    if (hoveredCard === null) return;
+    let raf: number;
+    const tick = () => {
+      measureOverlay(hoveredCard);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hoveredCard]);
 
   useEffect(() => {
     fetchArticles().then(data => setCards(data.slice(0, 7))).catch(() => {});
@@ -43,9 +82,9 @@ export function BlogInsightsSection() {
       ref={trackRef}
       style={{
         background: "#ffffff",
-        paddingTop: "48px",
-        paddingBottom: "60px",
-        overflow: "hidden",
+        paddingTop: isMobile ? "20px" : "48px",
+        paddingBottom: isMobile ? "24px" : "60px",
+        position: "relative",
       }}
     >
       {/* ── Header row ── */}
@@ -55,11 +94,11 @@ export function BlogInsightsSection() {
           gridTemplateColumns: isMobile ? "1fr" : "1fr auto",
           alignItems: "flex-start",
           padding: isMobile ? "0 20px 24px" : "0 72px 32px",
-          gap: "48px",
+          gap: isMobile ? "16px" : "48px",
         }}
       >
         {/* Left: kicker + headline */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "10px" : "20px" }}>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -87,7 +126,7 @@ export function BlogInsightsSection() {
             style={{
               fontFamily: "'Cal Sans', sans-serif",
               fontWeight: 400,
-              fontSize: "46px",
+              fontSize: isMobile ? "30px" : "46px",
               lineHeight: "1.2",
               letterSpacing: "-0.02em",
               color: "#5F5F5F",
@@ -109,8 +148,8 @@ export function BlogInsightsSection() {
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
-            gap: "20px",
-            paddingTop: "8px",
+            gap: isMobile ? "12px" : "20px",
+            paddingTop: isMobile ? "0px" : "8px",
           }}
         >
           <p
@@ -122,7 +161,7 @@ export function BlogInsightsSection() {
               color: "#777777",
               margin: 0,
               textAlign: "left",
-              maxWidth: "220px",
+              whiteSpace: "nowrap",
             }}
           >
             Actionable ideas backed by real results.
@@ -133,15 +172,15 @@ export function BlogInsightsSection() {
             whileHover="hover"
             animate="rest"
             onClick={() => navigate("/blog")}
-            style={{ position: "relative", height: 42, display: "inline-flex", cursor: "pointer" }}
+            style={{ position: "relative", height: isMobile ? 34 : 42, display: "inline-flex", cursor: "pointer" }}
           >
             <button
               style={{
-                height: 42,
-                paddingTop: 10,
-                paddingBottom: 10,
-                paddingLeft: 16,
-                paddingRight: 30,
+                height: isMobile ? 34 : 42,
+                paddingTop: isMobile ? 8 : 10,
+                paddingBottom: isMobile ? 8 : 10,
+                paddingLeft: isMobile ? 14 : 16,
+                paddingRight: isMobile ? 24 : 30,
                 display: "inline-flex",
                 alignItems: "center",
                 background: "#ffffff",
@@ -169,7 +208,7 @@ export function BlogInsightsSection() {
                 <motion.span
                   variants={{ rest: { y: 0 }, hover: { y: "-100%" } }}
                   transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                  style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#414141" }}
+                  style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: isMobile ? 12 : 14, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#414141" }}
                 >
                   View Blogs
                 </motion.span>
@@ -177,7 +216,7 @@ export function BlogInsightsSection() {
                   aria-hidden
                   variants={{ rest: { y: "100%" }, hover: { y: 0 } }}
                   transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-                  style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 14, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                  style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: isMobile ? 12 : 14, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
                 >
                   View Blogs
                 </motion.span>
@@ -186,9 +225,9 @@ export function BlogInsightsSection() {
             <motion.div
               variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
               transition={{ duration: 0.3 }}
-              style={{ position: "absolute", top: 0, right: -13, width: 42, height: 42, borderRadius: 42, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+              style={{ position: "absolute", top: 0, right: isMobile ? -9 : -13, width: isMobile ? 30 : 42, height: isMobile ? 30 : 42, borderRadius: 42, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
             >
-              <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+              <svg width={isMobile ? 16 : 14} height={isMobile ? 16 : 14} viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
               </svg>
             </motion.div>
@@ -197,14 +236,22 @@ export function BlogInsightsSection() {
       </div>
 
       {/* ── Card strip ── */}
-      <div
+      <motion.div
+        ref={scrollRef}
         style={{
           overflowX: "auto",
+          // Note: since overflowX is "auto", the browser forces this "visible" to
+          // compute as "auto" too (per spec, mismatched x/y overflow can't have a
+          // truly-visible axis), so anything that overflows this element's box
+          // vertically gets clipped instead of spilling out. The expanding
+          // description is rendered outside this container entirely (see below)
+          // so it never needs extra room reserved here — paddingBottom just
+          // covers the tallest staggered card's offset.
           overflowY: "visible",
           paddingLeft: isMobile ? "20px" : "72px",
           paddingRight: isMobile ? "20px" : "72px",
-          paddingBottom: "60px",
           paddingTop: "4px",
+          paddingBottom: (isMobile ? 24 : 40) + Math.max(...OFFSETS),
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
@@ -258,7 +305,7 @@ export function BlogInsightsSection() {
                     </p>
                     <p
                       style={{
-                        fontFamily: "'Cal Sans', sans-serif",
+                        fontFamily: "'Space Grotesk', sans-serif",
                         fontWeight: 600,
                         fontSize: "14px",
                         letterSpacing: "0.14em",
@@ -273,12 +320,13 @@ export function BlogInsightsSection() {
 
                   {/* Card — image on top, white text panel below */}
                   <motion.div
+                  ref={(el) => { cardRefs.current[i] = el; }}
                   onClick={() => navigate(`/blog/post/${getArticleId(article)}`)}
                   whileHover="hover"
                   onHoverStart={() => setHoveredCard(i)}
                   onHoverEnd={() => setHoveredCard(null)}
                   style={{
-                    width: isMobile ? "min(82vw, 320px)" : "calc((100vw - 144px - 2 * 24px) / 3)",
+                    width: isMobile ? "min(72vw, 270px)" : "calc((100vw - 144px - 2 * 24px) / 3)",
                     cursor: "pointer",
                     flexShrink: 0,
                     display: "flex",
@@ -288,7 +336,7 @@ export function BlogInsightsSection() {
                   }}
                 >
                   {/* Image */}
-                  <div style={{ position: "relative", overflow: "hidden", height: "clamp(300px, 26vw, 420px)", flexShrink: 0 }}>
+                  <div style={{ position: "relative", overflow: "hidden", height: isMobile ? "clamp(260px, 24vw, 360px)" : "clamp(300px, 26vw, 420px)", flexShrink: 0 }}>
                     <motion.img
                       src={article.img}
                       alt={article.title}
@@ -298,10 +346,8 @@ export function BlogInsightsSection() {
                     />
                   </div>
 
-                  {/* Title panel + description share a single, non-toggling border so
-                      there's no seam left behind when the description collapses. */}
+                  {/* Title panel */}
                   <div style={{ border: "1px solid #9A9A9A" }}>
-                    {/* Title panel */}
                     <motion.div
                       animate={{
                         backgroundColor: hoveredCard === i ? "#F2F2F2" : "#ffffff",
@@ -324,41 +370,6 @@ export function BlogInsightsSection() {
                         {article.title}
                       </p>
                     </motion.div>
-
-                    {/* Description — expands below on hover */}
-                    <AnimatePresence initial={false}>
-                      {hoveredCard === i && (
-                        <motion.div
-                          key="desc"
-                          initial={{ height: 0 }}
-                          animate={{ height: "auto" }}
-                          exit={{ height: 0 }}
-                          transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
-                          style={{
-                            overflow: "hidden",
-                            background: "#F2F2F2",
-                          }}
-                        >
-                          <motion.p
-                            initial={{ y: 16, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: 16, opacity: 0 }}
-                            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                            style={{
-                              fontFamily: "'Space Grotesk', sans-serif",
-                              fontWeight: 400,
-                              fontSize: "13px",
-                              lineHeight: "1.6",
-                              color: "#666666",
-                              margin: 0,
-                              padding: "3px 18px 20px",
-                            }}
-                          >
-                            {article.description}
-                          </motion.p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
                   </div>
                 </motion.div>
                 </motion.div>
@@ -366,7 +377,52 @@ export function BlogInsightsSection() {
             );
           })}
         </motion.div>
-      </div>
+      </motion.div>
+
+      {/* Expanding description — a sibling of the scroll container (not a
+          descendant), positioned via measurement, so it can visually spill
+          below the strip without being clipped or growing any scrolling
+          element's box (which would otherwise push the footer down). */}
+      <AnimatePresence initial={false}>
+        {hoveredCard !== null && overlayRect && cards[hoveredCard] && (
+          <motion.div
+            key="desc"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: "absolute",
+              left: overlayRect.left,
+              top: overlayRect.top,
+              width: overlayRect.width,
+              overflow: "hidden",
+              background: "#F2F2F2",
+              border: "1px solid #9A9A9A",
+              borderTop: "none",
+              zIndex: 30,
+            }}
+          >
+            <motion.p
+              initial={{ y: 16, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 16, opacity: 0 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontWeight: 400,
+                fontSize: "13px",
+                lineHeight: "1.6",
+                color: "#666666",
+                margin: 0,
+                padding: "3px 18px 20px",
+              }}
+            >
+              {cards[hoveredCard].description}
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

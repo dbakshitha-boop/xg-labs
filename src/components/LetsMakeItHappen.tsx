@@ -167,7 +167,7 @@ export function LetsMakeItHappen() {
               style={{
                 fontFamily: "'Sora', sans-serif",
                 fontWeight: 600,
-                fontSize: "32px",
+                fontSize: isMobile ? "20px" : "32px",
                 lineHeight: "120%",
                 letterSpacing: "-0.02em",
                 textAlign: "center",
@@ -183,12 +183,17 @@ export function LetsMakeItHappen() {
               style={{
                 fontFamily: "'Cal Sans', sans-serif",
                 fontWeight: 400,
-                fontSize: "92px",
+                fontSize: isMobile ? "44px" : "92px",
                 lineHeight: "120%",
                 letterSpacing: "-0.02em",
                 textAlign: "center",
                 color: "#414141",
                 margin: 0,
+                // Traveling images pass directly behind this headline on mobile (3 full-width
+                // columns) — a soft halo matching the section bg keeps the text legible over them.
+                textShadow: isMobile
+                  ? "0 0 16px #ECEEF2, 0 0 16px #ECEEF2, 0 0 16px #ECEEF2"
+                  : undefined,
               }}
             >
               {"Let's make"}

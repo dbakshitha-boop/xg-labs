@@ -144,6 +144,8 @@ function AccordionRow({
   onToggle,
   isLast,
   labelSize = "16px",
+  rowPadding = "14px 0",
+  circleSize = 28,
 }: {
   label: string;
   description: string;
@@ -151,6 +153,8 @@ function AccordionRow({
   onToggle: () => void;
   isLast: boolean;
   labelSize?: string;
+  rowPadding?: string;
+  circleSize?: number;
 }) {
   return (
     <div style={{ borderBottom: isLast ? "none" : "1px solid rgba(0,0,0,0.1)" }}>
@@ -164,7 +168,7 @@ function AccordionRow({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "14px 0",
+          padding: rowPadding,
           gap: "24px",
         }}
       >
@@ -184,8 +188,8 @@ function AccordionRow({
         </span>
         <motion.div
           style={{
-            width: 28,
-            height: 28,
+            width: circleSize,
+            height: circleSize,
             border: "1.5px solid rgba(0,0,0,0.2)",
             borderRadius: "50%",
             display: "flex",
@@ -259,17 +263,17 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
       }}
     >
       {/* Padded top section: title + description + buttons */}
-      <div style={{ padding: "24px 20px 20px" }}>
+      <div style={{ padding: "20px 20px 14px" }}>
       {/* Title */}
       <h2
         style={{
           fontFamily: "'Cal Sans'",
           fontWeight: 400,
-          fontSize: 28,
+          fontSize: 21,
           letterSpacing: "-0.02em",
           textTransform: "uppercase",
           color: "#414141",
-          margin: "0 0 10px",
+          margin: "0 0 8px",
           lineHeight: "1",
         }}
       >
@@ -281,11 +285,11 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
         style={{
           fontFamily: "'Sora', sans-serif",
           fontWeight: 400,
-          fontSize: 14,
+          fontSize: 13,
           color: "#6E6E6E",
-          lineHeight: "1",
+          lineHeight: "1.4",
           letterSpacing: "-0.04em",
-          margin: "0 0 18px",
+          margin: "0 0 16px",
         }}
       >
         {service.description}
@@ -299,11 +303,11 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           whileHover="hover"
           animate="rest"
           onClick={() => navigate("/blog/case-study/0")}
-          style={{ position: "relative", height: 32, display: "inline-flex", cursor: "pointer" }}
+          style={{ position: "relative", height: 28, display: "inline-flex", cursor: "pointer" }}
         >
           <button
             style={{
-              height: 32,
+              height: 28,
               paddingLeft: 12,
               paddingRight: 22,
               display: "inline-flex",
@@ -348,9 +352,9 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           <motion.div
             variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
             transition={{ duration: 0.18 }}
-            style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+            style={{ position: "absolute", top: 0, right: -9, width: 28, height: 28, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
           >
-            <motion.svg width={18} height={18} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <motion.svg width={16} height={16} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
             </motion.svg>
           </motion.div>
@@ -362,11 +366,11 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           whileHover="hover"
           animate="rest"
           onClick={() => openContactForm()}
-          style={{ position: "relative", height: 32, display: "inline-flex", cursor: "pointer" }}
+          style={{ position: "relative", height: 28, display: "inline-flex", cursor: "pointer" }}
         >
           <button
             style={{
-              height: 32,
+              height: 28,
               paddingLeft: 12,
               paddingRight: 22,
               display: "inline-flex",
@@ -411,7 +415,7 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           <motion.div
             variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }}
             transition={{ duration: 0.18 }}
-            style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+            style={{ position: "absolute", top: 0, right: -9, width: 28, height: 28, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
           >
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M5 12h14" />
@@ -427,12 +431,12 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
         <img
           src={service.mobileImage}
           alt={service.title}
-          style={{ width: "100%", height: 250, objectFit: "cover", display: "block", borderRadius: 16 }}
+          style={{ width: "100%", height: 190, objectFit: "cover", display: "block", borderRadius: 16 }}
         />
       </div>
 
       {/* Accordion */}
-      <div style={{ padding: "4px 20px 28px" }}>
+      <div style={{ padding: "4px 20px 12px" }}>
         {service.items.map((item, i) => (
           <AccordionRow
             key={i}
@@ -441,7 +445,9 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
             open={openIdx === i}
             onToggle={() => toggle(i)}
             isLast={i === service.items.length - 1}
-            labelSize="16px"
+            labelSize="13px"
+            rowPadding="10px 0"
+            circleSize={24}
           />
         ))}
       </div>
@@ -810,6 +816,63 @@ function GridServiceCard({ service }: { service: ServiceData }) {
   );
 }
 
+// ─── Mobile card (same stack/peel scroll effect as the desktop CardSlide) ────
+function MobileCardSlide({
+  service,
+  index,
+  total,
+  scrollYProgress,
+}: {
+  service: ServiceData;
+  index: number;
+  total: number;
+  scrollYProgress: MotionValue<number>;
+}) {
+  const seg = 1 / total;
+  const isLast = index === total - 1;
+
+  // Slide in from below over its entry window
+  const y = useTransform(
+    scrollYProgress,
+    index === 0 ? [0, seg] : [(index - 1) * seg, index * seg],
+    index === 0 ? ["0%", "0%"] : ["100%", "0%"]
+  );
+
+  // Scale down (peel away) over its exit window; last card never shrinks
+  const scale = useTransform(
+    scrollYProgress,
+    [index * seg, (index + 1) * seg],
+    [1, isLast ? 1 : 0.92]
+  );
+
+  // Stay invisible until the card starts entering, then instantly visible
+  const opacity = useTransform(
+    scrollYProgress,
+    index === 0
+      ? [0, 1]
+      : [(index - 1) * seg, (index - 1) * seg + seg * 0.04],
+    index === 0 ? [1, 1] : [0, 1]
+  );
+
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        top: 16,
+        left: 0,
+        right: 0,
+        zIndex: index + 1,
+        y,
+        scale,
+        opacity,
+        transformOrigin: "top center",
+      }}
+    >
+      <MobileServiceCard service={service} />
+    </motion.div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export function ServicesPage() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -844,15 +907,10 @@ export function ServicesPage() {
   useEffect(() => {
     const idx = (location.state as { serviceIndex?: number } | null)?.serviceIndex;
     if (idx == null) return;
-    if (isMobile) {
-      const sectionId = SERVICES[idx]?.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-      if (sectionId) document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
     const vh = window.innerHeight;
     const top = 114 + (idx / total) * (total - 1) * vh;
     requestAnimationFrame(() => window.scrollTo({ top, behavior: "smooth" }));
-  }, [location, total, isMobile]);
+  }, [location, total]);
 
   if (isMobile) {
     return (
@@ -864,16 +922,29 @@ export function ServicesPage() {
           </div>
         </div>
 
-        {/* Mobile service cards */}
-        <div style={{ padding: "20px 40px 0", display: "flex", flexDirection: "column", gap: 12 }}>
-          {SERVICES.map((svc) => {
-            const sectionId = svc.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-            return (
-              <div key={svc.title} id={sectionId}>
-                <MobileServiceCard service={svc} />
-              </div>
-            );
-          })}
+        {/* Scroll driver — one viewport-height per card, same stack/peel effect as desktop */}
+        <div ref={containerRef} style={{ height: `${total * 100}vh` }}>
+          <div
+            style={{
+              position: "sticky",
+              top: "114px",
+              height: "calc(100vh - 114px)",
+              overflow: "hidden",
+              boxSizing: "border-box",
+            }}
+          >
+            <div style={{ position: "relative", height: "100%", width: "calc(100% - 80px)", margin: "0 auto", boxSizing: "border-box" }}>
+              {SERVICES.map((svc, i) => (
+                <MobileCardSlide
+                  key={svc.title}
+                  service={svc}
+                  index={i}
+                  total={total}
+                  scrollYProgress={scrollYProgress}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         <Footer />

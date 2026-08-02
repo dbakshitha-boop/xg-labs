@@ -1,5 +1,5 @@
-import { motion, animate, useMotionValue, useTransform, useMotionValueEvent } from "motion/react";
-import { useEffect, useState, memo, useMemo } from "react";
+import { motion, animate, useMotionValue, useTransform } from "motion/react";
+import { useEffect, useRef, useState, memo, useMemo } from "react";
 
 const originalWords = [
   "Strategy", "Research", "Insights", "Positioning",
@@ -24,12 +24,6 @@ const WordItem = memo(({ word, index, progress }: { word: string, index: number,
     return Math.max(0, 1 - (absD * 0.12));
   });
 
-  // Blur: Blur as it moves away
-  const filter = useTransform(distance, (d: number) => {
-    const absD = Math.abs(d);
-    return absD < 0.5 ? 'blur(0px)' : `blur(${Math.min(4, absD * 0.5)}px)`;
-  });
-
   const color = useTransform(distance, (d: number) => {
     return Math.abs(d) < 0.5 ? "#FFFFFF" : "#A3A3A3"; 
   });
@@ -50,8 +44,9 @@ const WordItem = memo(({ word, index, progress }: { word: string, index: number,
     return `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg)`;
   });
 
-  // Hide items that are too far to save GPU, increased range to prevent popping
-  const display = useTransform(distance, (d: number) => Math.abs(d) > 12 ? "none" : "flex");
+  // Hide items that are too far to save GPU — kept tight since each visible item
+  // is its own composited layer, and mobile GPUs choke if too many are live at once.
+  const display = useTransform(distance, (d: number) => Math.abs(d) > 8 ? "none" : "flex");
 
   return (
     <motion.div
@@ -63,7 +58,6 @@ const WordItem = memo(({ word, index, progress }: { word: string, index: number,
         transformOrigin: "center center",
         transform,
         opacity: itemOpacity,
-        filter,
         display,
       }}
     >
@@ -77,18 +71,27 @@ const WordItem = memo(({ word, index, progress }: { word: string, index: number,
   );
 });
 
-const PercentageDisplay = ({ progress, start, end }: { progress: any, start: number, end: number }) => {
+const PercentageDisplay = ({ durationMs }: { durationMs: number }) => {
   const [displayVal, setDisplayVal] = useState(0);
 
-  useMotionValueEvent(progress, "change", (latest: number) => {
-    // Map progress range [start, end] to 0..100
-    const rawPct = ((latest - start) / (end - start)) * 100;
-    const pct = Math.min(100, Math.max(0, Math.round(rawPct)));
-    setDisplayVal(pct);
-  });
+  // Drives the counter directly off requestAnimationFrame + plain state,
+  // independent of the word carousel's motion-value chain — so the percentage
+  // is guaranteed to count up on its own even if anything upstream stalls.
+  useEffect(() => {
+    let raf = 0;
+    const startTime = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - startTime) / durationMs);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out, matches the word carousel's feel
+      setDisplayVal(Math.round(eased * 100));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [durationMs]);
 
   return (
-    <div className="absolute left-[10%] md:left-[15%] xl:left-[20%] z-20 pointer-events-none">
+    <div className="absolute left-[10%] md:left-[15%] xl:left-[20%] top-1/2 -translate-y-1/2 z-20 pointer-events-none">
       <span className="block text-3xl md:text-[50px] font-['Cal_Sans',sans-serif] text-white leading-[1.1] tracking-[-0.02em] tabular-nums">
         {displayVal < 10 ? `0${displayVal}` : displayVal}%
       </span>
@@ -115,10 +118,16 @@ export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
   const fadeStart = startIndex + (totalDistance * 0.92); // Start fading at 92%
 
   const progress = useMotionValue(startIndex);
-  
+
   // Global opacity for the end-of-loading transition
   // At 98%, start fading to 0. At 100%, fully transparent (matches #060606 bg).
   const globalOpacity = useTransform(progress, [startIndex, fadeStart, endIndex], [1, 1, 0]);
+
+  // Read via ref instead of a useEffect dependency — the caller passes a new
+  // inline function on every render, which would otherwise restart this whole
+  // animation (resetting progress back toward 0%) on any parent re-render.
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     const controls = animate(progress, endIndex, {
@@ -127,13 +136,13 @@ export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
       onComplete: () => {
         setIsComplete(true);
         setTimeout(() => {
-          onComplete?.();
+          onCompleteRef.current?.();
         }, 150);
       }
     });
 
     return () => controls.stop();
-  }, [endIndex, onComplete, progress]);
+  }, [endIndex, progress]);
 
   return (
     <motion.div
@@ -151,10 +160,10 @@ export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
         style={{ opacity: globalOpacity }} // Apply the 98%-100% fade here
       >
         
-        <PercentageDisplay progress={progress} start={startIndex} end={endIndex} />
+        <PercentageDisplay durationMs={1600} />
 
         {/* List Container */}
-        <div className="absolute left-[5%] md:left-[60%] top-0 bottom-0 w-[500px] pointer-events-none">
+        <div className="absolute left-[42%] md:left-[60%] top-0 bottom-0 w-[500px] pointer-events-none">
           <div className="absolute top-1/2 left-0 w-full h-0">
             {loopedWords.map((word, index) => (
               <WordItem 

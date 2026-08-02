@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useAnimationFrame } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { LogoGroup } from "./LandingLogos";
 import Rectangle from "../../imports/Rectangle21";
@@ -9,7 +9,6 @@ import { useContactForm } from "../ContactFormContext";
 import { ContactFormContent } from "../ContactFormOverlay";
 import CardImages from "../../imports/CardImages";
 import mobileLogo from "../../assets/logo.jpeg";
-import mobileMenuLogo from "../../assets/2-cropped.png";
 
 // Portfolio images for mobile hero
 import mImg_cup      from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
@@ -54,6 +53,22 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
     const [talkHovered, setTalkHovered] = useState(false);
     const whatMakesUsRef = useRef<HTMLDivElement>(null);
     const mobileFormPrevRef = useRef<HTMLDivElement>(null);
+
+    // Mobile hero image rows — slow horizontal drift, mirroring the desktop
+    // portfolio columns' vertical drift (WorkSection in FinalLayout.tsx).
+    const rowDriftTime = useRef(0);
+    const rowDriftX1 = useMotionValue(0);
+    const rowDriftX2 = useMotionValue(0);
+    const rowDriftX3 = useMotionValue(0);
+    useAnimationFrame((_, delta) => {
+        if (!isMobile) return;
+        rowDriftTime.current += delta * 0.001;
+        const t = rowDriftTime.current;
+        rowDriftX1.set(Math.sin(t * 0.3) * 16);
+        rowDriftX2.set(Math.sin(t * 0.24 + 1.5) * 20);
+        rowDriftX3.set(Math.sin(t * 0.34 + 3.0) * 16);
+    });
+
     useEffect(() => {
         const onResize = () => {
             setViewWidth(window.innerWidth);
@@ -366,7 +381,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                     )}
                 </AnimatePresence>
 
-                {/* ── Slide-in sidebar menu ── */}
+                {/* ── Slide-in sidebar menu — sits behind the fixed navbar (which stays visible, hamburger morphed to X) ── */}
                 <AnimatePresence>
                     {mobileMenuOpen && (
                         <motion.div
@@ -374,22 +389,10 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                            style={{ position: "fixed", inset: 0, zIndex: 400, background: "#0a0a0a", display: "flex", flexDirection: "column" }}
+                            style={{ position: "fixed", inset: 0, zIndex: 150, background: "#ffffff", display: "flex", flexDirection: "column" }}
                         >
-                            {/* Sidebar header */}
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-                                <img alt="XG Labs" style={{ height: "42px", width: "auto", display: "block" }} src={mobileMenuLogo} />
-                                <button
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    aria-label="Close menu"
-                                    style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", padding: 0, color: "#fff", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "26px", letterSpacing: "0.02em" }}
-                                >
-                                    [X]
-                                </button>
-                            </div>
-
                             {/* Nav links */}
-                            <nav style={{ display: "flex", flexDirection: "column", padding: "16px 24px", flex: 1 }}>
+                            <nav style={{ display: "flex", flexDirection: "column", padding: "104px 24px 40px", flex: 1, overflowY: "auto" }}>
                                 {NAV_ITEMS.map((item, i) => (
                                     <motion.button
                                         key={item}
@@ -397,22 +400,60 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: i * 0.06 + 0.05, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                                         onClick={() => handleNavClick(item)}
-                                        style={{ width: "100%", textAlign: "left", padding: "18px 0", borderBottom: "1px solid rgba(255,255,255,0.08)", background: "none", border: "none", borderBottomStyle: "solid", borderBottomWidth: "1px", borderBottomColor: "rgba(255,255,255,0.08)", cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(22px, 6vw, 28px)", textTransform: "uppercase", letterSpacing: "0.02em", color: "#fff" }}
+                                        style={{ width: "100%", textAlign: "left", padding: "14px 0", border: "none", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(17px, 4.6vw, 21px)", textTransform: "uppercase", letterSpacing: "0.02em", color: "#414141", background: "none" }}
                                     >
                                         {item}
                                     </motion.button>
                                 ))}
-                            </nav>
 
-                            {/* Let's Talk CTA */}
-                            <div style={{ padding: "16px 24px 48px" }}>
-                                <button
-                                    onClick={() => { setMobileMenuOpen(false); openContactForm(); }}
-                                    style={{ width: "100%", padding: "16px", background: "#fff", color: "#414141", border: "none", borderRadius: "100px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "13px", textTransform: "uppercase", letterSpacing: "0.12em" }}
-                                >
-                                    Let's Talk
-                                </button>
-                            </div>
+                                <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(30px, 8.5vw, 40px)", lineHeight: 1.15, letterSpacing: "-0.01em", color: "#9A9A9A", margin: "40px 0 0" }}>
+                                    We Build Brands That Perform
+                                </p>
+
+                                <div style={{ marginTop: "auto", paddingTop: "32px" }}>
+                                    <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "16px", letterSpacing: "0.03em", textTransform: "uppercase", color: "#414141", margin: "0 0 10px" }}>
+                                        Connect With
+                                    </p>
+                                    <a href="tel:+916369974530" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: "#6E6E6E", textDecoration: "none" }}>
+                                        +91 63699 74530
+                                    </a>
+                                    <a href="mailto:xglabs@thebrandopedia.in" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: "#6E6E6E", textDecoration: "none" }}>
+                                        xglabs@thebrandopedia.in
+                                    </a>
+                                    <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: "#6E6E6E", margin: 0 }}>
+                                        Chennai, Tamil Nadu, India
+                                    </p>
+
+                                    <motion.div
+                                        initial="rest"
+                                        whileHover="hover"
+                                        whileTap="hover"
+                                        animate="rest"
+                                        style={{ position: "relative", height: 38, display: "inline-flex", marginTop: "18px", cursor: "pointer" }}
+                                    >
+                                        <button
+                                            onClick={() => { setMobileMenuOpen(false); openContactForm(); }}
+                                            style={{ height: 38, paddingTop: 6, paddingRight: 24, paddingBottom: 6, paddingLeft: 16, display: "inline-flex", alignItems: "center", background: "#ffffff", borderRadius: 38, border: "1px solid #9A9A9A", cursor: "pointer", boxSizing: "border-box", position: "relative", overflow: "hidden" }}
+                                        >
+                                            <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
+                                            <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
+                                            <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, fontSize: 13, height: "1em" }}>
+                                                <motion.span variants={{ rest: { y: 0, transition: { duration: 0.1, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1], delay: 0.1 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, lineHeight: 1, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#414141" }}>
+                                                    Let's Talk
+                                                </motion.span>
+                                                <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.1, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.18, ease: [0.16, 1, 0.3, 1], delay: 0.1 } } }} style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, lineHeight: 1, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}>
+                                                    Let's Talk
+                                                </motion.span>
+                                            </div>
+                                        </button>
+                                        <motion.div variants={{ rest: { background: "#000000" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 1, right: -12, width: 32, height: 32, borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+                                            <motion.svg width={16} height={16} viewBox="0 0 24 24" style={{ display: "block" }} fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+                                            </motion.svg>
+                                        </motion.div>
+                                    </motion.div>
+                                </div>
+                            </nav>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -450,13 +491,21 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                             </motion.button>
                         )}
                         <button
-                            onClick={() => setMobileMenuOpen(true)}
-                            aria-label="Open menu"
-                            style={{ width: 36, height: 36, borderRadius: "50%", background: "#0a0a0a", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                            style={{ width: 36, height: 36, borderRadius: mobileMenuOpen ? "10px" : "50%", background: "#0a0a0a", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, flexShrink: 0 }}
                         >
-                            <span style={{ display: "block", width: 16, height: 2, borderRadius: 99, background: "#fff" }} />
-                            <span style={{ display: "block", width: 11, height: 2, borderRadius: 99, background: "#fff" }} />
-                            <span style={{ display: "block", width: 16, height: 2, borderRadius: 99, background: "#fff" }} />
+                            {mobileMenuOpen ? (
+                                <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                                    <path d="M18 6L6 18M6 6l12 12" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                            ) : (
+                                <>
+                                    <span style={{ display: "block", width: 16, height: 2, borderRadius: 99, background: "#fff" }} />
+                                    <span style={{ display: "block", width: 11, height: 2, borderRadius: 99, background: "#fff" }} />
+                                    <span style={{ display: "block", width: 16, height: 2, borderRadius: 99, background: "#fff" }} />
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
@@ -478,90 +527,159 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                     {/* Circle — sits behind the text block */}
                     <div style={{
                         position: "absolute",
-                        left: "50%", top: isTablet ? "210px" : "175px",
+                        left: "50%", top: isTablet ? "235px" : "195px",
                         transform: "translate(-50%, -50%)",
                         width: isTablet ? "min(80vw, 640px)" : "min(90vw, 440px)",
                         height: isTablet ? "min(80vw, 640px)" : "min(90vw, 440px)",
-                        borderRadius: "50%",
-                        background: "#ffffff",
                         pointerEvents: "none",
                         zIndex: 0,
-                    }} />
+                    }}>
+                        <motion.div
+                            initial={{ scale: 0.45, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#ffffff" }}
+                        />
+                    </div>
 
                     {/* Text block */}
-                    <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "0 20px 52px", width: "100%", boxSizing: "border-box" }}>
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "0 20px 52px", width: "100%", boxSizing: "border-box" }}
+                    >
                         <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.04em", color: "#414141", margin: 0, textTransform: "uppercase" }}>
                             STRATEGY FIRST
                         </p>
-                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "min(12.5vw, 60px)", lineHeight: "1.0", letterSpacing: "-0.02em", color: "#060606", margin: 0, textTransform: "uppercase", width: "100%", textAlign: "center", whiteSpace: "nowrap" }}>
-                            From Vision<br />To Velocity
+                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(22px, 6.5vw, 30px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#414141", margin: 0, textTransform: "uppercase", width: "100%", textAlign: "center", maxWidth: "320px" }}>
+                            A creative partner for brands who refuse to be{" "}
+                            <span style={{ position: "relative", display: "inline-block", padding: "0 8px", margin: "0 2px" }}>
+                                <span style={{ position: "relative", zIndex: 1, color: "#ffffff" }}>ordinary.</span>
+                                <motion.span
+                                    initial={{ scaleX: 0 }}
+                                    whileInView={{ scaleX: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.8, delay: 0.4, ease: [0.76, 0, 0.24, 1] }}
+                                    style={{ position: "absolute", inset: 0, background: "#00A88D", transformOrigin: "left center", zIndex: 0 }}
+                                />
+                            </span>
                         </h1>
                         <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 3.8vw, 17px)", lineHeight: "1.5", letterSpacing: "-0.01em", color: "#414141", margin: "4px 0 0", maxWidth: "300px" }}>
-                            We align strategy, creative, and performance to accelerate growth.
+                            We align strategy, creative, and execution to drive measurable growth.
                         </p>
-                    </div>
+                    </motion.div>
 
                     {/* Portfolio images — 3 rows, uniform height per row, varying widths */}
                     <div style={{ width: "100%", zIndex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
-                        {/* Row 1: 3 equal-width images */}
-                        <div style={{ display: "flex", gap: "4px", height: "120px" }}>
-                            <div style={{ flex: 1, overflow: "hidden" }}>
-                                <img src={mImg_billboard} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                            </div>
-                            <div style={{ flex: 1, overflow: "hidden" }}>
-                                <img src={mImg_disc} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                            </div>
-                            <div style={{ flex: 1, overflow: "hidden" }}>
-                                <img src={mImg_extra1} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                            </div>
-                        </div>
+                        {/* Row 1: 3 equal-width images — drifts horizontally, mirroring desktop's vertical column drift */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 }}
+                            style={{ height: "120px", overflow: "hidden", position: "relative" }}
+                        >
+                            {/* Deferred until the loading screen finishes — decoding these images
+                                immediately competes with the loading screen's own paint on first load. */}
+                            {startSequence && (
+                            <motion.div style={{ display: "flex", gap: "4px", height: "100%", width: "112%", position: "absolute", left: "-6%", x: rowDriftX1 }}>
+                                <div style={{ flex: 1, overflow: "hidden" }}>
+                                    <img src={mImg_billboard} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                </div>
+                                <div style={{ flex: 1, overflow: "hidden" }}>
+                                    <img src={mImg_disc} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                </div>
+                                <div style={{ flex: 1, overflow: "hidden" }}>
+                                    <img src={mImg_extra1} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                </div>
+                            </motion.div>
+                            )}
+                        </motion.div>
                         {/* Row 2: 2 images — narrower left, wider right */}
-                        <div style={{ display: "flex", gap: "4px", height: "148px" }}>
-                            <div style={{ flex: 4, overflow: "hidden" }}>
-                                <img src={mImg_maha} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                            </div>
-                            <div style={{ flex: 6, overflow: "hidden" }}>
-                                <img src={mImg_extra3} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                            </div>
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                            style={{ height: "120px", overflow: "hidden", position: "relative" }}
+                        >
+                            {startSequence && (
+                            <motion.div style={{ display: "flex", gap: "4px", height: "100%", width: "112%", position: "absolute", left: "-6%", x: rowDriftX2 }}>
+                                <div style={{ flex: 4, overflow: "hidden" }}>
+                                    <img src={mImg_maha} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                </div>
+                                <div style={{ flex: 6, overflow: "hidden" }}>
+                                    <img src={mImg_extra3} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                </div>
+                            </motion.div>
+                            )}
+                        </motion.div>
                         {/* Row 3: 3 images — thin strip left, medium middle, wider right */}
-                        <div style={{ display: "flex", gap: "4px", height: "120px" }}>
-                            <div style={{ flex: 1, overflow: "hidden" }}>
-                                <img src={mImg_extra2} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                            </div>
-                            <div style={{ flex: 4, overflow: "hidden" }}>
-                                <img src={mImg_pamph} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                            </div>
-                            <div style={{ flex: 5, overflow: "hidden" }}>
-                                <img src={mImg_cup} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                            </div>
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                            style={{ height: "120px", overflow: "hidden", position: "relative" }}
+                        >
+                            {startSequence && (
+                            <motion.div style={{ display: "flex", gap: "4px", height: "100%", width: "112%", position: "absolute", left: "-6%", x: rowDriftX3 }}>
+                                <div style={{ flex: 1, overflow: "hidden" }}>
+                                    <img src={mImg_extra2} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                </div>
+                                <div style={{ flex: 4, overflow: "hidden" }}>
+                                    <img src={mImg_pamph} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                </div>
+                                <div style={{ flex: 5, overflow: "hidden" }}>
+                                    <img src={mImg_cup} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                                </div>
+                            </motion.div>
+                            )}
+                        </motion.div>
                     </div>
                 </div>
 
                 {/* ── WE'RE XG LABS section ── */}
-                <div ref={mobileFormPrevRef} style={{ position: "relative", background: "#f7f8fa", height: isTablet ? 730 : 560, overflow: "hidden" }}>
+                <div ref={mobileFormPrevRef} style={{ position: "relative", background: "#f7f8fa", height: isTablet ? 755 : 790, overflow: "hidden" }}>
                     <FinalGrid />
                     {/* Circle — sized so text fits inside it */}
                     <div style={{
                         position: "absolute", left: "50%",
-                        top: isTablet ? "290px" : "250px",
+                        top: isTablet ? "340px" : "300px",
                         transform: "translate(-50%, -50%)",
                         width: isTablet ? "min(78vw, 600px)" : "min(88vw, 460px)",
                         height: isTablet ? "min(78vw, 600px)" : "min(88vw, 460px)",
-                        borderRadius: "50%", background: "#ffffff", pointerEvents: "none", zIndex: 0,
-                    }} />
+                        pointerEvents: "none", zIndex: 0,
+                    }}>
+                        <motion.div
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#ffffff" }}
+                        />
+                    </div>
                     {/* Text block — centered on the circle's center point */}
                     <div style={{
                         position: "absolute", left: "50%",
-                        top: isTablet ? "290px" : "250px",
+                        top: isTablet ? "340px" : "300px",
                         transform: "translate(-50%, -50%)",
-                        zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center",
-                        gap: isTablet ? "14px" : "10px", textAlign: "center",
+                        zIndex: 1,
                         width: isTablet ? "min(62vw, 480px)" : "min(68vw, 300px)",
                     }}>
-                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: isTablet ? "16px" : "13px", letterSpacing: "0.12em", color: "#5f5f5f", margin: 0, textTransform: "uppercase" }}>WE'RE XG LABS</p>
-                        <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: isTablet ? "clamp(30px, 4.2vw, 46px)" : "clamp(19px, 5vw, 26px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#414141", margin: 0 }}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 24 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                        style={{
+                        display: "flex", flexDirection: "column", alignItems: "center",
+                        gap: isTablet ? "14px" : "10px", textAlign: "center",
+                        width: "100%",
+                    }}>
+                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isTablet ? "16px" : "13px", letterSpacing: "0.04em", color: "#414141", margin: 0, textTransform: "uppercase" }}>WE'RE XG LABS</p>
+                        <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: isTablet ? "clamp(30px, 4.2vw, 46px)" : "clamp(19px, 5vw, 26px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#414141", margin: 0, textTransform: "uppercase" }}>
                             A creative partner for brands who refuse to be{" "}
                             <span style={{ position: "relative", display: "inline-block", padding: "0 8px", margin: "0 2px" }}>
                                 <span style={{ position: "relative", zIndex: 1, color: "#ffffff" }}>ordinary.</span>
@@ -577,11 +695,10 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                         <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isTablet ? "15px" : "11px", lineHeight: 1.5, color: "#6e6e6e", margin: "2px 0 0" }}>
                             We turn ideas into visuals that move people — and move brands forward. Every piece we create is intentional, expressive, and designed to hit with purpose.
                         </p>
+                    </motion.div>
                     </div>
-                    {/* Cards — slightly smaller on mobile via scale wrapper */}
-                    <div style={{ position: "absolute", left: 0, right: 0, top: isTablet ? -170 : -240, height: "1080px", transform: isTablet ? undefined : "scale(0.82)", transformOrigin: "top center" }}>
-                        <CardImages isVisible={true} />
-                    </div>
+                    {/* Cards — same collage on phone and tablet, just scaled up for the bigger circle. */}
+                    {startSequence && <CardImages isVisible={true} scale={isTablet ? 1.82 : 1.4} top={isTablet ? 390 : 510} />}
                 </div>
 
                 {/* ── Contact form section (mobile/tablet) ── */}

@@ -99,15 +99,17 @@ export function Footer() {
     <footer id="footer" style={{ background: "#0a0a0a", overflow: "hidden" }}>
       <style>{`
         @media (max-width: 767px) {
-          .footer-headline { padding: 32px 20px 20px !important; overflow: hidden !important; }
-          .footer-headline-text { font-size: 8vw !important; white-space: nowrap !important; transform: none !important; text-align: left !important; }
-          .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 32px 20px !important; }
-          .footer-grid > div:first-child { grid-column: 1 / -1 !important; padding-bottom: 24px !important; margin-bottom: 8px !important; }
-          .footer-bottom-bar { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; padding: 24px 20px !important; }
+          .footer-headline { padding: 32px 20px 10px !important; overflow: hidden !important; }
+          .footer-headline-text { font-size: 14vw !important; white-space: normal !important; transform: none !important; text-align: center !important; }
+          .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 16px 20px !important; }
+          .footer-grid > div:first-child { grid-column: 1 / -1 !important; padding-bottom: 12px !important; margin-bottom: 4px !important; }
+          .footer-col-head { letter-spacing: 0.06em !important; }
+          .footer-bottom-bar { display: flex !important; flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; padding: 24px 20px !important; }
           .footer-center-block { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; width: 100% !important; margin-left: 0 !important; text-align: left !important; }
           .footer-social-icons { width: 100% !important; justify-content: space-between !important; gap: 0 !important; }
           .footer-bottom-bar-legal { align-items: center !important; width: 100% !important; text-align: center !important; }
           .footer-connect-details a, .footer-connect-details p { font-size: 18px !important; line-height: 1.4 !important; }
+          .footer-powered-by { font-size: 12px !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
           .footer-grid { grid-template-columns: 1fr 1fr !important; padding: 24px 32px !important; }
@@ -125,9 +127,8 @@ export function Footer() {
         <h2
           className="footer-headline-text"
           style={{
-            fontFamily: "'Bebas Neue', sans-serif",
-            fontWeight: 400,
-            fontStyle: "semibold",
+            fontFamily: "'Humane', sans-serif",
+            fontWeight: 700,
             fontSize:  "clamp(72px, 8vw, 160px)",
             lineHeight: "0.88",
             letterSpacing: "-0.01em",
@@ -159,7 +160,7 @@ export function Footer() {
       >
         {/* Connect with */}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <p style={colHeadStyle}>Connect With</p>
+          <p className="footer-col-head" style={colHeadStyle}>Connect With</p>
           <div className="footer-connect-details" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <a
               href="mailto:xglabs@thebrandopedia.in"
@@ -199,7 +200,7 @@ export function Footer() {
 
         {/* Menu */}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <p style={colHeadStyle}>Menu</p>
+          <p className="footer-col-head" style={colHeadStyle}>Menu</p>
           <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {MENU_LINKS.map((item) => (
               <span
@@ -217,7 +218,7 @@ export function Footer() {
 
         {/* Services */}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <p style={colHeadStyle}>Services</p>
+          <p className="footer-col-head" style={colHeadStyle}>Services</p>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {SERVICES.map((s) => (
               <span
@@ -257,6 +258,7 @@ export function Footer() {
         {/* Center: Powered by + social icons */}
         <div className="footer-center-block" style={{ display: "flex", alignItems: "center", gap: "24px", justifySelf: "center", marginLeft: "40px" }}>
           <span
+            className="footer-powered-by"
             style={{
               fontFamily: "'Sora', sans-serif",
               fontWeight: 200,

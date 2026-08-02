@@ -154,6 +154,7 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
             role: "CEO, SML CARS",
             logo: imgLogo2,
             logoSize: 110,
+            logoMobileMarginTop: -45,
             logoDesktopSize: 130,
             logoDesktopMarginTop: -35,
 
@@ -253,9 +254,9 @@ const CardHeader = ({ name, role, logo, logoSize = 80, isMobile = false, logoMob
     </div>
 );
 
-const CardBody = ({ quote }: { quote: string }) => (
+const CardBody = ({ quote, isMobile }: { quote: string; isMobile?: boolean }) => (
     <div style={{ width: '100%', marginTop: 'auto' }}>
-        <p className="font-space font-medium text-[#414141] uppercase" style={{ fontSize: 28, lineHeight: 1.25, letterSpacing: '-0.5px', margin: 0 }}>
+        <p className="font-space font-medium text-[#414141] uppercase" style={{ fontSize: isMobile ? 22 : 28, lineHeight: 1.25, letterSpacing: '-0.5px', margin: 0 }}>
             {quote}
         </p>
     </div>
@@ -264,7 +265,7 @@ const CardBody = ({ quote }: { quote: string }) => (
 const CardContent = ({ name, role, quote, logo, logoSize, isMobile, logoMobileMarginTop, logoMobileMarginLeft, logoDesktopSize, logoDesktopMarginTop, logoDesktopMarginLeft }: { name: string; role: string; quote: string; logo: string; logoSize?: number; isMobile?: boolean; logoMobileMarginTop?: number; logoMobileMarginLeft?: number; logoDesktopSize?: number; logoDesktopMarginTop?: number; logoDesktopMarginLeft?: number }) => (
     <>
         <CardHeader name={name} role={role} logo={logo} logoSize={logoSize} isMobile={isMobile} logoMobileMarginTop={logoMobileMarginTop} logoMobileMarginLeft={logoMobileMarginLeft} logoDesktopSize={logoDesktopSize} logoDesktopMarginTop={logoDesktopMarginTop} logoDesktopMarginLeft={logoDesktopMarginLeft} />
-        <CardBody quote={quote} />
+        <CardBody quote={quote} isMobile={isMobile} />
     </>
 );
 

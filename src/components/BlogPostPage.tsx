@@ -87,7 +87,7 @@ export function BlogPostPage() {
   const rows: Article["content"][] = [];
   for (let i = 0; i < sections.length; i += 2) rows.push(sections.slice(i, i + 2));
 
-  const sidePad = isMobile ? "20px" : "80px";
+  const sidePad = isMobile ? "40px" : "80px";
 
   const otherArticles = allArticles.filter((a) => getArticleId(a) !== id);
   const relatedPool = otherArticles.length ? otherArticles : allArticles;
@@ -107,7 +107,7 @@ export function BlogPostPage() {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "24px 20px 0" : "32px 0 0" }}
+        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "24px 40px 0" : "32px 0 0" }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
           <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "16px", letterSpacing: "-0.02em", textTransform: "uppercase" as const, color: "#6E6E6E", margin: 0 }}>
@@ -139,7 +139,7 @@ export function BlogPostPage() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "0 20px" : "0" }}
+        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "0 40px" : "0" }}
       >
         <div style={{ position: "relative", borderRadius: "16px", overflow: "hidden", border: "1px solid #e0e0e0" }}>
           <div
@@ -171,7 +171,7 @@ export function BlogPostPage() {
 
       {/* Description */}
       {article.description && (
-        <div style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "24px 20px 0" : "24px 0 0" }}>
+        <div style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "24px 40px 0" : "24px 0 0" }}>
           <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "16px" : "18px", lineHeight: "1.7", color: "#6E6E6E", margin: 0, maxWidth: "760px" }}>
             {article.description}
           </p>
@@ -183,7 +183,7 @@ export function BlogPostPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "32px 20px 64px" : "48px 0 88px" }}
+        style={{ maxWidth: "1224px", width: isMobile ? "100%" : "calc(100% - 80px)", margin: "0 auto", padding: isMobile ? "32px 40px 64px" : "48px 0 88px" }}
       >
         {rows.map((row, rowIdx) => (
           <div
@@ -258,8 +258,8 @@ export function BlogPostPage() {
       </motion.main>
 
       {/* ── CTA Banner ── */}
-      <section style={{ background: "#0a0a0a", padding: isMobile ? "40px 20px" : "56px 80px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
-        <h3 style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "clamp(22px, 6vw, 28px)" : "clamp(24px, 2.6vw, 38px)", lineHeight: "1.2", letterSpacing: "-0.01em", color: "#F7F8FA", margin: 0 }}>
+      <section style={{ background: "#0a0a0a", padding: isMobile ? "40px 40px" : "56px 80px", display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, alignItems: "center", justifyContent: isMobile ? "center" : "space-between", flexWrap: "wrap", gap: isMobile ? "24px" : "16px" }}>
+        <h3 style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "clamp(22px, 6vw, 28px)" : "clamp(24px, 2.6vw, 38px)", lineHeight: "1.2", letterSpacing: "-0.01em", color: "#F7F8FA", margin: 0, textAlign: isMobile ? "center" as const : "left" as const }}>
           Want a two-week creative audit for your brand?
         </h3>
         <motion.div initial="rest" whileHover="hover" whileTap="hover" animate="rest" style={{ position: "relative", height: 52, display: "inline-flex", flexShrink: 0 }}>
@@ -308,7 +308,7 @@ export function BlogPostPage() {
         </motion.div>
 
         {/* Bullet points row */}
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: isMobile ? "16px 12px" : "0", paddingTop: "0", paddingBottom: "36px", paddingLeft: sidePad, paddingRight: sidePad }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: isMobile ? "14px" : "0", paddingTop: "0", paddingBottom: "36px", paddingLeft: sidePad, paddingRight: sidePad, textAlign: isMobile ? "center" as const : "left" as const }}>
           {BULLET_POINTS.map((item, i) => (
             <p key={i} style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "15px" : "clamp(15px, 1.2vw, 18px)", lineHeight: "1.5", color: "#414141", margin: 0, paddingLeft: isMobile ? 0 : "16px", paddingRight: isMobile ? 0 : "20px" }}>
               {"· "}{item}
@@ -322,10 +322,10 @@ export function BlogPostPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: "0" }}
+          style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(4, 1fr)", gap: isMobile ? "12px" : "0", paddingLeft: isMobile ? sidePad : 0, paddingRight: isMobile ? sidePad : 0 }}
         >
           {STRIP_IMAGES.map((src, i) => (
-            <div key={i} style={{ aspectRatio: "3/4", overflow: "hidden" }}>
+            <div key={i} style={{ aspectRatio: isMobile ? "16/9" : "3/4", overflow: "hidden", borderRadius: isMobile ? "12px" : 0 }}>
               <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
             </div>
           ))}
@@ -335,10 +335,10 @@ export function BlogPostPage() {
       {/* ── Process Overview ── */}
       <section style={{ background: "#ffffff", paddingTop: isMobile ? "48px" : "80px", paddingBottom: isMobile ? "28px" : "40px", paddingLeft: sidePad, paddingRight: sidePad }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "220px 1fr", gap: isMobile ? "12px" : "48px", marginBottom: isMobile ? "28px" : "48px" }}>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "0.14em", textTransform: "uppercase" as const, color: "#1a1a1a", margin: 0 }}>
+          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.04em", textTransform: "uppercase" as const, color: "#414141", margin: 0 }}>
             Process Overview
           </p>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: isMobile ? "14px" : "clamp(15px, 1.1vw, 18px)", lineHeight: "1.6", color: "#6E6E6E", margin: 0 }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "14px" : "clamp(15px, 1.1vw, 18px)", lineHeight: "1.6", color: "#5F5F5F", margin: 0 }}>
             We followed a structured, four-step approach that aligned brand, product, and strategy — moving from insight to execution with clarity and intention.
           </p>
         </div>
@@ -353,10 +353,10 @@ export function BlogPostPage() {
               transition={{ delay: i * 0.07, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
               style={{ background: "#F7F8FA", borderRadius: "12px", padding: isMobile ? "18px 16px" : "24px 20px", display: "flex", flexDirection: "column", gap: "12px" }}
             >
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: isMobile ? "13px" : "clamp(14px, 1.2vw, 16px)", letterSpacing: "-0.01em", color: "#1a1a1a", margin: 0 }}>
+              <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: isMobile ? "13px" : "clamp(14px, 1.2vw, 16px)", letterSpacing: "-0.01em", color: "#414141", margin: 0 }}>
                 {step.num} {step.title}
               </p>
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: isMobile ? "12px" : "13px", lineHeight: "1.55", color: "#6E6E6E", margin: 0 }}>
+              <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: isMobile ? "12px" : "13px", lineHeight: "1.55", color: "#5F5F5F", margin: 0 }}>
                 {step.body}
               </p>
             </motion.div>
@@ -366,11 +366,11 @@ export function BlogPostPage() {
 
       {/* ── Related Blogs ── */}
       {relatedArticles.length > 0 && (
-        <section style={{ padding: isMobile ? "32px 20px 64px" : "40px 80px 100px", background: "#ffffff" }}>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "#888888", margin: "0 0 28px" }}>
+        <section style={{ padding: isMobile ? "32px 40px 64px" : "40px 80px 100px", background: "#ffffff" }}>
+          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: isMobile ? "18px" : "13px", letterSpacing: "0.04em", textTransform: "uppercase" as const, color: "#6E6E6E", margin: "0 0 28px" }}>
             Related Blogs
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "16px" : "20px" }}>
+          <div style={{ display: "flex", flexDirection: isMobile ? "column" as const : "row" as const, flexWrap: isMobile ? "nowrap" as const : "wrap" as const, gap: isMobile ? "16px" : "20px" }}>
             {relatedArticles.map((post, i) => (
               <motion.div
                 key={getArticleId(post) + i}
@@ -379,17 +379,22 @@ export function BlogPostPage() {
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ delay: i * 0.07, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                 onClick={() => navigate(`/blog/post/${getArticleId(post)}`)}
-                style={{ width: isMobile ? "calc(50% - 8px)" : "calc(25% - 15px)", display: "flex", flexDirection: "column", gap: "10px", cursor: "pointer" }}
+                style={isMobile
+                  ? { width: "100%", display: "flex", flexDirection: "row", alignItems: "flex-start", gap: "14px", cursor: "pointer", border: "1px solid #5F5F5F", borderRadius: "12px", padding: "12px", boxSizing: "border-box" as const }
+                  : { width: "calc(25% - 15px)", display: "flex", flexDirection: "column", gap: "10px", cursor: "pointer", border: "1px solid #5F5F5F", borderRadius: "12px", padding: "10px", boxSizing: "border-box" as const }
+                }
               >
-                <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: "10px", overflow: "hidden", background: "#e0e0e0" }}>
+                <div style={{ width: isMobile ? "110px" : "100%", flexShrink: 0, aspectRatio: "1/1", borderRadius: "10px", overflow: "hidden", background: "#e0e0e0" }}>
                   <img src={post.img} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 </div>
-                <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(13px, 1vw, 15px)", lineHeight: "1.3", color: "#1a1a1a", margin: 0 }}>
-                  {post.title}
-                </p>
-                <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(11px, 0.85vw, 13px)", lineHeight: "1.55", color: "#888888", margin: 0 }}>
-                  {post.description}
-                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? "8px" : "10px", minWidth: 0 }}>
+                  <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: isMobile ? "16px" : "clamp(13px, 1vw, 15px)", lineHeight: "1.3", color: "#1a1a1a", margin: 0 }}>
+                    {post.title}
+                  </p>
+                  <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: isMobile ? "14px" : "clamp(11px, 0.85vw, 13px)", lineHeight: "1.55", color: "#888888", margin: 0 }}>
+                    {post.description}
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>

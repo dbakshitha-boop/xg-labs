@@ -106,20 +106,20 @@ export function ServicesList() {
   return (
     <div
       onMouseEnter={() => setVariant('default')}
-      className="w-full max-w-[1920px] mx-auto px-4 lg:px-0 py-20 flex flex-col lg:gap-[60px] font-sans bg-[#F7F8FA]"
+      className="w-full max-w-[1920px] mx-auto px-4 lg:px-0 pt-6 pb-20 lg:py-20 flex flex-col lg:gap-[60px] font-sans bg-[#F7F8FA]"
     >
       {/* Mobile/tablet header — lg:hidden so desktop is untouched */}
-      <div className="lg:hidden px-6 pt-10 pb-8 flex flex-col gap-4">
-        <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "28px", lineHeight: "120%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#060606" }}>
+      <div className="lg:hidden px-6 pt-4 pb-8 flex flex-col gap-3">
+        <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: "125%", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#060606" }}>
           Everything your brand needs to grow built into one system
         </p>
-        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "24px", lineHeight: "100%", letterSpacing: "0%", color: "#5F5F5F" }}>
+        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: "135%", letterSpacing: "0%", color: "#5F5F5F" }}>
           Every service works together as one system, built to create clarity, momentum, and results.
         </p>
-        <div className="flex items-start justify-between gap-4">
-          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "20px", lineHeight: "100%", letterSpacing: "0%", color: "#6E6E6E" }}>
-            No noise. No guesswork.<br />Just structured creative and strategic execution.
-          </p>
+        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "140%", letterSpacing: "0%", color: "#6E6E6E" }}>
+          No noise. No guesswork.<br />Just structured creative and strategic execution.
+        </p>
+        <div style={{ marginTop: "12px" }}>
           <motion.div
             initial="rest" whileHover="hover" animate="rest"
             style={{ position: 'relative', height: 36, display: 'inline-flex', flexShrink: 0, cursor: 'pointer' }}
@@ -278,18 +278,18 @@ function ServiceCard({
       )}
       onClick={() => navigate("/services", { state: { serviceIndex: index } })}
       onMouseEnter={() => {
+        setHoveredIndex(index);
         if (!isMobile) {
-          setHoveredIndex(index);
           setVariant('button');
           setText('Explore our work');
         }
       }}
       onMouseLeave={() => {
+        setHoveredIndex(null);
+        if (!hasBeenRevealed) setHasBeenRevealed(true);
         if (!isMobile) {
-          setHoveredIndex(null);
           setVariant('default');
           setText(null);
-          if (!hasBeenRevealed) setHasBeenRevealed(true);
         }
       }}
     >
@@ -384,7 +384,7 @@ function ServiceCard({
             <h3 className="font-['Sora',sans-serif] font-bold text-[14px] tracking-tight text-[#414141] uppercase mb-1">{title}</h3>
             <p className="font-['Sora',sans-serif] text-[12px] text-gray-500 leading-relaxed">{subtitle}</p>
           </div>
-          {/* content lines — simple whileInView animation */}
+          {/* content lines — same curtain-sweep reveal as desktop, driven by auto-reveal-on-scroll */}
           <div className="flex flex-col gap-0">
             {contentLines.map((line, idx) => {
               const highlightText =
@@ -396,48 +396,57 @@ function ServiceCard({
                 index === 5 && idx === 1 ? "relevance, reach, and structure." :
                 index === 6 && idx === 1 ? "scale consistently." : undefined;
 
-              const hasHighlight = highlightText && line.toLowerCase().includes(highlightText.toLowerCase());
-              const splitIdx = hasHighlight ? line.toLowerCase().indexOf(highlightText!.toLowerCase()) : -1;
-              const before = hasHighlight ? line.substring(0, splitIdx) : line;
-              const target = hasHighlight ? line.substring(splitIdx, splitIdx + highlightText!.length) : "";
-              const after  = hasHighlight ? line.substring(splitIdx + highlightText!.length) : "";
-
               return (
-                <div key={idx} style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(17px, 4.5vw, 22px)", lineHeight: 1.25, letterSpacing: "-0.02em", color: "#6E6E6E" }}>
-                  {hasHighlight ? (
-                    <>
-                      {before}
-                      <span style={{ position: "relative", display: "inline-flex", alignItems: "center", padding: "0 4px", margin: "0 2px" }}>
-                        <motion.span
-                          initial={{ scaleX: 0, originX: 0 }}
-                          whileInView={{ scaleX: 1 }}
-                          viewport={{ once: true, amount: 0.8 }}
-                          transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
-                          style={{ position: "absolute", inset: 0, background: "#00A88D", transformOrigin: "left center", zIndex: 1 }}
-                        />
-                        <span style={{ position: "relative", zIndex: 2, color: "#ffffff" }}>{target}</span>
-                      </span>
-                      {after}
-                    </>
-                  ) : line}
-                </div>
+                <motion.div
+                  key={idx}
+                  className="relative leading-[1.25] tracking-[-0.02em]"
+                  style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 4vw, 18px)", color: "#6E6E6E" }}
+                  animate={idx === 1 ? { x: active ? 0 : 80 } : { x: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    ease: [0.16, 1, 0.3, 1],
+                    // Synced to RevealText's own reveal instant (delay + 0.35s) so the slide
+                    // is actually visible while the text fades in, instead of finishing
+                    // mostly-offscreen before RevealText even makes it opaque.
+                    delay: active && !hasBeenRevealed ? idx * lineStagger + 0.35 : 0,
+                  }}
+                >
+                  <RevealText
+                    isActive={active}
+                    hasBeenRevealed={hasBeenRevealed}
+                    delay={idx * lineStagger}
+                    highlight={highlightText}
+                  >
+                    {line}
+                  </RevealText>
+                </motion.div>
               );
             })}
           </div>
-          {/* deliverables — one per line */}
-          <div>
+          {/* "What We Deliver" — hover-only reveal (not tied to scroll auto-reveal) */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
+            transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
+          >
             <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#6E6E6E", marginBottom: "8px" }}>
               What We Deliver
             </p>
             <div className="flex flex-col gap-2">
               {deliverables.map((item, i) => (
-                <div key={i} className="font-['Sora',sans-serif] font-medium text-[13px] text-[#414141] flex items-center gap-2">
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -10 }}
+                  transition={{ duration: 0.25, delay: isHovered ? 0.2 + (i * 0.03) : 0, ease: [0.76, 0, 0.24, 1] }}
+                  className="font-['Sora',sans-serif] font-medium text-[13px] text-[#414141] flex items-center gap-2"
+                >
                   <div className="w-1.5 h-1.5 rounded-full bg-[#00A88D] shrink-0" />
                   {item}
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 

@@ -203,6 +203,7 @@ function EmbeddedContactForm({ px }: { px: string }) {
     fontFamily: "'Poppins', sans-serif", fontWeight: 400,
     fontSize: "13px", letterSpacing: "0.04em",
     textTransform: "uppercase", color: "#9D9D9D", margin: "0 0 8px",
+    textDecoration: "underline", textUnderlineOffset: "3px",
   };
   const fieldStyle: React.CSSProperties = {
     borderBottom: "2px solid #8E8E8E", paddingBottom: "12px",
@@ -213,8 +214,8 @@ function EmbeddedContactForm({ px }: { px: string }) {
     <section style={{ background: "#E8ECFF", padding: `72px ${px}` }}>
       <style>{`.ecf-input::placeholder { color: #6F6F6F; font-family: 'Poppins', sans-serif; font-weight: 600; }`}</style>
 
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "24px" : "72px", marginBottom: "64px", alignItems: "start" }}>
-        <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1.08, letterSpacing: "-0.04em", color: "#2E2E2E", margin: 0 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "24px" : "72px", marginBottom: isMobile ? "28px" : "64px", alignItems: "start" }}>
+        <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800, fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1.08, letterSpacing: "-0.04em", color: "#414141", margin: 0 }}>
           Let's create work that drives real growth.
         </h2>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1.2vw, 18px)", lineHeight: 1.3, color: "#474747", margin: 0, paddingTop: "8px" }}>
@@ -332,19 +333,30 @@ export function CaseStudyPage({ id }: { id?: string }) {
   if (loading) return <div style={{ minHeight: "100vh", background: "#0f0f0f" }} />;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0f0f0f" }}>
+    <div style={{ minHeight: "100vh", background: "#0f0f0f", overflowX: "hidden" }}>
       <style>{`
         @media (max-width: 767px) {
           .cs-hero-grid { grid-template-columns: 1fr !important; }
-          .cs-hero-img { display: none !important; }
+          .cs-hero-img { height: 240px !important; margin-top: 8px !important; margin-bottom: 28px !important; margin-left: 40px !important; margin-right: 40px !important; border-radius: 20px !important; }
+          .cs-hero-img-el { object-fit: cover !important; object-position: center !important; border-radius: 20px !important; }
           .cs-hero-text { padding: 120px 40px 40px !important; }
+          .cs-hero-label { font-size: 15px !important; }
+          .cs-hero-title { font-size: 30px !important; }
+          .cs-stat-value { font-size: 34px !important; }
+          .cs-stat-label { font-size: 14px !important; }
           .cs-content-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .cs-para-row { grid-template-columns: 96px 1fr !important; gap: 36px !important; padding-top: 16px !important; padding-bottom: 16px !important; }
+          .cs-solution-col { gap: 16px !important; }
+          .cs-role-label { font-size: 12px !important; }
+          .cs-brand-section { padding-top: 32px !important; }
+          .cs-brand-text { padding-top: 0px !important; }
           .cs-brand-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
           .cs-steps-grid { grid-template-columns: 1fr 1fr !important; }
           .cs-stats-grid { grid-template-columns: 1fr 1fr !important; }
           .cs-deliverables-grid { grid-template-columns: 1fr 1fr !important; }
           .cs-bullet-grid { grid-template-columns: 1fr 1fr !important; }
-          .cs-images-grid { grid-template-columns: 1fr 1fr !important; }
+          .cs-images-grid { grid-template-columns: 1fr 1fr !important; gap: 22px !important; }
+          .cs-bullet-item { padding-left: 4px !important; }
           .cs-quote-text { font-size: clamp(18px, 5vw, 28px) !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
@@ -420,6 +432,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
             {/* Top text block */}
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
               <p
+                className="cs-hero-label"
                 style={{
                   fontFamily: "'Sora', sans-serif",
                   fontWeight: 600,
@@ -435,6 +448,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               </p>
 
               <h1
+                className="cs-hero-title"
                 style={{
                   fontFamily: "'Cal Sans', sans-serif",
                   fontWeight: 400,
@@ -449,6 +463,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               </h1>
 
               <p
+                className="cs-hero-label"
                 style={{
                   fontFamily: "'Sora', sans-serif",
                   fontWeight: 600,
@@ -482,6 +497,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
                   style={{ display: "flex", flexDirection: "column", gap: "6px" }}
                 >
                   <p
+                    className="cs-stat-value"
                     style={{
                       fontFamily: "'Cal Sans', sans-serif",
                       fontWeight: 400,
@@ -495,6 +511,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
                     {stat.value}
                   </p>
                   <p
+                    className="cs-stat-label"
                     style={{
                       fontFamily: "'Sora', sans-serif",
                       fontWeight: 400,
@@ -514,6 +531,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
 
           {/* Right — image */}
           <motion.div
+            className="cs-hero-img"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -528,6 +546,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
             }}
           >
             <img
+              className="cs-hero-img-el"
               src={study.heroImg}
               alt={study.title}
               style={{
@@ -555,6 +574,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
         ].map(({ label, body }, i) => body && (
           <motion.div
             key={label}
+            className="cs-para-row"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
@@ -579,6 +599,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
         {/* THE SOLUTION */}
         {(study as any).solution && (
           <motion.div
+            className="cs-para-row"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
@@ -594,7 +615,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
             <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               THE SOLUTION
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+            <div className="cs-solution-col" style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
               <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
                 {(study as any).solution}
               </p>
@@ -620,6 +641,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
         {/* ROLE & DELIVERABLES */}
         {(study as any).deliverables && (
           <motion.div
+            className="cs-para-row"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
@@ -632,7 +654,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p className="cs-role-label" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               ROLE & DELIVERABLES
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0 24px" }}>
@@ -648,6 +670,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
         {/* TIMELINE */}
         {(study as any).timeline && (
           <motion.div
+            className="cs-para-row"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
@@ -672,11 +695,12 @@ export function CaseStudyPage({ id }: { id?: string }) {
       </section>
 
       {/* ── Brand Direction ── */}
-      <section style={{ background: "#0f0f0f", paddingTop: "72px", paddingBottom: "80px", paddingLeft: px, paddingRight: px }}>
+      <section className="cs-brand-section" style={{ background: "#0f0f0f", paddingTop: "72px", paddingBottom: "80px", paddingLeft: px, paddingRight: px }}>
         <div className="cs-brand-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: "72px", alignItems: "stretch" }}>
 
           {/* Left — text */}
           <motion.div
+            className="cs-brand-text"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -770,7 +794,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               fontSize: "clamp(22px, 2.8vw, 40px)",
               lineHeight: "1.15",
               letterSpacing: "-0.03em",
-              color: "rgba(255,255,255,0.28)",
+              color: "#A3A3A3",
               margin: "0 auto",
             }}
           >
@@ -778,7 +802,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
             <br />
             creative so campaigns matched the app experience —
             <br />
-            <span style={{ color: "#ffffff" }}>
+            <span style={{ color: "#D6D6D6" }}>
               reducing drop-off and increasing conversion efficiency.
             </span>
           </p>
@@ -801,6 +825,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
           ].map((item, i) => (
             <p
               key={i}
+              className="cs-bullet-item"
               style={{
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontWeight: 400,
