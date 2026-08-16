@@ -352,7 +352,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                 else navigate("/", { state: { skipLoading: true, scrollToSection: "selected-work" } });
             } else if (item === "Contact") {
                 const el = document.getElementById("footer");
-                if (el) { document.body.style.overflow = "auto"; el.scrollIntoView({ behavior: "smooth" }); }
+                if (el) { document.body.style.overflow = "auto"; el.scrollIntoView({ behavior: "auto" }); }
                 else navigate("/", { state: { skipLoading: true, scrollToFooter: true } });
             }
         };
@@ -539,7 +539,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                             initial={{ scale: 0.45, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                            style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#ffffff" }}
+                            style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#ffffff", boxShadow: "0 12px 44px rgba(0,0,0,0.08)", border: "1px solid rgba(0,0,0,0.05)" }}
                         />
                     </div>
 
@@ -548,14 +548,14 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                        style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "0 20px 52px", width: "100%", boxSizing: "border-box" }}
+                        style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "0 20px 72px", width: "100%", boxSizing: "border-box" }}
                     >
                         <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.04em", color: "#414141", margin: 0, textTransform: "uppercase" }}>
                             STRATEGY FIRST
                         </p>
-                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(22px, 6.5vw, 30px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#060606", margin: 0, textTransform: "uppercase", width: "100%", textAlign: "center", maxWidth: "320px" }}>
-                            <span style={{ display: "block" }}>From Vision</span>
-                            <span style={{ display: "block" }}>To Velocity</span>
+                        <h1 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(30px, 8.5vw, 42px)", lineHeight: 1.1, letterSpacing: "-0.02em", color: "#060606", margin: 0, textTransform: "uppercase", width: "100%", textAlign: "center", maxWidth: "360px" }}>
+                            <span style={{ display: "block" }}>From Vision To</span>
+                            <span style={{ display: "block" }}>Velocity</span>
                         </h1>
                         <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 3.8vw, 17px)", lineHeight: "1.5", letterSpacing: "-0.01em", color: "#414141", margin: "4px 0 0", maxWidth: "300px" }}>
                             We align strategy, creative, and execution to drive measurable growth.
@@ -570,7 +570,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, amount: 0.3 }}
                             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0 }}
-                            style={{ height: "120px", overflow: "hidden", position: "relative" }}
+                            style={{ height: "108px", overflow: "hidden", position: "relative" }}
                         >
                             {/* Deferred until the loading screen finishes — decoding these images
                                 immediately competes with the loading screen's own paint on first load. */}
@@ -594,7 +594,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, amount: 0.3 }}
                             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-                            style={{ height: "120px", overflow: "hidden", position: "relative" }}
+                            style={{ height: "108px", overflow: "hidden", position: "relative" }}
                         >
                             {startSequence && (
                             <motion.div style={{ display: "flex", gap: "4px", height: "100%", width: "112%", position: "absolute", left: "-6%", x: rowDriftX2 }}>
@@ -613,7 +613,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, amount: 0.3 }}
                             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-                            style={{ height: "120px", overflow: "hidden", position: "relative" }}
+                            style={{ height: "108px", overflow: "hidden", position: "relative" }}
                         >
                             {startSequence && (
                             <motion.div style={{ display: "flex", gap: "4px", height: "100%", width: "112%", position: "absolute", left: "-6%", x: rowDriftX3 }}>
@@ -691,13 +691,14 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                     </motion.div>
                     </div>
                     {/* Cards — same collage on phone and tablet, just scaled up for the bigger circle. */}
-                    {startSequence && <CardImages isVisible={true} scale={isTablet ? 1.82 : 1.4} top={isTablet ? 390 : 510} />}
+                    {startSequence && <CardImages isVisible={true} scale={isTablet ? 1.65 : 1.25} top={isTablet ? 390 : 510} />}
                 </div>
 
                 {/* ── Contact form section (mobile/tablet) ── */}
                 <div style={{ background: "#0e0e0e", display: "flex", flexDirection: "column", minHeight: "100svh", position: "relative", overflow: "hidden" }}>
                     <ContactFormContent
                         embedded
+                        hideClose
                         onClose={() => mobileFormPrevRef.current?.scrollIntoView({ behavior: "smooth" })}
                     />
                 </div>

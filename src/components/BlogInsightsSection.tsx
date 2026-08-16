@@ -20,6 +20,7 @@ function pad(n: number) {
   return String(n).padStart(3, "0");
 }
 
+
 export function BlogInsightsSection() {
   const navigate = useNavigate();
   const isMobile = useIsMobile(768);
@@ -271,21 +272,21 @@ export function BlogInsightsSection() {
           style={{
             display: "flex",
             gap: "24px",
-            alignItems: "flex-start",
+            alignItems: isMobile ? "stretch" : "flex-start",
             width: "max-content",
             y: stripY,
           }}
         >
           {cards.map((article, i) => {
-            const offset = OFFSETS[i % OFFSETS.length];
+            const offset = isMobile ? 0 : OFFSETS[i % OFFSETS.length];
 
             return (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: offset + 30 }}
+                initial={isMobile ? { opacity: 1, y: offset } : { opacity: 0, y: offset + 30 }}
                 whileInView={{ opacity: 1, y: offset }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{
+                transition={isMobile ? { duration: 0 } : {
                   delay: i * 0.09,
                   duration: 1.05,
                   ease: [0.16, 1, 0.3, 1],
@@ -297,7 +298,7 @@ export function BlogInsightsSection() {
                 <motion.div
                   animate={{ y: hoveredCard === i ? -offset : 0 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+                  style={{ display: "flex", flexDirection: "column", gap: "12px", flex: isMobile ? "1 1 auto" : undefined, minHeight: 0 }}
                 >
                   {/* Number + label row */}
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingLeft: "2px" }}>
@@ -314,7 +315,7 @@ export function BlogInsightsSection() {
                       {pad(i + 1)}
                     </p>
                     <motion.p
-                      animate={{ opacity: hoveredCard === i ? 1 : 0 }}
+                      animate={{ opacity: (isMobile || hoveredCard === i) ? 1 : 0 }}
                       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                       style={{
                         fontFamily: "'Space Grotesk', sans-serif",
@@ -334,9 +335,9 @@ export function BlogInsightsSection() {
                   <motion.div
                   ref={(el) => { cardRefs.current[i] = el; }}
                   onClick={() => navigate(`/blog/post/${getArticleId(article)}`)}
-                  whileHover="hover"
-                  onHoverStart={() => setHoveredCard(i)}
-                  onHoverEnd={() => setHoveredCard(null)}
+                  whileHover={isMobile ? undefined : "hover"}
+                  onHoverStart={() => { if (!isMobile) setHoveredCard(i); }}
+                  onHoverEnd={() => { if (!isMobile) setHoveredCard(null); }}
                   style={{
                     width: isMobile ? "min(72vw, 270px)" : "calc((100vw - 144px - 2 * 24px) / 3)",
                     cursor: "pointer",
@@ -345,6 +346,8 @@ export function BlogInsightsSection() {
                     flexDirection: "column",
                     background: "#ffffff",
                     position: "relative",
+                    flex: isMobile ? "1 1 auto" : undefined,
+                    minHeight: 0,
                   }}
                 >
                   {/* Image */}
@@ -359,7 +362,7 @@ export function BlogInsightsSection() {
                   </div>
 
                   {/* Title panel */}
-                  <div style={{ border: "1px solid #9A9A9A", borderBottom: hoveredCard === i ? "none" : "1px solid #9A9A9A" }}>
+                  <div style={{ border: "1px solid #9A9A9A", borderBottom: (isMobile || hoveredCard === i) ? "none" : "1px solid #9A9A9A" }}>
                     <motion.div
                       animate={{
                         backgroundColor: hoveredCard === i ? "#F2F2F2" : "#ffffff",
@@ -383,6 +386,26 @@ export function BlogInsightsSection() {
                       </p>
                     </motion.div>
                   </div>
+
+                  {/* Description — always visible on mobile (no hover to reveal it there);
+                      desktop keeps the hover-expanding overlay rendered further below. */}
+                  {isMobile && (
+                    <div style={{ background: "#ffffff", border: "1px solid #9A9A9A", borderTop: "none", flex: 1, display: "flex", flexDirection: "column" }}>
+                      <p
+                        style={{
+                          fontFamily: "'Space Grotesk', sans-serif",
+                          fontWeight: 400,
+                          fontSize: "13px",
+                          lineHeight: "1.6",
+                          color: "#1a1a1a",
+                          margin: 0,
+                          padding: "12px 18px 20px",
+                        }}
+                      >
+                        {article.description}
+                      </p>
+                    </div>
+                  )}
                 </motion.div>
                 </motion.div>
               </motion.div>
@@ -396,7 +419,7 @@ export function BlogInsightsSection() {
           below the strip without being clipped or growing any scrolling
           element's box (which would otherwise push the footer down). */}
       <AnimatePresence initial={false}>
-        {hoveredCard !== null && overlayRect && cards[hoveredCard] && (
+        {!isMobile && hoveredCard !== null && overlayRect && cards[hoveredCard] && (
           <motion.div
             key="desc"
             initial={{ height: 0, opacity: 0 }}

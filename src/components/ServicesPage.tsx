@@ -1103,7 +1103,7 @@ export function ServicesPage() {
             boxSizing: "border-box",
           }}
         >
-          <div style={{ position: "relative", height: "100%", width: "calc(100% - 80px)", margin: "0 auto", boxSizing: "border-box" }}>
+          <div style={{ position: "relative", height: "100%", width: "calc(100% - 56px)", margin: "0 auto", boxSizing: "border-box" }}>
             {SERVICES.map((svc, i) => (
               <MobileCardSlide
                 key={svc.title}

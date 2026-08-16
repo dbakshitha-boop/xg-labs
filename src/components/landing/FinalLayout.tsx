@@ -485,11 +485,12 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
     <>
       <style>{`
         @media (max-width: 1023px) {
-          .topbar-row { height: 56px !important; }
+          .topbar-row { height: 56px !important; padding-left: 14px !important; padding-right: 14px !important; }
           .topbar-logo { height: 42px !important; }
           .topbar-hamburger { width: 40px !important; height: 40px !important; gap: 4px !important; }
           .topbar-hamburger-bar { width: 16px !important; }
           .topbar-hamburger-bar-short { width: 11px !important; }
+          .topbar-pill { left: 10px !important; width: calc(100vw - 20px) !important; }
         }
       `}</style>
       {/* ── Mobile full-screen menu — sits behind the floating pill bar (which stays visible, hamburger morphed to X) ── */}
@@ -503,7 +504,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
             className="fixed inset-0 z-40 flex flex-col lg:hidden"
             style={{ background: dark ? "#2A2A2A" : "#ffffff" }}
           >
-            <nav style={{ display: "flex", flexDirection: "column", padding: "88px 24px 40px", flex: 1, overflowY: "auto" }}>
+            <nav style={{ display: "flex", flexDirection: "column", padding: "88px 16px 40px", flex: 1, overflowY: "auto" }}>
               {["Our Edge", "Service", "Portfolio", "Blog", "Contact"].map((item, i) => (
                 <motion.button
                   key={item}
@@ -521,7 +522,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                       else navigate("/", { state: { skipLoading: true, scrollToSection: "selected-work" } });
                     } else if (item === "Contact") {
                       const footerEl = document.getElementById("footer");
-                      if (footerEl) { document.body.style.overflow = "auto"; footerEl.scrollIntoView({ behavior: "smooth" }); }
+                      if (footerEl) { document.body.style.overflow = "auto"; footerEl.scrollIntoView({ behavior: "auto" }); }
                       else navigate("/", { state: { skipLoading: true, scrollToFooter: true } });
                     }
                   }}
@@ -601,14 +602,14 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
         boxShadow: { duration: 0.3, ease: "easeInOut" },
       }}
       onMouseLeave={() => setServiceOpen(false)}
-      className={`fixed flex flex-col ${mobileMenuOpen ? "top-0" : "top-[40px]"} z-50 pointer-events-auto ${mobileMenuOpen ? "rounded-none" : "rounded-[8px]"} ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
+      className={`fixed flex flex-col ${mobileMenuOpen ? "top-0" : "top-[40px]"} z-50 pointer-events-auto ${mobileMenuOpen ? "rounded-none" : "rounded-[8px] topbar-pill"} ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
       style={(() => {
         if (mobileMenuOpen) {
           return { left: "0px", width: "100%", ...(dark ? { background: "#2A2A2A" } : {}) };
         }
         const w = containerWidth ?? "100vw";
-        const pad = containerWidth ? "40px" : "80px";
-        const minW = containerWidth ? "1200px" : "1224px";
+        const pad = containerWidth ? "40px" : "56px";
+        const minW = containerWidth ? "1200px" : "1320px";
         const barW = `min(${minW}, calc(${w} - ${pad}))`;
         const barLeft = `max(20px, calc((${w} - ${barW}) / 2))`;
         return {
@@ -713,7 +714,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                     const footerEl = document.getElementById("footer");
                     if (footerEl) {
                       document.body.style.overflow = "auto";
-                      footerEl.scrollIntoView({ behavior: "smooth" });
+                      footerEl.scrollIntoView({ behavior: "auto" });
                     } else {
                       navigate("/", { state: { skipLoading: true, scrollToFooter: true } });
                     }

@@ -174,7 +174,8 @@ function Cards({ isInView, isMobile }: { isInView: boolean, isMobile: boolean })
                     <div
                         key={card.id}
                         onClick={() => navigate('/portfolio')}
-                        className="snap-start shrink-0 w-[85vw] md:w-[42vw] first:ml-0 last:mr-4 cursor-pointer"
+                        className="snap-start shrink-0 first:ml-0 last:mr-4 cursor-pointer"
+                        style={{ width: "72vw" }}
                     >
                          <card.component isMobile={true} quote={card.quote} name={card.name} role={card.role} logo={card.logo} logoSize={card.logoSize} logoMobileMarginTop={card.logoMobileMarginTop} logoMobileMarginLeft={card.logoMobileMarginLeft} />
                     </div>

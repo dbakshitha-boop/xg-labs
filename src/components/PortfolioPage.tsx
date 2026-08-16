@@ -73,9 +73,9 @@ function normalizeTags(str: string): string {
 const T: Transition = { duration: 1.0, ease: [0.16, 1, 0.3, 1] };
 const CAROUSEL_TRANSITION: Transition = { duration: 1.4, ease: [0.16, 1, 0.3, 1] };
 
-// Matches TopBar's horizontal inset exactly (FinalLayout.tsx: min(1224px, 100vw - 80px), centered)
+// Matches TopBar's horizontal inset exactly (FinalLayout.tsx: min(1320px, 100vw - 56px), centered)
 // so page content lines up with the nav bar's left/right edges instead of using a fixed padding.
-const NAV_MARGIN = "max(20px, calc((100vw - min(1224px, calc(100vw - 80px))) / 2))";
+const NAV_MARGIN = "max(20px, calc((100vw - min(1320px, calc(100vw - 56px))) / 2))";
 
 // Section 0: fades out; the 2 middle images animate via layoutId — that IS the expansion
 const s0Variants = {

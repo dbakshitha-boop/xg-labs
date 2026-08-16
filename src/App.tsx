@@ -116,7 +116,7 @@ function HomePage() {
       const el = document.getElementById(targetId);
       if (el) {
         document.body.style.overflow = "auto";
-        el.scrollIntoView({ behavior: "smooth" });
+        el.scrollIntoView({ behavior: "auto" });
       } else {
         setTimeout(tryScroll, 100);
       }

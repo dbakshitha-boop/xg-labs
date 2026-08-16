@@ -121,7 +121,7 @@ export function ServicesList() {
         </p>
         <div style={{ marginTop: "12px" }}>
           <motion.div
-            initial="rest" whileHover="hover" animate="rest"
+            initial="rest" whileTap="hover" animate="rest"
             style={{ position: 'relative', height: 36, display: 'inline-flex', flexShrink: 0, cursor: 'pointer' }}
           >
             <button onClick={() => navigate("/services")} style={{ height: 36, paddingTop: 7, paddingRight: 26, paddingBottom: 7, paddingLeft: 14, display: 'inline-flex', alignItems: 'center', background: '#ffffff', borderRadius: 42, border: '1px solid #9A9A9A', cursor: 'pointer', boxSizing: 'border-box', position: 'relative', overflow: 'hidden' }}>
@@ -382,7 +382,7 @@ function ServiceCard({
         <div className="flex flex-col gap-4" style={{ paddingLeft: "24px", paddingRight: "24px", paddingTop: "20px", paddingBottom: "28px" }}>
           <div>
             <h3 className="font-['Sora',sans-serif] font-bold text-[14px] tracking-tight text-[#414141] uppercase mb-1">{title}</h3>
-            <p className="font-['Sora',sans-serif] text-[12px] text-gray-500 leading-relaxed">{subtitle}</p>
+            <p className="font-['Sora',sans-serif] text-gray-500 leading-relaxed" style={{ fontSize: "11px" }}>{subtitle}</p>
           </div>
           {/* content lines — same curtain-sweep reveal as desktop, driven by auto-reveal-on-scroll */}
           <div className="flex flex-col gap-0">
@@ -400,7 +400,7 @@ function ServiceCard({
                 <motion.div
                   key={idx}
                   className="relative leading-[1.25] tracking-[-0.02em]"
-                  style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 4vw, 18px)", color: "#6E6E6E" }}
+                  style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(18px, 5vw, 22px)", color: "#6E6E6E" }}
                   animate={idx === 1 ? { x: active ? 0 : 80 } : { x: 0 }}
                   transition={{
                     duration: 0.5,
@@ -423,30 +423,6 @@ function ServiceCard({
               );
             })}
           </div>
-          {/* "What We Deliver" — hover-only reveal (not tied to scroll auto-reveal) */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
-            transition={{ duration: 0.4, ease: [0.76, 0, 0.24, 1] }}
-          >
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#6E6E6E", marginBottom: "8px" }}>
-              What We Deliver
-            </p>
-            <div className="flex flex-col gap-2">
-              {deliverables.map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -10 }}
-                  transition={{ duration: 0.25, delay: isHovered ? 0.2 + (i * 0.03) : 0, ease: [0.76, 0, 0.24, 1] }}
-                  className="font-['Sora',sans-serif] font-medium text-[13px] text-[#414141] flex items-center gap-2"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#00A88D] shrink-0" />
-                  {item}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
         </div>
       </div>
 
