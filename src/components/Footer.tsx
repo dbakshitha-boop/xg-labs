@@ -5,7 +5,6 @@ import xgLogo from "../assets/2.png";
 const MENU_LINKS = [
   { label: "Home", path: "/" },
   { label: "Works", path: "/portfolio" },
-  { label: "About", path: "/" },
   { label: "Services", path: "/services" },
   { label: "Blog", path: "/blog" },
   { label: "Contact", path: "/" },
@@ -37,10 +36,10 @@ const linkStyle: React.CSSProperties = {
 };
 
 const colHeadStyle: React.CSSProperties = {
-  fontFamily: "'Space Grotesk', sans-serif",
-  fontWeight: 700,
-  fontSize: "13px",
-  letterSpacing: "0.14em",
+  fontFamily: "'Sora', sans-serif",
+  fontWeight: 600,
+  fontSize: "20px",
+  letterSpacing: "-2%",
   textTransform: "uppercase",
   color: "#ffffff",
   margin: 0,
@@ -129,10 +128,10 @@ export function Footer() {
           className="footer-headline-text"
           style={{
             fontFamily: "'Humane', sans-serif",
-            fontWeight: 700,
-            fontSize:  "clamp(84px, 9.2vw, 176px)",
+            fontWeight: 600,
+            fontSize:  "clamp(120px, 13.4vw, 250px)",
             lineHeight: "0.88",
-            letterSpacing: "0.05em",
+            letterSpacing: "0em",
             textTransform: "uppercase",
             color: "#D9D9D9",
             margin: 0,
@@ -154,17 +153,17 @@ export function Footer() {
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
-          padding: "24px 48px 28px",
-          gap: "24px",
+          padding: "40px 48px 48px",
+          gap: "72px",
           borderBottom: "1px solid rgba(255,255,255,0.07)",
         }}
       >
         {/* Connect with */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className="footer-shift-col" style={{ display: "flex", flexDirection: "column", gap: "15px", marginLeft: "48px" }}>
           <p className="footer-col-head" style={colHeadStyle}>Connect With</p>
-          <div className="footer-connect-details" style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div className="footer-connect-details" style={{ display: "flex", flexDirection: "column", gap: "11px" }}>
             <a
-              href="mailto:xglabs@thebrandopedia.in"
+              href="mailto:hello@xglabs.in"
               style={{
                 ...linkStyle,
                 fontSize: "clamp(16px, 1.5vw, 22px)",
@@ -173,7 +172,7 @@ export function Footer() {
               onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#9A9A9A")}
               onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.72)")}
             >
-              xglabs@thebrandopedia.in
+              hello@xglabs.in
             </a>
             <a
               href="tel:+916369974530"
@@ -200,9 +199,9 @@ export function Footer() {
         </div>
 
         {/* Menu */}
-        <div className="footer-shift-col" style={{ display: "flex", flexDirection: "column", gap: "10px", marginLeft: "56px" }}>
+        <div className="footer-shift-col" style={{ display: "flex", flexDirection: "column", gap: "15px", marginLeft: "260px" }}>
           <p className="footer-col-head" style={colHeadStyle}>Menu</p>
-          <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <nav style={{ display: "flex", flexDirection: "column", gap: "11px" }}>
             {MENU_LINKS.map((item) => (
               <span
                 key={item.label}
@@ -218,9 +217,9 @@ export function Footer() {
         </div>
 
         {/* Services */}
-        <div className="footer-shift-col" style={{ display: "flex", flexDirection: "column", gap: "10px", marginLeft: "16px" }}>
+        <div className="footer-shift-col" style={{ display: "flex", flexDirection: "column", gap: "15px", marginLeft: "130px" }}>
           <p className="footer-col-head" style={colHeadStyle}>Services</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "11px" }}>
             {SERVICES.map((s) => (
               <span
                 key={s.label}
@@ -243,7 +242,7 @@ export function Footer() {
           display: "grid",
           gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
-          padding: "4px 48px 12px",
+          padding: "16px 48px 24px",
           gap: "24px",
         }}
       >

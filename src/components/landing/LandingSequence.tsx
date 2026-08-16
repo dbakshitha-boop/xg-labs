@@ -418,8 +418,8 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                                     <a href="tel:+916369974530" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: "#6E6E6E", textDecoration: "none" }}>
                                         +91 63699 74530
                                     </a>
-                                    <a href="mailto:xglabs@thebrandopedia.in" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: "#6E6E6E", textDecoration: "none" }}>
-                                        xglabs@thebrandopedia.in
+                                    <a href="mailto:hello@xglabs.in" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: "#6E6E6E", textDecoration: "none" }}>
+                                        hello@xglabs.in
                                     </a>
                                     <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: "#6E6E6E", margin: 0 }}>
                                         Chennai, Tamil Nadu, India

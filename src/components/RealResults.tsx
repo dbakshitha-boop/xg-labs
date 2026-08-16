@@ -46,15 +46,17 @@ export function RealResults() {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-white text-sm md:text-base font-space font-medium tracking-wide uppercase mb-4"
+            className="text-white font-medium tracking-wide uppercase mb-4"
+            style={{ fontFamily: "'Cal Sans', sans-serif", fontSize: "clamp(16px, 1.6vw, 22px)" }}
           >
             REAL BRANDS. REAL RESULTS.
           </motion.h2>
-          <motion.h3 
+          <motion.h3
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-white text-3xl md:text-5xl lg:text-6xl font-space font-medium leading-tight max-w-4xl mx-auto"
+            className="text-white font-medium leading-tight max-w-4xl mx-auto"
+            style={{ fontFamily: "'Cal Sans', sans-serif", fontSize: "clamp(22px, 3.2vw, 40px)" }}
           >
             Feedback that shows how our work drives clarity, growth, and measurable
           </motion.h3>
@@ -260,7 +262,7 @@ const CardHeader = ({ name, role, logo, logoSize = 80, isMobile = false, logoMob
 
 const CardBody = ({ quote, isMobile }: { quote: string; isMobile?: boolean }) => (
     <div style={{ width: '100%', marginTop: 'auto' }}>
-        <p className="font-space font-medium text-[#414141] uppercase" style={{ fontSize: isMobile ? 22 : 28, lineHeight: 1.25, letterSpacing: '-0.5px', margin: 0 }}>
+        <p className="font-space font-medium text-[#414141]" style={{ fontSize: isMobile ? 24 : 31, lineHeight: 1.35, letterSpacing: '0px', margin: 0 }}>
             {quote}
         </p>
     </div>

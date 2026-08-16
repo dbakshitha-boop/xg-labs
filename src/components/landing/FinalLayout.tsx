@@ -63,11 +63,11 @@ function TextContainer() {
     >
       <p className="font-['Sora',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full">STRATEGY FIRST</p>
       <div
-        className="font-['Cal_Sans'] font-[900] not-italic relative shrink-0 text-[#060606] text-[96px] uppercase w-full text-center mt-[-12px]"
+        className="font-['Cal_Sans'] font-[900] not-italic relative shrink-0 text-[#060606] text-[80px] uppercase w-full text-center mt-[-12px]"
         style={{ WebkitTextStroke: "2.5px #060606", letterSpacing: "-0.005em" }}
       >
-        <span style={{ display: "block", lineHeight: 0.85 }}>From Vision</span>
-        <span style={{ display: "block", lineHeight: 0.85, marginTop: "0.1em" }}>To Velocity</span>
+        <span style={{ display: "block", lineHeight: 0.85 }}>From Vision To</span>
+        <span style={{ display: "block", lineHeight: 0.85, marginTop: "0.1em" }}>Velocity</span>
       </div>
       <p className="font-['Sora',sans-serif] font-normal leading-[1.2] relative shrink-0 text-[#414141] text-[24px] tracking-[-0.96px] w-full text-center">
         We align strategy, creative, and performance
@@ -79,18 +79,40 @@ function TextContainer() {
 }
 
 function ArrowContainer({ onPrev, onNext }: { onPrev?: () => void; onNext?: () => void }) {
+  const [hoverPrev, setHoverPrev] = useState(false);
+  const [hoverNext, setHoverNext] = useState(false);
+
   return (
     <div className="content-stretch flex gap-[24px] items-center relative shrink-0">
       <div
         className="content-stretch flex items-center relative shrink-0 cursor-pointer"
         onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
+        onMouseEnter={() => setHoverPrev(true)}
+        onMouseLeave={() => setHoverPrev(false)}
       >
         <div className="flex items-center justify-center relative shrink-0 size-[40px]">
           <div className="flex-none rotate-[270deg]">
             <div className="relative size-[40px]">
               <svg className="block size-full" fill="none" viewBox="0 0 40 40">
-                <rect height="39" rx="19.5" stroke="var(--stroke-0, black)" width="39" x="0.5" y="0.5" />
-                <path d={svgPaths.p3c0a3b80} stroke="var(--stroke-0, black)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                <rect
+                  height="39"
+                  rx={hoverPrev ? 3.5 : 19.5}
+                  stroke="black"
+                  fill="black"
+                  fillOpacity={hoverPrev ? 1 : 0}
+                  width="39"
+                  x="0.5"
+                  y="0.5"
+                  style={{ transition: "rx 0.45s cubic-bezier(0.16, 1, 0.3, 1), fill-opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}
+                />
+                <path
+                  d={svgPaths.p3c0a3b80}
+                  stroke={hoverPrev ? "white" : "black"}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  style={{ transition: "stroke 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}
+                />
               </svg>
             </div>
           </div>
@@ -99,13 +121,29 @@ function ArrowContainer({ onPrev, onNext }: { onPrev?: () => void; onNext?: () =
       <div
         className="content-stretch flex items-center relative shrink-0 cursor-pointer"
         onClick={(e) => { e.stopPropagation(); onNext?.(); }}
+        onMouseEnter={() => setHoverNext(true)}
+        onMouseLeave={() => setHoverNext(false)}
       >
         <div className="flex items-center justify-center relative shrink-0 size-[40px]">
           <div className="flex-none rotate-[90deg]">
             <div className="relative size-[40px]">
               <svg className="block size-full" fill="none" viewBox="0 0 40 40">
-                <rect height="39" rx="3.5" stroke="var(--stroke-0, black)" width="39" x="0.5" y="0.5" />
-                <path d={svgPaths.p47d4600} fill="var(--fill-0, black)" />
+                <rect
+                  height="39"
+                  rx={hoverNext ? 19.5 : 3.5}
+                  stroke="black"
+                  fill="black"
+                  fillOpacity={hoverNext ? 1 : 0}
+                  width="39"
+                  x="0.5"
+                  y="0.5"
+                  style={{ transition: "rx 0.45s cubic-bezier(0.16, 1, 0.3, 1), fill-opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}
+                />
+                <path
+                  d={svgPaths.p47d4600}
+                  fill={hoverNext ? "white" : "black"}
+                  style={{ transition: "fill 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}
+                />
               </svg>
             </div>
           </div>
@@ -425,7 +463,7 @@ const SERVICE_IMG_MAP: Record<string, string> = {
   influencer,
 };
 
-export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk = false, barHeight = 74 }: { dark?: boolean; containerWidth?: string; logoSrc?: string; refinedLetsTalk?: boolean; barHeight?: number }) {
+export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk = false, barHeight = 56 }: { dark?: boolean; containerWidth?: string; logoSrc?: string; refinedLetsTalk?: boolean; barHeight?: number }) {
   const navigate = useNavigate();
   const [serviceOpen, setServiceOpen] = useState(false);
   const [hoveredSlug, setHoveredSlug] = useState<string>("performance-marketing");
@@ -504,8 +542,8 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                 <a href="tel:+916369974530" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: dark ? "#F7F8FA" : "#6E6E6E", textDecoration: "none" }}>
                   +91 63699 74530
                 </a>
-                <a href="mailto:xglabs@thebrandopedia.in" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: dark ? "#F7F8FA" : "#6E6E6E", textDecoration: "none" }}>
-                  xglabs@thebrandopedia.in
+                <a href="mailto:hello@xglabs.in" style={{ display: "block", fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: dark ? "#F7F8FA" : "#6E6E6E", textDecoration: "none" }}>
+                  hello@xglabs.in
                 </a>
                 <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "15px", lineHeight: 1.6, color: dark ? "#F7F8FA" : "#6E6E6E", margin: 0 }}>
                   Chennai, Tamil Nadu, India
@@ -584,14 +622,14 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
       <div className="topbar-row flex items-center justify-between px-[24px] py-[8px]" style={{ height: barHeight, ...(mobileMenuOpen ? { paddingLeft: 16, paddingRight: 16 } : {}) }}>
         <div className="shrink-0 cursor-pointer" onClick={() => navigate("/", { state: { skipLoading: true } })} onMouseEnter={() => setServiceOpen(false)}>
           {logoSrc ? (
-            <img alt="Xg Labs" className="topbar-logo" src={logoSrc} style={{ height: "44px", width: "auto", display: "block" }} />
+            <img alt="Xg Labs" className="topbar-logo" src={logoSrc} style={{ height: "34px", width: "auto", display: "block" }} />
           ) : (
-            <img alt="Xg Labs" className="topbar-logo" src={imgImage12} style={{ height: "54px", width: "auto", display: "block" }} />
+            <img alt="Xg Labs" className="topbar-logo" src={imgImage12} style={{ height: "42px", width: "auto", display: "block" }} />
           )}
         </div>
 
         {/* Desktop nav — hidden on mobile */}
-        <div className="hidden lg:flex gap-1 xl:gap-4 items-center">
+        <div className="hidden lg:flex gap-2 xl:gap-6 items-center">
           {["Our Edge", "Service", "Portfolio", "Blog", "Contact"].map(item => {
             const isService = item === "Service";
             const isActive = isService && serviceOpen;
@@ -603,7 +641,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                   initial="rest"
                   whileHover="hover"
                   animate={isActive ? "hover" : "rest"}
-                  className="relative cursor-pointer px-3 py-2 flex items-center gap-[6px] overflow-hidden"
+                  className="relative cursor-pointer px-4 py-2 flex items-center gap-[6px] overflow-hidden"
                   style={{ borderRadius: "6px" }}
                   onClick={() => navigate("/services")}
                   onMouseEnter={() => setServiceOpen(true)}
@@ -666,7 +704,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                 initial="rest"
                 whileHover="hover"
                 animate="rest"
-                className="relative cursor-pointer px-3 py-2 overflow-hidden"
+                className="relative cursor-pointer px-4 py-2 overflow-hidden"
                 style={{ borderRadius: "6px" }}
                 onMouseEnter={() => setServiceOpen(false)}
                 onClick={() => {
@@ -887,7 +925,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
             </p>
             {[
               "+91 63699 74530",
-              "xglabs@thebrandopedia.in",
+              "hello@xglabs.in",
               "Chennai, Tamil Nadu, India",
             ].map((line) => (
               <p key={line} style={{

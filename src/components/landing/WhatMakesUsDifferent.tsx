@@ -239,7 +239,7 @@ function RevealText({ children, delay = 0, isActive }: { children: React.ReactNo
 
 function SubheaderContainer({ title, id }: { title: string, id: string }) {
   return (
-    <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#414141] uppercase w-full" style={{ fontSize: "clamp(20px, 2.2vw, 32px)" }} data-name="Subheader Container">
+    <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#060606] uppercase w-full" style={{ fontSize: "clamp(16px, 1.6vw, 24px)" }} data-name="Subheader Container">
       <p className="basis-0 grow min-h-px min-w-px relative shrink-0">{title}</p>
     </div>
   );
@@ -247,11 +247,11 @@ function SubheaderContainer({ title, id }: { title: string, id: string }) {
 
 function ContentContainer({ description, title, id, isInView }: { description: string[], title: string, id: string, isInView: boolean }) {
   return (
-    <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full" data-name="Content Container">
+    <div className="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full" data-name="Content Container">
       <SubheaderContainer title={title} id={id} />
       <div className="flex flex-col w-full">
         {description.map((line, idx) => (
-             <div key={idx} className="relative font-['Sora',sans-serif] font-normal leading-[1.4] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(20px, 2.2vw, 28px)" }}>
+             <div key={idx} className="relative font-['Cal Sans',sans-serif] leading-[1.4] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(24px, 3.2vw, 38px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
                 <RevealText delay={idx * 0.1} isActive={isInView}>
                   {line}
                 </RevealText>
@@ -287,7 +287,7 @@ function RealContent({ activeIndex, isInView }: { activeIndex: number; isInView:
 
 function TextContainer({ activeIndex, isInView }: { activeIndex: number; isInView: boolean }) {
   return (
-    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full gap-[24px] lg:gap-[36px]" style={{ padding: "clamp(24px, 4vw, 64px)", paddingTop: "clamp(32px, 4vw, 56px)", justifyContent: "flex-start" }} data-name="Text Container">
+    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full" style={{ padding: "clamp(24px, 4vw, 64px)", paddingTop: "clamp(32px, 4vw, 56px)", justifyContent: "flex-start", gap: "clamp(56px, 12vw, 190px)" }} data-name="Text Container">
       <HeaderContainer />
       <div>
         <RealContent activeIndex={activeIndex} isInView={isInView} />

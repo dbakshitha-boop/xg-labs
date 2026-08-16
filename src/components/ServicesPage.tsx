@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent, MotionValue } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
 import { useContactForm } from "./ContactFormContext";
+import xgLogoWhite from "../assets/2.png";
 
 import svcPerformanceMarketing from "../assets/service section - xg web/Performance Marketing.png";
 import svcSEO from "../assets/service section - xg web/SEO.png";
@@ -190,7 +191,8 @@ function AccordionRow({
           style={{
             width: circleSize,
             height: circleSize,
-            border: "1.5px solid rgba(0,0,0,0.2)",
+            background: "#FFFFFF",
+            border: "1px solid rgba(0,0,0,0.08)",
             borderRadius: "50%",
             display: "flex",
             alignItems: "center",
@@ -244,10 +246,20 @@ function AccordionRow({
 }
 
 // ─── Mobile service card (vertical scroll layout) ────────────────────────────
-function MobileServiceCard({ service }: { service: ServiceData }) {
+function MobileServiceCard({ service, active = true }: { service: ServiceData; active?: boolean }) {
   const navigate = useNavigate();
   const { open: openContactForm } = useContactForm();
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  // Touch has no hover state. The "Let's Talk" button starts already in its
+  // hover look (no animated entry), then eases backward into rest once this
+  // card swipes into place.
+  const [talkPulsing, setTalkPulsing] = useState(true);
+  useEffect(() => {
+    if (!active) return;
+    const settleTimer = setTimeout(() => setTalkPulsing(false), 700);
+    return () => clearTimeout(settleTimer);
+  }, [active]);
 
   function toggle(i: number) {
     setOpenIdx((prev) => (prev === i ? null : i));
@@ -256,7 +268,7 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
   return (
     <div
       style={{
-        background: "#ffffff",
+        background: "#F7F8FA",
         borderRadius: 16,
         overflow: "hidden",
         boxSizing: "border-box",
@@ -362,9 +374,9 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
 
         {/* Let's Talk */}
         <motion.div
-          initial="rest"
+          initial="hover"
           whileHover="hover"
-          animate="rest"
+          animate={talkPulsing ? "hover" : "rest"}
           onClick={() => openContactForm()}
           style={{ position: "relative", height: 28, display: "inline-flex", cursor: "pointer" }}
         >
@@ -387,25 +399,25 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
             <motion.span
               aria-hidden
               variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-              transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
               style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
             />
             <motion.span
               aria-hidden
               variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-              transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
+              transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
               style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
             />
             <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 11 }}>
               <motion.span
-                variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                variants={{ rest: { y: 0, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
                 style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
               >
                 {"Let's Talk"}
               </motion.span>
               <motion.span
                 aria-hidden
-                variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                variants={{ rest: { y: "100%", transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
                 style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: "0", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
               >
                 {"Let's Talk"}
@@ -414,12 +426,12 @@ function MobileServiceCard({ service }: { service: ServiceData }) {
           </button>
           <motion.div
             variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }}
-            transition={{ duration: 0.18 }}
+            transition={{ duration: 0.26 }}
             style={{ position: "absolute", top: 0, right: -9, width: 28, height: 28, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
           >
             <svg width={18} height={18} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M5 12h14" />
-              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M13 5l7 7-7 7" />
+              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.26 }} d="M5 12h14" />
+              <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.26 }} d="M13 5l7 7-7 7" />
             </svg>
           </motion.div>
         </motion.div>
@@ -460,12 +472,12 @@ function CardSlide({
   service,
   index,
   total,
-  scrollYProgress,
+  activeIndex,
 }: {
   service: ServiceData;
   index: number;
   total: number;
-  scrollYProgress: MotionValue<number>;
+  activeIndex: number;
 }) {
   const navigate = useNavigate();
   const { open: openContactForm } = useContactForm();
@@ -486,31 +498,32 @@ function CardSlide({
     return () => observer.disconnect();
   }, []);
 
-  const seg = 1 / total;
   const isLast = index === total - 1;
+  const relative = index - activeIndex;
+  const isActive = relative === 0;
 
-  // Slide in from below over its entry window
-  const y = useTransform(
-    scrollYProgress,
-    index === 0 ? [0, seg] : [(index - 1) * seg, index * seg],
-    index === 0 ? ["0%", "0%"] : ["100%", "0%"]
-  );
+  // Not yet reached: waiting off-screen below.
+  // Already passed: peeled back behind the current card (unless it's the last one).
+  // Current: fully in place, front and center.
+  let y = "0%";
+  let scale = 1;
+  let opacity = 1;
+  if (relative > 0) {
+    y = "100%";
+    opacity = 0;
+  } else if (relative < 0) {
+    scale = isLast ? 1 : 0.88;
+  }
 
-  // Scale down (peel away) over its exit window; last card never shrinks
-  const scale = useTransform(
-    scrollYProgress,
-    [index * seg, (index + 1) * seg],
-    [1, isLast ? 1 : 0.88]
-  );
-
-  // Stay invisible until the card starts entering, then instantly visible
-  const opacity = useTransform(
-    scrollYProgress,
-    index === 0
-      ? [0, 1]
-      : [(index - 1) * seg, (index - 1) * seg + seg * 0.04],
-    index === 0 ? [1, 1] : [0, 1]
-  );
+  // The "Let's Talk" button starts already in its hover look (no animated
+  // entry), then eases backward into rest once this card scrolls into place —
+  // a nudge, independent of whether the user is actually hovering it.
+  const [talkPulsing, setTalkPulsing] = useState(true);
+  useEffect(() => {
+    if (!isActive) return;
+    const settleTimer = setTimeout(() => setTalkPulsing(false), 700);
+    return () => clearTimeout(settleTimer);
+  }, [isActive]);
 
   function toggle(i: number) {
     setOpenIdx((prev) => (prev === i ? null : i));
@@ -521,39 +534,39 @@ function CardSlide({
   return (
     <motion.div
       id={sectionId}
+      initial={false}
+      animate={{ y, scale, opacity }}
+      transition={{ duration: 0.95, ease: [0.65, 0, 0.35, 1] }}
       style={{
         position: "absolute",
         top: 0,
         left: 0,
         right: 0,
         zIndex: index + 1,
-        y,
-        scale,
-        opacity,
         transformOrigin: "top center",
       }}
     >
       <div
         style={{
-          background: "#ffffff",
-          borderRadius: "16px",
+          background: "#F7F8FA",
+          borderRadius: "24px",
           width: "100%",
-          paddingTop: "52px",
-          paddingRight: "60px",
-          paddingBottom: "44px",
-          paddingLeft: "60px",
+          paddingTop: "60px",
+          paddingRight: "80px",
+          paddingBottom: "52px",
+          paddingLeft: "80px",
           boxShadow: "0 4px 32px rgba(0,0,0,0.28)",
           boxSizing: "border-box",
         }}
       >
         {/* Row 1: title + description + buttons */}
-        <div style={{ display: "flex", gap: "48px", alignItems: "flex-start", marginBottom: "32px" }}>
-          <div style={{ width: "280px", flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: "110px", alignItems: "flex-start", marginBottom: "44px" }}>
+          <div style={{ width: "280px", flexShrink: 0, marginLeft: "-24px" }}>
             <h2
               style={{
                 fontFamily: "'Cal Sans', sans-serif",
                 fontWeight: 400,
-                fontSize: "clamp(22px, 2.2vw, 34px)",
+                fontSize: "clamp(16px, 1.5vw, 23px)",
                 letterSpacing: "-0.02em",
                 textTransform: "uppercase",
                 color: "#414141",
@@ -565,12 +578,12 @@ function CardSlide({
             </h2>
           </div>
 
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div style={{ flex: 1, maxWidth: "620px", display: "flex", flexDirection: "column", gap: "32px" }}>
             <p
               style={{
                 fontFamily: "'Sora', sans-serif",
                 fontWeight: 400,
-                fontSize: "clamp(14px, 1.1vw, 17px)",
+                fontSize: "clamp(13px, 1vw, 15px)",
                 color: "#6E6E6E",
                 letterSpacing: "-0.04em",
                 lineHeight: "1.7",
@@ -580,20 +593,20 @@ function CardSlide({
               {service.description}
             </p>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
               {/* View Cases */}
               <motion.div
                 initial="rest"
                 whileHover="hover"
                 animate="rest"
                 onClick={() => navigate("/blog/case-study/0")}
-                style={{ position: "relative", height: 32, display: "inline-flex", cursor: "pointer" }}
+                style={{ position: "relative", height: 40, display: "inline-flex", cursor: "pointer" }}
               >
                 <button
                   style={{
-                    height: 32,
-                    paddingLeft: 12,
-                    paddingRight: 22,
+                    height: 40,
+                    paddingLeft: 10,
+                    paddingRight: 34,
                     display: "inline-flex",
                     alignItems: "center",
                     background: "#ffffff",
@@ -617,17 +630,17 @@ function CardSlide({
                     transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
                     style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
                   />
-                  <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 13 }}>
+                  <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 15 }}>
                     <motion.span
                       variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
+                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}
                     >
                       View Cases
                     </motion.span>
                     <motion.span
                       aria-hidden
                       variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
                     >
                       View Cases
                     </motion.span>
@@ -636,9 +649,9 @@ function CardSlide({
                 <motion.div
                   variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }}
                   transition={{ duration: 0.18 }}
-                  style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+                  style={{ position: "absolute", top: 1, right: -9, width: 38, height: 38, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
                 >
-                  <motion.svg width={18} height={18} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <motion.svg width={20} height={20} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
                   </motion.svg>
                 </motion.div>
@@ -646,17 +659,17 @@ function CardSlide({
 
               {/* Let’s Talk — black oval, white text, teal circle, black arrow → hover: white bg, grey text, black circle, white arrow */}
               <motion.div
-                initial="rest"
+                initial="hover"
                 whileHover="hover"
-                animate="rest"
+                animate={talkPulsing ? "hover" : "rest"}
                 onClick={() => openContactForm()}
-                style={{ position: "relative", height: 32, display: "inline-flex", cursor: "pointer" }}
+                style={{ position: "relative", height: 40, display: "inline-flex", cursor: "pointer" }}
               >
                 <button
                   style={{
-                    height: 32,
-                    paddingLeft: 12,
-                    paddingRight: 22,
+                    height: 40,
+                    paddingLeft: 10,
+                    paddingRight: 34,
                     display: "inline-flex",
                     alignItems: "center",
                     background: "#0a0a0a",
@@ -671,26 +684,26 @@ function CardSlide({
                   <motion.span
                     aria-hidden
                     variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                    transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+                    transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
                     style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }}
                   />
                   <motion.span
                     aria-hidden
                     variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                    transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
+                    transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1], delay: 0.05 }}
                     style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }}
                   />
-                  <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 13 }}>
+                  <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 15 }}>
                     <motion.span
-                      variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
+                      variants={{ rest: { y: 0, transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                      style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}
                     >
                       {"Let’s Talk"}
                     </motion.span>
                     <motion.span
                       aria-hidden
-                      variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
-                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 13, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
+                      variants={{ rest: { y: "100%", transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }}
+                      style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 15, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}
                     >
                       {"Let’s Talk"}
                     </motion.span>
@@ -698,12 +711,12 @@ function CardSlide({
                 </button>
                 <motion.div
                   variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }}
-                  transition={{ duration: 0.18 }}
-                  style={{ position: "absolute", top: 1, right: -9, width: 30, height: 30, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
+                  transition={{ duration: 0.26 }}
+                  style={{ position: "absolute", top: 1, right: -9, width: 38, height: 38, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}
                 >
-                  <svg width={18} height={18} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M5 12h14" />
-                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M13 5l7 7-7 7" />
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.26 }} d="M5 12h14" />
+                    <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.26 }} d="M13 5l7 7-7 7" />
                   </svg>
                 </motion.div>
               </motion.div>
@@ -712,8 +725,8 @@ function CardSlide({
         </div>
 
         {/* Row 2: image height tracks the accordion column, growing/shrinking as items expand */}
-        <div style={{ display: "flex", gap: "48px", alignItems: "flex-start" }}>
-          <div style={{ width: "280px", flexShrink: 0, borderRadius: "12px", overflow: "hidden", height: accordionHeight ? `${accordionHeight}px` : "auto" }}>
+        <div style={{ display: "flex", gap: "110px", alignItems: "flex-start" }}>
+          <div style={{ width: "280px", flexShrink: 0, marginLeft: "-24px", borderRadius: "12px", overflow: "hidden", height: accordionHeight ? `${accordionHeight}px` : "auto" }}>
             <img
               src={service.images[0]}
               alt={service.title}
@@ -721,7 +734,7 @@ function CardSlide({
             />
           </div>
 
-          <div ref={accordionColRef} style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div ref={accordionColRef} style={{ flex: 1, maxWidth: "620px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
             {service.items.map((item, i) => (
               <AccordionRow
                 key={i}
@@ -730,6 +743,9 @@ function CardSlide({
                 open={openIdx === i}
                 onToggle={() => toggle(i)}
                 isLast={i === service.items.length - 1}
+                labelSize="18px"
+                rowPadding="20px 0"
+                circleSize={30}
               />
             ))}
           </div>
@@ -746,7 +762,7 @@ function GridServiceCard({ service }: { service: ServiceData }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <div style={{ background: "#ffffff", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px", boxSizing: "border-box", height: "100%", overflow: "hidden" }}>
+    <div style={{ background: "#F7F8FA", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px", boxSizing: "border-box", height: "100%", overflow: "hidden" }}>
       {/* Title + description + buttons */}
       <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
         <div style={{ width: "90px", flexShrink: 0 }}>
@@ -758,19 +774,83 @@ function GridServiceCard({ service }: { service: ServiceData }) {
           <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "9px", color: "#6E6E6E", letterSpacing: "-0.04em", lineHeight: "1.5", margin: 0 }}>
             {service.description}
           </p>
-          <div style={{ display: "flex", gap: "5px" }}>
-            <button onClick={() => navigate("/blog/case-study/0")} style={{ display: "flex", alignItems: "center", gap: "5px", border: "1px solid #1a1a1a", borderRadius: "100px", background: "#fff", padding: "4px 8px 4px 11px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "7.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#1a1a1a" }}>
-              View Cases
-              <div style={{ width: 14, height: 14, borderRadius: "50%", background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="6" height="6" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </div>
-            </button>
-            <button onClick={() => openContactForm()} style={{ display: "flex", alignItems: "center", gap: "5px", border: "none", borderRadius: "100px", background: "#1a1a1a", padding: "4px 8px 4px 11px", cursor: "pointer", fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "7.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>
-              {"Let's Talk"}
-              <div style={{ width: 14, height: 14, borderRadius: "50%", background: "#02A884", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="6" height="6" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </div>
-            </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {/* View Cases */}
+            <motion.div
+              initial="rest"
+              whileHover="hover"
+              animate="rest"
+              onClick={() => navigate("/blog/case-study/0")}
+              style={{ position: "relative", height: 22, display: "inline-flex", cursor: "pointer" }}
+            >
+              <button
+                style={{
+                  height: 22,
+                  paddingLeft: 8,
+                  paddingRight: 18,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  background: "#ffffff",
+                  borderRadius: 42,
+                  border: "1px solid #1a1a1a",
+                  cursor: "pointer",
+                  boxSizing: "border-box",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
+                <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
+                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 8 }}>
+                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 8, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}>View Cases</motion.span>
+                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 8, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}>View Cases</motion.span>
+                </div>
+              </button>
+              <motion.div variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -5, width: 20, height: 20, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+                <motion.svg width={11} height={11} viewBox="0 0 24 24" fill="none" variants={{ rest: { stroke: "#ffffff" }, hover: { stroke: "#000000" } }} transition={{ duration: 0.18 }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14" /><path d="M13 5l7 7-7 7" />
+                </motion.svg>
+              </motion.div>
+            </motion.div>
+
+            {/* Let's Talk */}
+            <motion.div
+              initial="rest"
+              whileHover="hover"
+              animate="rest"
+              onClick={() => openContactForm()}
+              style={{ position: "relative", height: 22, display: "inline-flex", cursor: "pointer" }}
+            >
+              <button
+                style={{
+                  height: 22,
+                  paddingLeft: 8,
+                  paddingRight: 18,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  background: "#0a0a0a",
+                  borderRadius: 42,
+                  border: "1px solid #0a0a0a",
+                  cursor: "pointer",
+                  boxSizing: "border-box",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
+                <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
+                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 8 }}>
+                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 8, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}>{"Let’s Talk"}</motion.span>
+                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 8, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}>{"Let’s Talk"}</motion.span>
+                </div>
+              </button>
+              <motion.div variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -5, width: 20, height: 20, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
+                <svg width={11} height={11} viewBox="0 0 24 24" fill="none" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M5 12h14" />
+                  <motion.path variants={{ rest: { stroke: "#000000" }, hover: { stroke: "#ffffff" } }} transition={{ duration: 0.18 }} d="M13 5l7 7-7 7" />
+                </svg>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -816,69 +896,62 @@ function GridServiceCard({ service }: { service: ServiceData }) {
   );
 }
 
-// ─── Mobile card (same stack/peel scroll effect as the desktop CardSlide) ────
+// ─── Mobile card (same stack/peel step effect as the desktop CardSlide) ──────
 function MobileCardSlide({
   service,
   index,
   total,
-  scrollYProgress,
+  activeIndex,
 }: {
   service: ServiceData;
   index: number;
   total: number;
-  scrollYProgress: MotionValue<number>;
+  activeIndex: number;
 }) {
-  const seg = 1 / total;
   const isLast = index === total - 1;
+  const relative = index - activeIndex;
+  const isActive = relative === 0;
 
-  // Slide in from below over its entry window
-  const y = useTransform(
-    scrollYProgress,
-    index === 0 ? [0, seg] : [(index - 1) * seg, index * seg],
-    index === 0 ? ["0%", "0%"] : ["100%", "0%"]
-  );
-
-  // Scale down (peel away) over its exit window; last card never shrinks
-  const scale = useTransform(
-    scrollYProgress,
-    [index * seg, (index + 1) * seg],
-    [1, isLast ? 1 : 0.92]
-  );
-
-  // Stay invisible until the card starts entering, then instantly visible
-  const opacity = useTransform(
-    scrollYProgress,
-    index === 0
-      ? [0, 1]
-      : [(index - 1) * seg, (index - 1) * seg + seg * 0.04],
-    index === 0 ? [1, 1] : [0, 1]
-  );
+  let y = "0%";
+  let scale = 1;
+  let opacity = 1;
+  if (relative > 0) {
+    y = "100%";
+    opacity = 0;
+  } else if (relative < 0) {
+    scale = isLast ? 1 : 0.92;
+  }
 
   return (
     <motion.div
+      initial={false}
+      animate={{ y, scale, opacity }}
+      transition={{ duration: 0.95, ease: [0.65, 0, 0.35, 1] }}
       style={{
         position: "absolute",
         top: 16,
         left: 0,
         right: 0,
         zIndex: index + 1,
-        y,
-        scale,
-        opacity,
         transformOrigin: "top center",
       }}
     >
-      <MobileServiceCard service={service} />
+      <MobileServiceCard service={service} active={isActive} />
     </motion.div>
   );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
+const STEP_LOCK_MS = 950;
+const SWIPE_THRESHOLD = 40;
+// Trackpad "flicks" fire a long tail of wheel events (momentum scrolling) well
+// after the physical gesture ends. Events closer together than this count as
+// the same gesture — only the first one in a burst steps the deck; the rest
+// are swallowed (not re-armed) until the stream goes quiet for this long.
+const GESTURE_IDLE_MS = 220;
+
 export function ServicesPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef });
   const total = SERVICES.length;
-  const [activeIndex, setActiveIndex] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const { open: openContactForm } = useContactForm();
@@ -886,8 +959,18 @@ export function ServicesPage() {
     typeof window !== "undefined" ? window.innerWidth < 1024 : false
   );
 
-  const [isGrid, setIsGrid] = useState(false);
-  const gridThreshold = (total - 1) / total;
+  // slideIndex ranges 0..total on desktop (total = the finale grid) and
+  // 0..total-1 on mobile (no grid finale there). One scroll/swipe tick = one step.
+  const [slideIndex, setSlideIndex] = useState<number>(() => {
+    const idx = (location.state as { serviceIndex?: number } | null)?.serviceIndex;
+    return idx != null ? Math.min(Math.max(idx, 0), total) : 0;
+  });
+
+  const isMobileRef = useRef(isMobile);
+  const slideIndexRef = useRef(slideIndex);
+  const isAnimatingRef = useRef(false);
+  useEffect(() => { isMobileRef.current = isMobile; }, [isMobile]);
+  useEffect(() => { slideIndexRef.current = slideIndex; }, [slideIndex]);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 1024);
@@ -895,55 +978,141 @@ export function ServicesPage() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    setActiveIndex(Math.min(Math.floor(v * total), total - 1));
-    setIsGrid(v >= gridThreshold);
-  });
+  // Guarantee the deck starts pinned at the top so the wheel/touch lock's
+  // scrollY === 0 check is accurate from the first tick, regardless of any
+  // stray scroll position left over from a prior route or restoration.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
-  // Scroll to the target service card whenever location.state carries a serviceIndex.
-  // Runs on mount AND on every same-page navigate (e.g. clicking from the footer
-  // while already on /services). scrollYProgress goes 0→1 as scrollTop goes
-  // 114 → 114+(total-1)*vh, so card i is at: 114 + i*(total-1)*vh/total.
+  // Clamp slideIndex when the mobile/desktop max changes (e.g. window resize
+  // crossing the breakpoint while sitting on the desktop-only grid finale).
+  useEffect(() => {
+    const max = isMobile ? total - 1 : total;
+    setSlideIndex((i) => Math.min(i, max));
+  }, [isMobile, total]);
+
+  // Jump to the target service card whenever location.state carries a
+  // serviceIndex — on mount, and on every same-page navigate (e.g. clicking
+  // a service link from the footer while already on /services).
   useEffect(() => {
     const idx = (location.state as { serviceIndex?: number } | null)?.serviceIndex;
     if (idx == null) return;
-    const vh = window.innerHeight;
-    const top = 114 + (idx / total) * (total - 1) * vh;
-    requestAnimationFrame(() => window.scrollTo({ top, behavior: "smooth" }));
+    setSlideIndex(Math.min(Math.max(idx, 0), total));
+    requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
   }, [location, total]);
+
+  // Scroll-locked navigation: while the deck is pinned at the top of the page
+  // (scrollY === 0), scrolling/swiping DOWN advances exactly one slide
+  // (service card, then — on desktop — the finale grid). Upward scroll does
+  // nothing to the deck — there's nothing to go back to via scroll. At the
+  // last slide, the next downward tick releases the lock and lets the page
+  // scroll normally into the footer.
+  useEffect(() => {
+    function step() {
+      if (isAnimatingRef.current) return;
+      isAnimatingRef.current = true;
+      setSlideIndex((prev) => {
+        const max = isMobileRef.current ? total - 1 : total;
+        const next = Math.min(prev + 1, max);
+        slideIndexRef.current = next;
+        return next;
+      });
+      window.setTimeout(() => { isAnimatingRef.current = false; }, STEP_LOCK_MS);
+    }
+
+    function atExitBoundary() {
+      const max = isMobileRef.current ? total - 1 : total;
+      return slideIndexRef.current >= max;
+    }
+
+    // A trackpad flick keeps firing wheel events (momentum) long after the
+    // physical gesture ends. gestureActive collapses that whole burst — plus
+    // its momentum tail — into a single step, resetting only once the event
+    // stream has gone quiet for GESTURE_IDLE_MS.
+    let gestureActive = false;
+    let gestureTimer: ReturnType<typeof window.setTimeout> | null = null;
+    function markGestureAlive() {
+      if (gestureTimer != null) window.clearTimeout(gestureTimer);
+      gestureTimer = window.setTimeout(() => { gestureActive = false; }, GESTURE_IDLE_MS);
+    }
+
+    function onWheel(e: WheelEvent) {
+      if (window.scrollY > 0.5) return;
+      if (e.deltaY <= 0) return; // only downward scroll drives the deck
+      if (atExitBoundary()) return; // let the page scroll away into the footer
+      e.preventDefault(); // swallow the whole gesture, including its momentum tail
+      const isNewGesture = !gestureActive;
+      gestureActive = true;
+      markGestureAlive();
+      if (isNewGesture) step();
+    }
+
+    let touchStartY: number | null = null;
+    function onTouchStart(e: TouchEvent) {
+      touchStartY = e.touches[0]?.clientY ?? null;
+    }
+    function onTouchMove(e: TouchEvent) {
+      if (touchStartY == null || window.scrollY > 0.5) return;
+      const dy = touchStartY - (e.touches[0]?.clientY ?? touchStartY);
+      if (dy <= 0) return; // only an upward swipe (finger up = content down) drives the deck
+      if (!atExitBoundary()) e.preventDefault();
+    }
+    function onTouchEnd(e: TouchEvent) {
+      if (touchStartY == null || window.scrollY > 0.5) return;
+      const endY = e.changedTouches[0]?.clientY ?? touchStartY;
+      const dy = touchStartY - endY;
+      touchStartY = null;
+      if (dy < SWIPE_THRESHOLD) return;
+      if (atExitBoundary()) return;
+      step();
+    }
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      if (gestureTimer != null) window.clearTimeout(gestureTimer);
+    };
+  }, [total]);
+
+  const isGrid = !isMobile && slideIndex >= total;
+  const activeIndex = Math.min(slideIndex, total - 1);
 
   if (isMobile) {
     return (
       <div style={{ background: "#060606" }}>
         {/* Sticky nav */}
-        <div style={{ position: "sticky", top: 0, zIndex: 200, height: "114px", pointerEvents: "none" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 200, height: "96px", pointerEvents: "none" }}>
           <div style={{ position: "relative", width: "100%", height: "100%", pointerEvents: "auto" }}>
-            <TopBar />
+            <TopBar dark logoSrc={xgLogoWhite} />
           </div>
         </div>
 
-        {/* Scroll driver — one viewport-height per card, same stack/peel effect as desktop */}
-        <div ref={containerRef} style={{ height: `${total * 100}vh` }}>
-          <div
-            style={{
-              position: "sticky",
-              top: "114px",
-              height: "calc(100vh - 114px)",
-              overflow: "hidden",
-              boxSizing: "border-box",
-            }}
-          >
-            <div style={{ position: "relative", height: "100%", width: "calc(100% - 80px)", margin: "0 auto", boxSizing: "border-box" }}>
-              {SERVICES.map((svc, i) => (
-                <MobileCardSlide
-                  key={svc.title}
-                  service={svc}
-                  index={i}
-                  total={total}
-                  scrollYProgress={scrollYProgress}
-                />
-              ))}
-            </div>
+        {/* One-screen deck — wheel/swipe locked, one tick per card */}
+        <div
+          style={{
+            position: "relative",
+            height: "calc(100vh - 96px)",
+            overflow: "hidden",
+            boxSizing: "border-box",
+          }}
+        >
+          <div style={{ position: "relative", height: "100%", width: "calc(100% - 80px)", margin: "0 auto", boxSizing: "border-box" }}>
+            {SERVICES.map((svc, i) => (
+              <MobileCardSlide
+                key={svc.title}
+                service={svc}
+                index={i}
+                total={total}
+                activeIndex={activeIndex}
+              />
+            ))}
           </div>
         </div>
 
@@ -955,27 +1124,24 @@ export function ServicesPage() {
   return (
     <div style={{ background: "#060606" }}>
       {/* Sticky nav */}
-      <div style={{ position: "sticky", top: 0, zIndex: 200, height: "114px", pointerEvents: "none" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 200, height: "96px", pointerEvents: "none" }}>
         <div style={{ position: "relative", width: "100%", height: "100%", pointerEvents: "auto" }}>
-          <TopBar />
+          <TopBar dark logoSrc={xgLogoWhite} />
         </div>
       </div>
 
-      {/* Scroll driver — one viewport-height per card */}
-      <div ref={containerRef} style={{ height: `${total * 100}vh` }}>
-        {/* One shared sticky deck */}
-        <div
-          style={{
-            position: "sticky",
-            top: "114px",
-            height: "calc(100vh - 114px)",
-            display: "flex",
-            alignItems: "flex-start",
-            paddingTop: "36px",
-            boxSizing: "border-box",
-            overflow: "hidden",
-          }}
-        >
+      {/* One-screen deck — wheel/swipe locked, one tick per card then the grid finale */}
+      <div
+        style={{
+          position: "relative",
+          height: "calc(100vh - 96px)",
+          display: "flex",
+          alignItems: "flex-start",
+          paddingTop: "24px",
+          boxSizing: "border-box",
+          overflow: "hidden",
+        }}
+      >
           {/* Scroll indicator — hidden in grid mode */}
           <AnimatePresence>
             {!isGrid && (
@@ -1029,7 +1195,7 @@ export function ServicesPage() {
                     service={svc}
                     index={i}
                     total={total}
-                    scrollYProgress={scrollYProgress}
+                    activeIndex={activeIndex}
                   />
                 ))}
               </motion.div>
@@ -1066,7 +1232,7 @@ export function ServicesPage() {
                 {/* View Works */}
                 <div
                   onClick={() => navigate("/portfolio")}
-                  style={{ background: "#ffffff", borderRadius: "12px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", cursor: "pointer", paddingBottom: "12px", paddingRight: "16px" }}
+                  style={{ background: "#F7F8FA", borderRadius: "12px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", cursor: "pointer", paddingBottom: "12px", paddingRight: "16px" }}
                 >
                   <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4.17vw, 80px)", lineHeight: "1.2", letterSpacing: "0em", color: "rgba(0,0,0,0.15)", userSelect: "none", textAlign: "right" }}>
                     View Works
@@ -1076,7 +1242,7 @@ export function ServicesPage() {
                 {/* Let's Talk */}
                 <div
                   onClick={() => openContactForm()}
-                  style={{ background: "#ffffff", borderRadius: "12px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", cursor: "pointer", paddingBottom: "12px", paddingRight: "16px" }}
+                  style={{ background: "#F7F8FA", borderRadius: "12px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", cursor: "pointer", paddingBottom: "12px", paddingRight: "16px" }}
                 >
                   <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4.17vw, 80px)", lineHeight: "1.2", letterSpacing: "0em", color: "#636363", userSelect: "none", textAlign: "right" }}>
                     Let's talk
@@ -1085,7 +1251,6 @@ export function ServicesPage() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
       </div>
 
       <Footer />

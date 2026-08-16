@@ -115,7 +115,7 @@ export function BlogPage() {
     return (
       <div style={{ minHeight: "100vh", background: "#F7F8FA" }}>
         {/* Sticky TopBar */}
-        <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%", height: "114px" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%", height: "96px" }}>
           <TopBar />
         </div>
 
@@ -359,8 +359,8 @@ export function BlogPage() {
     <div style={{ minHeight: "100vh", background: "#F7F8FA" }}>
 
       {/* Sticky TopBar */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%", height: "114px" }}>
-        <div style={{ position: "relative", width: "100%", height: "114px" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%", height: "96px" }}>
+        <div style={{ position: "relative", width: "100%", height: "96px" }}>
           <TopBar />
         </div>
       </div>

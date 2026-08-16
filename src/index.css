@@ -3539,6 +3539,18 @@
   }
 
   @media (width >= 64rem) {
+    .lg\:gap-\[64px\] {
+      gap: 64px;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .lg\:gap-\[52px\] {
+      gap: 52px;
+    }
+  }
+
+  @media (width >= 64rem) {
     .lg\:p-\[80px\] {
       padding: 80px;
     }

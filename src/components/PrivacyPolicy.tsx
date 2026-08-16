@@ -155,8 +155,8 @@ export function PrivacyPolicy() {
               <p style={{ margin: "0 0 4px", fontWeight: 600, color: "#0a0a0a" }}>XG Labs</p>
               <p style={{ margin: "0 0 4px" }}>
                 Email:{" "}
-                <a href="mailto:xglabs@thebrandopedia.in" style={{ color: "#02A884", textDecoration: "none" }}>
-                  xglabs@thebrandopedia.in
+                <a href="mailto:hello@xglabs.in" style={{ color: "#02A884", textDecoration: "none" }}>
+                  hello@xglabs.in
                 </a>
               </p>
               <p style={{ margin: "0 0 4px" }}>

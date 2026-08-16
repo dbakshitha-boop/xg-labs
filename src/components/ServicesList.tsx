@@ -106,7 +106,7 @@ export function ServicesList() {
   return (
     <div
       onMouseEnter={() => setVariant('default')}
-      className="w-full max-w-[1920px] mx-auto px-4 lg:px-0 pt-6 pb-20 lg:py-20 flex flex-col lg:gap-[60px] font-sans bg-[#F7F8FA]"
+      className="w-full max-w-[1920px] mx-auto px-4 lg:px-0 pt-6 pb-20 lg:py-20 flex flex-col lg:gap-[52px] font-sans bg-[#F7F8FA]"
     >
       {/* Mobile/tablet header — lg:hidden so desktop is untouched */}
       <div className="lg:hidden px-6 pt-4 pb-8 flex flex-col gap-3">
@@ -461,17 +461,19 @@ function ServiceCard({
           minHeight: "340px",
           gridTemplateColumns: "350px 1fr",
           columnGap: "80px",
-          rowGap: "36px",
-          alignContent: "center",
+          rowGap: "18px",
+          alignContent: "space-between",
           alignItems: "start",
+          paddingTop: "28px",
+          paddingBottom: "28px",
         }}
       >
         {/* Row 1, Col 1: Title + subtitle — aligned with content lines */}
         <div className="flex flex-col justify-start z-10">
-          <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-[#414141] mb-2 uppercase font-['Sora',sans-serif]">
+          <h3 className="text-lg md:text-xl font-bold tracking-tight text-[#414141] mb-2 uppercase font-['Sora',sans-serif]">
             {title}
           </h3>
-          <p className="text-base text-gray-500 max-w-full lg:max-w-[250px] leading-relaxed font-['Sora',sans-serif]">
+          <p className="text-sm text-gray-500 max-w-full lg:max-w-[250px] leading-relaxed font-['Sora',sans-serif]">
             {subtitle}
           </p>
         </div>
@@ -479,7 +481,7 @@ function ServiceCard({
         {/* Row 1, Col 2: Content Lines — aligned with title */}
         <div className="flex flex-col gap-0 w-full min-w-0 relative z-30">
           {contentLines.map((line, idx) => (
-            <div key={idx} className="relative leading-[1.2] tracking-[-0.02em] font-normal text-[#6E6E6E] font-['Sora',sans-serif] py-0 lg:py-[2px]" style={{ fontSize: "clamp(18px, 4.5vw, 32px)" }}>
+            <div key={idx} className="relative leading-[1.2] tracking-[-0.02em] font-normal font-['Cal_Sans',sans-serif] py-0 lg:py-[2px]" style={{ fontSize: "clamp(22px, 5.2vw, 38px)", color: "#5F5F5F" }}>
               <RevealText
                 isActive={active}
                 hasBeenRevealed={hasBeenRevealed}
@@ -514,20 +516,28 @@ function ServiceCard({
         </motion.div>
 
         {/* Row 2, Col 2: Deliverables Grid — aligned with "What We Deliver" */}
-        <div className={cn(
-          "flex flex-wrap gap-x-16 gap-y-4 min-w-0 relative z-10 transition-all duration-500",
-          active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 lg:opacity-0"
-        )}>
+        <div
+          className={cn(
+            "flex flex-wrap min-w-0 relative z-10 transition-all duration-500",
+            active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 lg:opacity-0"
+          )}
+          style={{ columnGap: "44px", rowGap: "20px" }}
+        >
           {deliverables.map((item, i) => (
             <motion.div
               key={`deliverable-${i}`}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: active ? 1 : 0, x: active ? 0 : -10 }}
               transition={{ duration: 0.25, delay: active ? 0.2 + (i * 0.03) : 0, ease: [0.76, 0, 0.24, 1] }}
-              className="text-[#414141] font-medium font-['Sora',sans-serif] flex items-center gap-3"
-              style={{ fontSize: "clamp(14px, 3vw, 20px)", marginRight: "16px" }}
+              className="font-['Sora',sans-serif] font-medium inline-flex items-center"
+              style={{
+                fontSize: "clamp(14px, 2.2vw, 18px)",
+                color: "#5F5F5F",
+                border: "1px solid rgba(0, 168, 141, 0.45)",
+                borderRadius: "999px",
+                padding: "4px 10px",
+              }}
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-[#00A88D] shrink-0" />
               {item}
             </motion.div>
           ))}

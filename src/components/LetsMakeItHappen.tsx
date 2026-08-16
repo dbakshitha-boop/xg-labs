@@ -1,18 +1,19 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "motion/react";
 import type { MotionValue } from "motion/react";
 import { ContactFormContent } from "./ContactFormOverlay";
 
-import img1 from "../assets/letsmakeithappenscroll/143ce4dc78b3934cc2b5dfa00d6839d1276386b9 (1).jpg";
-import img3 from "../assets/letsmakeithappenscroll/5031ca01a26be2c1af7d3b272a6710097e75a24a.jpg";
-import img4 from "../assets/letsmakeithappenscroll/83d5ee443165d83f8ef367de998615dcd02a8030.jpg";
-import img5 from "../assets/letsmakeithappenscroll/909fc774b4c04c66a94c42415b5c1e63e9c52a20.jpg";
-import img6 from "../assets/letsmakeithappenscroll/b02af7d4fc1674218c1fad477c943436f1779a18 (1).jpg";
-import img7 from "../assets/letsmakeithappenscroll/df49a56c44261f37bec84fd5b5ee75f09b009a72.jpg";
-import img8 from "../assets/letsmakeithappenscroll/e9d9e8c4ee32a3e2a198e44198854aecafe6f134.jpg";
+import img1 from "../assets/letsmakeithappenscroll/1st row.png";
+import img2 from "../assets/letsmakeithappenscroll/2nd row.png";
+import img3 from "../assets/letsmakeithappenscroll/3rd row 1st.png";
+import img4 from "../assets/letsmakeithappenscroll/4th row.png";
+import img5 from "../assets/letsmakeithappenscroll/5th.png";
+import img6 from "../assets/letsmakeithappenscroll/6th row.png";
+import img7 from "../assets/letsmakeithappenscroll/7th row.png";
+import img8 from "../assets/letsmakeithappenscroll/8th.png";
 
 // ─── GridLines ───────────────────────────────────────────────────────────────
-function GridLines({ dark = false, cols = 7 }: { dark?: boolean; cols?: number }) {
+function GridLines({ dark = false, cols = 4 }: { dark?: boolean; cols?: number }) {
   const color = dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.08)";
   return (
     <div
@@ -26,59 +27,110 @@ function GridLines({ dark = false, cols = 7 }: { dark?: boolean; cols?: number }
   );
 }
 
-// ─── Image config ─────────────────────────────────────────────────────────────
-// Each image travels from below the viewport ("105vh") to above it ("-50vh").
-// scrollStart / scrollEnd control WHEN in the scroll that travel happens,
-// creating images that move at noticeably different speeds.
-//
-// col 1 is used twice: img2 exits (0.48) before img8 enters (0.50) — no overlap.
-// Wrapper = 400 vh → 300 vh of actual scroll.  All images done by ~0.92 * 300 = 276 vh.
-type ImageConfig = {
-  src: string;
-  colIndex: number;
-  scrollStart: number;
-  scrollEnd: number;
-};
+// ─── Columns ─────────────────────────────────────────────────────────────────
+// 8 columns total, one image each. Each column's image travels the full
+// height of the section — entering from below it and exiting above it, like
+// a real bottom-to-top scroll — rather than nudging into a fixed resting
+// spot. Which image lands in which column is shuffled once per page load.
+type ColumnConfig = { src: string; start: number; end: number };
 
-// One image per column (0–6). img7 in col 6 exits at exactly 1.0 so the
-// sticky section releases the moment the last image clears the top edge.
-const IMAGE_CONFIGS: ImageConfig[] = [
-  { src: img1, colIndex: 0, scrollStart: 0.02, scrollEnd: 0.34 }, // medium
-  { src: img8, colIndex: 1, scrollStart: 0.06, scrollEnd: 0.44 }, // medium
-  { src: img3, colIndex: 2, scrollStart: 0.04, scrollEnd: 0.24 }, // fast
-  { src: img4, colIndex: 3, scrollStart: 0.12, scrollEnd: 0.58 }, // slow
-  { src: img5, colIndex: 4, scrollStart: 0.16, scrollEnd: 0.38 }, // medium-fast
-  { src: img6, colIndex: 5, scrollStart: 0.22, scrollEnd: 0.66 }, // slow
-  { src: img7, colIndex: 6, scrollStart: 0.28, scrollEnd: 1.00 }, // very slow — last out
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Each column has its own [start, end] window over the normalized 0..1
+// progress range during which it travels bottom → top and off the top edge.
+// The two timing groups are pinned to ALTERNATING columns (even: 0,2,4,6
+// then odd: 1,3,5,7) — never two adjacent columns in the same group — so the
+// first wave is visibly spread across the whole row, not clustered on one
+// side. Within a group each window has a different width AND start, so
+// those 4 images travel the same 155vh distance at different speeds and
+// pass each other rather than moving in lockstep. Which image lands where,
+// and which of the 4 window variants each column in a group gets, are both
+// reshuffled every time.
+const DESKTOP_EARLY_WINDOWS: Array<[number, number]> = [
+  [0.03, 0.22], [0.06, 0.40], [0.12, 0.36], [0.02, 0.44],
+];
+const DESKTOP_LATE_WINDOWS: Array<[number, number]> = [
+  [0.46, 0.66], [0.50, 0.84], [0.56, 0.80], [0.45, 0.87],
 ];
 
-// 3-panel layout for mobile — remapped to colIndex 0–2
-const MOBILE_IMAGE_CONFIGS: ImageConfig[] = [
-  { src: img1, colIndex: 0, scrollStart: 0.02, scrollEnd: 0.34 },
-  { src: img4, colIndex: 1, scrollStart: 0.12, scrollEnd: 0.58 },
-  { src: img7, colIndex: 2, scrollStart: 0.28, scrollEnd: 1.00 },
+const MOBILE_EARLY_WINDOWS: Array<[number, number]> = [
+  [0.03, 0.24], [0.10, 0.44],
+];
+const MOBILE_LATE_WINDOWS: Array<[number, number]> = [
+  [0.47, 0.68], [0.44, 0.86],
 ];
 
-// ─── Traveling image ──────────────────────────────────────────────────────────
-// The motion.div starts below the viewport and translates to above it.
-// The gradient mask on the parent section fades it in at the bottom edge
-// and fades it out at the top edge — no per-image opacity needed.
-function ScrollImage({
+function buildAlternatingColumns(
+  images: string[],
+  evenCols: number[],
+  oddCols: number[],
+  earlyWindows: Array<[number, number]>,
+  lateWindows: Array<[number, number]>
+): ColumnConfig[] {
+  const shuffledImages = shuffle(images);
+  const early = shuffle(earlyWindows);
+  const late = shuffle(lateWindows);
+  const slots: (ColumnConfig | undefined)[] = new Array(images.length);
+  evenCols.forEach((col, i) => {
+    slots[col] = { src: shuffledImages[col], start: early[i][0], end: early[i][1] };
+  });
+  oddCols.forEach((col, i) => {
+    slots[col] = { src: shuffledImages[col], start: late[i][0], end: late[i][1] };
+  });
+  return slots as ColumnConfig[];
+}
+
+const DESKTOP_COLUMNS: ColumnConfig[] = buildAlternatingColumns(
+  [img1, img2, img3, img4, img5, img6, img7, img8],
+  [0, 2, 4, 6],
+  [1, 3, 5, 7],
+  DESKTOP_EARLY_WINDOWS,
+  DESKTOP_LATE_WINDOWS
+);
+
+const MOBILE_COLUMNS: ColumnConfig[] = buildAlternatingColumns(
+  [img1, img2, img3, img4],
+  [0, 2],
+  [1, 3],
+  MOBILE_EARLY_WINDOWS,
+  MOBILE_LATE_WINDOWS
+);
+
+const TALK_START = 0.78; // Let's Talk begins sliding up in the final stretch of progress — wider range, more gradual
+
+// How much accumulated wheel/touch delta (px) it takes to travel the whole
+// sequence from arrival to Let's Talk fully revealed.
+const SCROLL_DISTANCE = 3400;
+// Spring-smoothing on the raw accumulated delta — this is what makes the
+// motion glide instead of snapping, however jerky the raw input is.
+const PROGRESS_SPRING = { stiffness: 110, damping: 28, mass: 0.7 };
+
+// ─── Column ────────────────────────────────────────────────────────────────────
+function Column({
   config,
-  scrollYProgress,
-  totalCols = 7,
+  progress,
+  colIndex,
+  totalCols,
 }: {
-  config: ImageConfig;
-  scrollYProgress: MotionValue<number>;
-  totalCols?: number;
+  config: ColumnConfig;
+  progress: MotionValue<number>;
+  colIndex: number;
+  totalCols: number;
 }) {
-  const { src, colIndex, scrollStart, scrollEnd } = config;
-
-  const y = useTransform(
-    scrollYProgress,
-    [scrollStart, scrollEnd],
-    ["105vh", "-50vh"],
-  );
+  const { start, end } = config;
+  // Bottom-of-viewport to above-the-top — vh units so the travel spans the
+  // whole screen regardless of the image box's own (small, fixed) height, a
+  // real journey through and out, not a nudge into a resting spot. The
+  // section's mask-image (see below) fades it out softly right at the top
+  // and bottom edges instead of a hard pop.
+  const y = useTransform(progress, [start, end], ["105vh", "-50vh"]);
 
   return (
     <motion.div
@@ -94,7 +146,7 @@ function ScrollImage({
       }}
     >
       <img
-        src={src}
+        src={config.src}
         alt=""
         style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
       />
@@ -104,7 +156,6 @@ function ScrollImage({
 
 // ─── Main component ──────────────────────────────────────────────────────────
 export function LetsMakeItHappen() {
-  const [formOpen, setFormOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" ? window.innerWidth < 768 : false);
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
@@ -112,41 +163,161 @@ export function LetsMakeItHappen() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // 400 vh wrapper → hero is sticky for 300 vh of actual scroll.
-  // "Let's Talk" bar only enters the viewport after the hero releases.
-  const heroWrapperRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroWrapperRef,
-    offset: ["start start", "end end"],
-  });
+  const sectionRef = useRef<HTMLDivElement>(null);
 
+  // Raw accumulated wheel/touch delta, clamped to [0, SCROLL_DISTANCE], smoothed
+  // through a spring so the motion glides continuously with the input instead
+  // of jumping between fixed states.
+  const rawProgress = useMotionValue(0);
+  const smoothProgress = useSpring(rawProgress, PROGRESS_SPRING);
+  const progress = useTransform(smoothProgress, [0, SCROLL_DISTANCE], [0, 1]);
+  const talkY = useTransform(progress, [TALK_START, 1], ["100%", "0%"]);
+
+  const [talkRevealed, setTalkRevealed] = useState(false);
+  useEffect(() => progress.on("change", (v) => setTalkRevealed(v >= 0.985)), [progress]);
+
+  // The moment Let's Talk finishes revealing, open the contact form
+  // automatically — no extra scroll tick needed.
+  const [formOpen, setFormOpen] = useState(false);
+  useEffect(() => {
+    if (talkRevealed) setFormOpen(true);
+  }, [talkRevealed]);
+
+  // The screen itself stays completely locked in place while this section is
+  // engaged — every wheel tick or touch drag, up or down, is absorbed and
+  // instead nudges rawProgress, which drives the images continuously via the
+  // spring above. Once progress fully reaches SCROLL_DISTANCE (Let's Talk
+  // revealed, form auto-opened), the next forward tick releases the lock so
+  // the page can scroll normally. Scrolling fully back to 0 releases the
+  // lock upward at any point.
+  //
+  // Engagement can't rely on catching the section at exactly rect.top === 0
+  // inside a wheel event — a single scroll/trackpad tick can easily be much
+  // bigger than a few px and jump straight past that instant, silently
+  // never locking at all. Instead a real `scroll` listener checks the
+  // POST-scroll position (after the browser already applied it) and, the
+  // moment the section has reached or passed the top, snaps the page back
+  // to line it up exactly and engages the lock from there.
+  const lockedRef = useRef(false);
+  const releaseCooldownUntilRef = useRef(0);
+  useEffect(() => {
+    function tryEngage() {
+      if (lockedRef.current || Date.now() < releaseCooldownUntilRef.current) return;
+      const el = sectionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top <= 0 && rect.bottom > 0) {
+        if (rect.top !== 0) window.scrollBy(0, rect.top);
+        lockedRef.current = true;
+      }
+    }
+
+    function release() {
+      lockedRef.current = false;
+      releaseCooldownUntilRef.current = Date.now() + 500;
+    }
+
+    function onScroll() {
+      if (!lockedRef.current) { tryEngage(); return; }
+      // Already locked — keep the section pinned exactly at the top. A hard,
+      // fast flick's momentum can keep nudging real scroll for a bit even
+      // after preventDefault starts, so keep correcting any residual drift
+      // every scroll event until it settles at 0.
+      const el = sectionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top !== 0) window.scrollBy(0, rect.top);
+    }
+
+    function onWheel(e: WheelEvent) {
+      tryEngage();
+      if (!lockedRef.current) return;
+      const current = rawProgress.get();
+      if (e.deltaY > 0 && current >= SCROLL_DISTANCE) { release(); return; } // fully forward — release down
+      if (e.deltaY < 0 && current <= 0) { release(); return; } // fully back — release up
+      e.preventDefault();
+      rawProgress.set(Math.min(Math.max(current + e.deltaY, 0), SCROLL_DISTANCE));
+    }
+
+    let lastTouchY: number | null = null;
+    function onTouchStart(e: TouchEvent) {
+      lastTouchY = e.touches[0]?.clientY ?? null;
+    }
+    function onTouchMove(e: TouchEvent) {
+      if (lastTouchY == null) return;
+      tryEngage();
+      if (!lockedRef.current) return;
+      const currentY = e.touches[0]?.clientY ?? lastTouchY;
+      const dy = lastTouchY - currentY; // finger up → dy > 0 → same sense as wheel deltaY > 0
+      lastTouchY = currentY;
+      const current = rawProgress.get();
+      if (dy > 0 && current >= SCROLL_DISTANCE) { release(); return; }
+      if (dy < 0 && current <= 0) { release(); return; }
+      e.preventDefault();
+      rawProgress.set(Math.min(Math.max(current + dy, 0), SCROLL_DISTANCE));
+    }
+    function onTouchEnd() {
+      lastTouchY = null;
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [rawProgress]);
+
+  const columns = isMobile ? MOBILE_COLUMNS : DESKTOP_COLUMNS;
+  const totalCols = columns.length;
 
   return (
     <div style={{ position: "relative" }}>
 
-      {/* ── Sticky hero — 400 vh scroll wrapper ── */}
-      <div ref={heroWrapperRef} style={{ height: "400vh" }}>
+      {/* ── Locked section — images move continuously with the wheel/trackpad, the screen doesn't ── */}
+      <div
+        ref={sectionRef}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100vh",
+          overflow: "hidden",
+        }}
+      >
+        {/* ── Image collage — stays visible underneath the Let's Talk bar ── */}
         <section
           style={{
-            position: "sticky",
-            top: 0,
+            position: "absolute",
+            inset: 0,
             width: "100%",
-            height: "100vh",
+            height: "100%",
             background: "#ECEEF2",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             overflow: "hidden",
-            // Gradient mask: images fade in softly from the bottom and fade out at the top.
-            // The 15–85 % opaque band keeps the centred headline fully visible.
-            maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+            // Soft fade at the very top/bottom edges instead of a hard clip
+            // as each image travels through and off the section.
+            maskImage: "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)",
           }}
         >
-          <GridLines cols={isMobile ? 3 : 7} />
+          <GridLines cols={totalCols} />
 
-          {(isMobile ? MOBILE_IMAGE_CONFIGS : IMAGE_CONFIGS).map((config, i) => (
-            <ScrollImage key={i} config={config} scrollYProgress={scrollYProgress} totalCols={isMobile ? 3 : 7} />
+          {columns.map((config, colIndex) => (
+            <Column
+              key={colIndex}
+              config={config}
+              progress={progress}
+              colIndex={colIndex}
+              totalCols={totalCols}
+            />
           ))}
 
           {/* Headline — z-index keeps it above the images */}
@@ -189,8 +360,6 @@ export function LetsMakeItHappen() {
                 textAlign: "center",
                 color: "#414141",
                 margin: 0,
-                // Traveling images pass directly behind this headline on mobile (3 full-width
-                // columns) — a soft halo matching the section bg keeps the text legible over them.
                 textShadow: isMobile
                   ? "0 0 16px #ECEEF2, 0 0 16px #ECEEF2, 0 0 16px #ECEEF2"
                   : undefined,
@@ -202,55 +371,58 @@ export function LetsMakeItHappen() {
             </h2>
           </div>
         </section>
-      </div>
 
-      {/* ── Let's Talk bar — visible only once the sticky hero releases ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-        onClick={() => setFormOpen(true)}
-        style={{
-          position: "relative",
-          background: "#0e0e0e",
-          padding: isMobile ? "32px 24px" : "44px 72px",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          cursor: "pointer",
-          overflow: "hidden",
-        }}
-      >
-        <h2
+        {/* ── Let's Talk — docks in as a bar sliding up from the bottom, continuously ── */}
+        {/* ── tied to the same progress value as the images, image collage stays visible above it ── */}
+        <motion.div
+          onClick={() => talkRevealed && setFormOpen(true)}
           style={{
-            position: "relative",
-            zIndex: 1,
-            fontFamily: "'Cal Sans', sans-serif",
-            fontWeight: 300,
-            fontSize: "clamp(36px, 5vw, 72px)",
-            color: "#ffffff",
-            margin: 0,
-            letterSpacing: "-0.025em",
-            lineHeight: 1,
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "#0e0e0e",
+            padding: isMobile ? "32px 24px" : "44px 72px",
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: isMobile ? "flex-start" : "center",
+            justifyContent: isMobile ? "center" : "space-between",
+            gap: isMobile ? "24px" : 0,
+            cursor: "pointer",
+            overflow: "hidden",
+            pointerEvents: talkRevealed ? "auto" : "none",
+            y: talkY,
           }}
         >
-          {"Let's Talk"}
-        </h2>
-        <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: "32px" }}>
-          {!isMobile && (
-            <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1.1vw, 16px)", color: "rgba(255,255,255,0.5)", margin: 0, maxWidth: "340px", lineHeight: "1.55" }}>
-              {"We'd love to understand what you're building."}
-            </p>
-          )}
-          <div style={{ width: 48, height: 48, borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="22" height="22" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <h2
+            style={{
+              position: "relative",
+              zIndex: 1,
+              fontFamily: "'Cal Sans', sans-serif",
+              fontWeight: 300,
+              fontSize: "clamp(36px, 5vw, 72px)",
+              color: "#ffffff",
+              margin: 0,
+              letterSpacing: "-0.025em",
+              lineHeight: 1,
+            }}
+          >
+            {"Let's Talk"}
+          </h2>
+          <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: "32px" }}>
+            {!isMobile && (
+              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1.1vw, 16px)", color: "rgba(255,255,255,0.5)", margin: 0, maxWidth: "340px", lineHeight: "1.55" }}>
+                {"We'd love to understand what you're building."}
+              </p>
+            )}
+            <div style={{ width: 48, height: 48, borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="22" height="22" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7H12M12 7L7 2M12 7L7 12" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       {/* ── Contact form overlay — uses shared ContactFormContent ── */}
       <AnimatePresence>
@@ -259,7 +431,11 @@ export function LetsMakeItHappen() {
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.7, ease: [0.16, 1, 0.3, 1] }}
+            // Stops wheel events from bubbling to window — otherwise the home
+            // page's hero carousel (which listens on window for horizontal
+            // scroll) still advances underneath this fixed overlay.
+            onWheel={(e) => e.stopPropagation()}
             style={{
               position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 300, background: "#0e0e0e",
@@ -267,7 +443,7 @@ export function LetsMakeItHappen() {
               display: "flex", flexDirection: "column",
             }}
           >
-            <ContactFormContent onClose={() => setFormOpen(false)} />
+            <ContactFormContent onClose={() => setFormOpen(false)} hideClose />
           </motion.div>
         )}
       </AnimatePresence>

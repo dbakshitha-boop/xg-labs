@@ -286,8 +286,8 @@ export function BlogInsightsSection() {
                 whileInView={{ opacity: 1, y: offset }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{
-                  delay: i * 0.07,
-                  duration: 0.75,
+                  delay: i * 0.09,
+                  duration: 1.05,
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}
@@ -296,7 +296,7 @@ export function BlogInsightsSection() {
                     instead of letting the expanded description push it further down. */}
                 <motion.div
                   animate={{ y: hoveredCard === i ? -offset : 0 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   style={{ display: "flex", flexDirection: "column", gap: "12px" }}
                 >
                   {/* Number + label row */}
@@ -315,7 +315,7 @@ export function BlogInsightsSection() {
                     </p>
                     <motion.p
                       animate={{ opacity: hoveredCard === i ? 1 : 0 }}
-                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                       style={{
                         fontFamily: "'Space Grotesk', sans-serif",
                         fontWeight: 600,
@@ -353,7 +353,7 @@ export function BlogInsightsSection() {
                       src={article.img}
                       alt={article.title}
                       variants={{ hover: { scale: 1.06 } }}
-                      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
                       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                     />
                   </div>
@@ -364,7 +364,7 @@ export function BlogInsightsSection() {
                       animate={{
                         backgroundColor: hoveredCard === i ? "#F2F2F2" : "#ffffff",
                       }}
-                      transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
                       style={{ padding: "20px 18px 24px" }}
                     >
                       <p
@@ -402,7 +402,7 @@ export function BlogInsightsSection() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             style={{
               position: "absolute",
               left: overlayRect.left,
@@ -419,7 +419,7 @@ export function BlogInsightsSection() {
               initial={{ y: 16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 16, opacity: 0 }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 fontFamily: "'Space Grotesk', sans-serif",
                 fontWeight: 400,

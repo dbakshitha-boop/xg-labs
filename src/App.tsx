@@ -41,6 +41,15 @@ function ScrollToTop() {
     // These routes handle their own scroll target once the section mounts.
     if (location.state?.scrollToSection || location.state?.scrollToFooter) return;
 
+    // /services is a fixed one-viewport deck with its own internal step state
+    // (not a tall scrollable page), so a raw scrollY has no meaning to restore —
+    // doing so on back/forward would land scroll past the (now short) deck,
+    // stranding the user on whatever the page happened to render underneath.
+    if (location.pathname === "/services") {
+      window.scrollTo(0, 0);
+      return;
+    }
+
     if (navigationType === "POP") {
       const saved = sessionStorage.getItem(`scrollY:${location.pathname}`);
       if (!saved) return;
@@ -132,8 +141,8 @@ function HomePage() {
         <NeedMoreProof />
         <RealResults />
         <TrustedBrands />
-        <LetsMakeItHappen />
         <BlogInsightsSection />
+        <LetsMakeItHappen />
         <Footer />
       </div>
     </>

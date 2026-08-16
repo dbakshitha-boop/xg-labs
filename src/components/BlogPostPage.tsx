@@ -97,7 +97,7 @@ export function BlogPostPage() {
     <div style={{ minHeight: "100vh", background: "#ffffff" }}>
       {/* Sticky TopBar */}
       <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%" }}>
-        <div style={{ position: "relative", width: "100%", height: "114px" }}>
+        <div style={{ position: "relative", width: "100%", height: "96px" }}>
           <TopBar />
         </div>
       </div>

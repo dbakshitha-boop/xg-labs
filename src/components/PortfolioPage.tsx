@@ -12,11 +12,12 @@ import image5 from "../assets/portfolio/143ce4dc78b3934cc2b5dfa00d6839d1276386b9
 import image3 from "../assets/portfolio/1248070d103a19f145ae0f832592d24f14f6062d.jpg";
 import image2 from "../assets/portfolio/b38d05db3e088fb9946a699913465921149256a5.png";
 import image4 from "../assets/portfolio/b02af7d4fc1674218c1fad477c943436f1779a18.jpg";
+import image6 from "../assets/portfolio/d839b1310f56f4c0d4b3cdecae872501980ec379.jpg";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const STRIP_CARDS = [
-  { img: image1 }, { img: image2 }, { img: image3 }, { img: image4 }, { img: image5 },
+  { img: image1 }, { img: image2 }, { img: image3 }, { img: image4 }, { img: image5 }, { img: image6 },
 ];
 
 const FILTERS = ["ALL", "STRATEGY", "CREATIVE", "PERFORMANCE", "BRANDING", "PRODUCT"];
@@ -37,9 +38,9 @@ type ProjectCard = {
 };
 
 const FALLBACK_CARDS: ProjectCard[] = [
-  { img: image1, category: "WEBSITE + VISUAL IDENTITY",    description: "A modern digital presence and clean identity system built for clarity.", tags: "BRANDING / WEB",        filters: ["BRANDING"],    workId: "0" },
-  { img: image2, category: "PRODUCT EXPERIENCE + REBRAND", description: "A bold product refresh that improved conversion and user clarity.",       tags: "MARKETING / STRATEGY",  filters: ["STRATEGY"],    workId: "1" },
-  { img: image3, category: "BRANDING FOR DIGITAL",         description: "A high-performing content system that scaled across ads & social.",       tags: "CONTENT / PERFORMANCE", filters: ["PERFORMANCE"], workId: "2" },
+  { img: image1, category: "Website + Visual Identity",    description: "A modern digital presence and clean identity system built for clarity.", tags: "BRANDING / WEB",        filters: ["BRANDING"],    workId: "0" },
+  { img: image2, category: "Product Experience + Rebrand", description: "A bold product refresh that improved conversion and user clarity.",       tags: "MARKETING / STRATEGY",  filters: ["STRATEGY"],    workId: "1" },
+  { img: image3, category: "Branding for Digital",         description: "A high-performing content system that scaled across ads & social.",       tags: "CONTENT / PERFORMANCE", filters: ["PERFORMANCE"], workId: "2" },
 ];
 
 const FILTER_KEYWORDS = ["STRATEGY", "CREATIVE", "PERFORMANCE", "BRANDING", "PRODUCT"];
@@ -47,6 +48,24 @@ function deriveFilters(tags: string): string[] {
   const upper = tags.toUpperCase();
   const found = FILTER_KEYWORDS.filter((k) => upper.includes(k));
   return found.length ? found : ["CREATIVE"];
+}
+
+// Normalizes category text to the same title case regardless of how the
+// source data is cased (API content is often ALL CAPS, fallback data is
+// already sentence/title case) so every card reads with matching typography.
+const CATEGORY_SMALL_WORDS = new Set(["for", "and", "of", "the", "in", "on", "to", "a", "an", "or", "with"]);
+function toTitleCase(str: string): string {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word, i) => (i > 0 && CATEGORY_SMALL_WORDS.has(word) ? word : word.charAt(0).toUpperCase() + word.slice(1)))
+    .join(" ");
+}
+
+// Normalizes the tags separator to match the fallback cards' " / " format,
+// regardless of whether the source data uses "|", "," or some other divider.
+function normalizeTags(str: string): string {
+  return str.replace(/\s*[|,•]\s*/g, " / ").trim();
 }
 
 // ─── Animation constants ──────────────────────────────────────────────────────
@@ -150,13 +169,20 @@ export function PortfolioPage() {
     return () => clearTimeout(t);
   }, [section, carouselStart, nextCard, maxCarouselStart]);
 
-  // Pixel-accurate card width — no gap so each card = exactly half the container
+  // Pixel-accurate card width — accounts for the 24px track gap so two cards
+  // plus the gap between them exactly fill the container (no overflow-clipped sliver).
+  // PEEK_WIDTH/PEEK_GAP reserve a permanent sliver on the left for the decorative
+  // peek of the last hero-strip image, echoing the section 0 → section 1 transition.
+  const CAROUSEL_GAP = 24;
+  const PEEK_WIDTH = 100;
+  const PEEK_GAP = 24;
   const updateTrackX = useCallback(() => {
     const el = carouselContainerRef.current;
     if (!el) return;
-    const w = el.offsetWidth / 2;
+    const reserved = PEEK_WIDTH + PEEK_GAP;
+    const w = (el.offsetWidth - reserved - CAROUSEL_GAP) / 2;
     setCardPxWidth(w);
-    setTrackX(-carouselStart * w);
+    setTrackX(reserved - carouselStart * (w + CAROUSEL_GAP));
   }, [carouselStart]);
 
   useEffect(() => { updateTrackX(); }, [updateTrackX]);
@@ -205,16 +231,19 @@ export function PortfolioPage() {
   };
 
   // ── Filtered cards ────────────────────────────────────────────────────────
-  const allCards: ProjectCard[] = works.length > 0
-    ? works.map((w) => ({
-        img: w.heroImage,
-        category: w.heroSubtitle,
-        description: w.title,
-        tags: w.heroTags,
-        filters: deriveFilters(w.heroTags),
-        workId: w._id,
-      }))
-    : FALLBACK_CARDS;
+  // Real case studies from the API appear alongside the fallback cards, not
+  // instead of them, so the grid never looks sparse while content is thin.
+  const allCards: ProjectCard[] = [
+    ...works.map((w) => ({
+      img: w.heroImage,
+      category: w.heroSubtitle,
+      description: w.title,
+      tags: w.heroTags,
+      filters: deriveFilters(w.heroTags),
+      workId: w._id,
+    })),
+    ...FALLBACK_CARDS,
+  ];
 
   const visibleCards = activeFilter === "ALL"
     ? allCards
@@ -225,7 +254,7 @@ export function PortfolioPage() {
     return (
       <div style={{ minHeight: "100dvh", background: "#E9F0FF", overflowY: "auto" }}>
         {/* TopBar */}
-        <div style={{ position: "sticky", top: 0, zIndex: 100, height: "114px" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 100, height: "96px" }}>
           <TopBar refinedLetsTalk />
         </div>
 
@@ -234,7 +263,7 @@ export function PortfolioPage() {
           <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(32px, 9vw, 48px)", lineHeight: "94%", letterSpacing: "-0.04em", textTransform: "uppercase", color: "#414141", margin: "0 0 16px" }}>
             A curated selection of our most impactful projects.
           </h1>
-          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "140%", color: "#414141", margin: "0 0 24px" }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", lineHeight: "140%", color: "#000000", margin: "0 0 24px" }}>
             Creative, digital, and performance work built to move brands forward.
           </p>
           <motion.div initial="rest" whileHover="hover" animate="rest" style={{ position: "relative", height: 36, display: "inline-flex" }}>
@@ -323,14 +352,14 @@ export function PortfolioPage() {
       onPointerUp={handlePointerUp}
     >
       {/* Nav */}
-      <div style={{ position: "relative", zIndex: 100, height: "114px" }}>
+      <div style={{ position: "relative", zIndex: 100, height: "96px" }}>
         <div style={{ position: "relative", width: "100%", height: "100%" }}>
           <TopBar refinedLetsTalk />
         </div>
       </div>
 
       {/* Section viewport — sync mode so sections animate simultaneously, no gap */}
-      <div style={{ position: "relative", height: "calc(100dvh - 114px)", overflow: "hidden" }}>
+      <div style={{ position: "relative", height: "calc(100dvh - 96px)", overflow: "hidden" }}>
         <AnimatePresence custom={dir} mode="sync">
 
           {/* ── Section 0: Full-height strip, text overlay at bottom ── */}
@@ -343,34 +372,49 @@ export function PortfolioPage() {
               animate="animate"
               exit="exit"
               transition={T}
-              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column" }}
+              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", paddingTop: isMobile ? "0px" : "36px" }}
             >
-              {/* Text — takes remaining space */}
-              <div style={{ flex: 1, paddingTop: isMobile ? "32px" : "32px", paddingBottom: "24px", paddingLeft: isMobile ? "40px" : NAV_MARGIN, paddingRight: isMobile ? "40px" : NAV_MARGIN, display: "flex", flexDirection: "column", alignItems: isMobile ? "flex-start" : "center", justifyContent: "center", gap: isMobile ? "20px" : "16px" }}>
+              {/* Text — sized to its own content, so the image below gets all the leftover space */}
+              <div style={{ flexShrink: 0, paddingTop: isMobile ? "32px" : "32px", paddingBottom: "24px", paddingLeft: isMobile ? "40px" : NAV_MARGIN, paddingRight: isMobile ? "40px" : NAV_MARGIN, display: "flex", flexDirection: "column", alignItems: isMobile ? "flex-start" : "center", justifyContent: "center", gap: isMobile ? "20px" : "16px" }}>
                 <h1 style={{
                   fontFamily: "'Space Grotesk', sans-serif",
                   fontWeight: 600,
                   fontSize: isMobile ? "clamp(32px, 9vw, 52px)" : "clamp(24px, 4.5vw, 60px)",
-                  lineHeight: "94%",
+                  lineHeight: "98%",
                   letterSpacing: "-0.04em",
                   textAlign: isMobile ? "left" : "center",
                   textTransform: "uppercase",
                   color: "#414141",
                   margin: 0,
                 }}>
-                  A curated selection of our most impactful projects.
+                  {isMobile ? (
+                    "A curated selection of our most impactful projects."
+                  ) : (
+                    <>
+                      A curated selection of<br />
+                      our most impactful<br />
+                      projects.
+                    </>
+                  )}
                 </h1>
                 <p style={{
                   fontFamily: "'Sora', sans-serif",
                   fontWeight: 400,
-                  fontSize: isMobile ? "14px" : "clamp(13px, 1.4vw, 18px)",
-                  lineHeight: "140%",
+                  fontSize: isMobile ? "14px" : "clamp(16px, 1.8vw, 22px)",
+                  lineHeight: "120%",
                   textAlign: isMobile ? "left" : "center",
                   color: "#414141",
-                  maxWidth: isMobile ? "none" : "600px",
+                  maxWidth: isMobile ? "none" : "640px",
                   margin: 0,
                 }}>
-                  Creative, digital, and performance work built to move brands forward.
+                  {isMobile ? (
+                    "Creative, digital, and performance work built to move brands forward."
+                  ) : (
+                    <>
+                      Creative, digital, and performance work<br />
+                      built to move brands forward.
+                    </>
+                  )}
                 </p>
               </div>
 
@@ -380,29 +424,40 @@ export function PortfolioPage() {
                   <img src={STRIP_CARDS[0].img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 </div>
               ) : (
-                <div style={{ height: "48%", flexShrink: 0, overflow: "hidden" }}>
-                  <div style={{ display: "flex", gap: "3px", height: "100%", transform: "translateX(-12.5vw)" }}>
+                <div style={{ flex: 1, minHeight: 0, overflow: "hidden", marginTop: "70px" }}>
+                  <div style={{ display: "flex", gap: "20px", height: "100%", transform: "translateX(-10vw)" }}>
                     {STRIP_CARDS.map((card, i) => {
-                      const lid = i === 1 ? "pf-img-0" : i === 2 ? "pf-img-1" : undefined;
+                      const lid = i === 0 ? "pf-img-2" : i === 1 ? "pf-img-0" : i === 2 ? "pf-img-1" : undefined;
                       return lid ? (
                         <motion.div
                           key={i}
                           layoutId={lid}
                           transition={{ layout: T }}
                           style={{
-                            width: "25vw", flexShrink: 0, height: "100%",
+                            width: "20vw", flexShrink: 0, height: "100%",
                             overflow: "hidden", background: "#d0d0d0", position: "relative",
+                            borderRadius: "16px 16px 0 0",
                           }}
                         >
                           <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
                         </motion.div>
                       ) : (
-                        <div key={i} style={{
-                          width: "25vw", flexShrink: 0, height: "100%",
-                          overflow: "hidden", background: "#d0d0d0", position: "relative",
-                        }}>
+                        // Non-shared strip images fade out quickly on their own, so they
+                        // never linger mid-crossfade and overlap section 1's content —
+                        // only the two morphing (layoutId) images and the dedicated
+                        // section 1 peek sliver stay visible once the transition settles.
+                        <motion.div
+                          key={i}
+                          animate={{ opacity: section === 0 ? 1 : 0 }}
+                          transition={{ duration: 0.25 }}
+                          style={{
+                            width: "20vw", flexShrink: 0, height: "100%",
+                            overflow: "hidden", background: "#d0d0d0", position: "relative",
+                            borderRadius: "16px 16px 0 0",
+                          }}
+                        >
                           <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                        </div>
+                        </motion.div>
                       );
                     })}
                   </div>
@@ -421,11 +476,24 @@ export function PortfolioPage() {
               animate="animate"
               exit="exit"
               transition={T}
-              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", paddingTop: "40px", paddingBottom: "24px", paddingLeft: isMobile ? "40px" : NAV_MARGIN, paddingRight: isMobile ? "40px" : NAV_MARGIN, gap: "24px" }}
+              style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: "32px", paddingBottom: "24px", paddingLeft: isMobile ? "40px" : "0px", paddingRight: isMobile ? "40px" : "0px", gap: "24px" }}
             >
-              
-              {/* Carousel track — zero gap so no background bleeds between cards */}
-              <div ref={carouselContainerRef} style={{ flex: 1, minHeight: 0, overflow: "hidden", position: "relative" }}>
+
+              {/* Carousel track */}
+              <div ref={carouselContainerRef} style={{ height: "90%", flexShrink: 0, overflow: "hidden", position: "relative" }}>
+                {/* Peek — shares layoutId "pf-img-2" with the first hero-strip image,
+                    so it physically animates (bottom-to-up, then sideways) from its
+                    section 0 position into this aligned sliver as the transition plays,
+                    instead of just cutting to a static decorative crop. */}
+                {!isMobile && (
+                  <motion.div
+                    layoutId="pf-img-2"
+                    transition={{ layout: T }}
+                    style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${PEEK_WIDTH}px`, overflow: "hidden", zIndex: 0 }}
+                  >
+                    <img src={STRIP_CARDS[0].img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                  </motion.div>
+                )}
                 <motion.div
                   animate={{ x: trackX }}
                   transition={CAROUSEL_TRANSITION}
@@ -449,21 +517,46 @@ export function PortfolioPage() {
                       paddingLeft: 0,
                       boxSizing: "border-box",
                     }}>
-                      <div style={{ flex: 1, borderRadius: "8px", overflow: "hidden", minHeight: 0 }}>
+                      <div style={{ flex: 1, overflow: "hidden", minHeight: 0, borderRadius: "16px" }}>
                         <motion.div
                           layoutId={lid}
                           transition={{ layout: T }}
-                          style={{ height: "100%", position: "relative", borderRadius: "8px", overflow: "hidden" }}
+                          style={{ height: "100%", position: "relative", overflow: "hidden", borderRadius: "16px" }}
                         >
-                          <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }} />
+                          <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
                         </motion.div>
                       </div>
-                      <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "clamp(20px, 2.4vw, 36px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#060606", margin: 0 }}>
-                        {card.metric}
-                      </h3>
-                      <p style={{ fontFamily: "'Sora', sans-serif", fontSize: "clamp(12px, 1vw, 15px)", lineHeight: "1.6", color: "#555555", margin: 0 }}>
-                        {card.description}
-                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "14px", paddingLeft: "24px" }}>
+                        {i === 2 ? (
+                          <>
+                            <motion.h3
+                              initial={{ y: 130, opacity: 0 }}
+                              animate={carouselStart === 1 ? { y: 0, opacity: 1 } : { y: 130, opacity: 0 }}
+                              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                              style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(22px, 2.6vw, 38px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#414141", margin: 0 }}
+                            >
+                              {card.metric}
+                            </motion.h3>
+                            <motion.p
+                              initial={{ y: 130, opacity: 0 }}
+                              animate={carouselStart === 1 ? { y: 0, opacity: 1 } : { y: 130, opacity: 0 }}
+                              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                              style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.4vw, 19px)", lineHeight: "1.6", color: "#5F5F5F", margin: 0, maxWidth: "560px" }}
+                            >
+                              {card.description}
+                            </motion.p>
+                          </>
+                        ) : (
+                          <>
+                            <h3 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(22px, 2.6vw, 38px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#414141", margin: 0 }}>
+                              {card.metric}
+                            </h3>
+                            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.4vw, 19px)", lineHeight: "1.6", color: "#5F5F5F", margin: 0, maxWidth: "560px" }}>
+                              {card.description}
+                            </p>
+                          </>
+                        )}
+                      </div>
                     </div>
                   );
                   })}
@@ -485,7 +578,7 @@ export function PortfolioPage() {
               transition={T}
               style={{ position: "absolute", inset: 0, zIndex: 1 }}
             >
-              <div ref={section2Ref} style={{ height: "100%", overflowY: "auto" }}>
+              <div ref={section2Ref} style={{ height: "100%", overflowY: "auto", background: "linear-gradient(180deg, #E9F0FF 0%, #F7F8FA 100%)" }}>
                 {/* Padded content area */}
                 <div style={{ paddingTop: "40px", paddingBottom: "80px", paddingLeft: isMobile ? "40px" : NAV_MARGIN, paddingRight: isMobile ? "40px" : NAV_MARGIN }}>
                   {/* Filter pills */}
@@ -497,13 +590,14 @@ export function PortfolioPage() {
                           key={f}
                           onClick={() => setActiveFilter(f)}
                           style={{
-                            padding: "10px 22px", borderRadius: "100px",
-                            border: active ? "none" : "1.5px solid #414141",
+                            padding: "10px 22px", borderRadius: "8px",
+                            border: active ? "none" : "1.5px solid #6E6E6E",
                             background: active ? "#060606" : "transparent",
-                            color: active ? "#ffffff" : "#414141",
+                            color: active ? "#ffffff" : "#6E6E6E",
                             fontFamily: "'Space Grotesk', sans-serif",
-                            fontWeight: 600, fontSize: "13px",
+                            fontWeight: 600, fontSize: "15px",
                             letterSpacing: "0.06em", textTransform: "uppercase" as const,
+                            textAlign: "center" as const,
                             cursor: "pointer", transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
                           }}
                         >
@@ -514,7 +608,7 @@ export function PortfolioPage() {
                   </div>
 
                   {/* Cards grid */}
-                  <motion.div layout style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: isMobile ? "40px" : "40px 24px" }}>
+                  <motion.div layout style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: isMobile ? "40px" : "40px 56px" }}>
                     <AnimatePresence mode="popLayout">
                       {visibleCards.map((card, i) => (
                         <motion.div
@@ -525,19 +619,19 @@ export function PortfolioPage() {
                           exit={{ opacity: 0, y: 12 }}
                           transition={{ delay: (i % 3) * 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                           onClick={() => routerNavigate(`/blog/case-study/${card.workId}`)}
-                          style={{ display: "flex", flexDirection: "column", gap: "12px", cursor: "pointer" }}
+                          style={{ display: "flex", flexDirection: "column", gap: "16px", cursor: "pointer", height: "100%" }}
                         >
-                          <div style={{ width: "100%", aspectRatio: "400 / 237", borderRadius: "9.47px", overflow: "hidden", position: "relative", background: "#d5d5d5" }}>
+                          <div style={{ width: "100%", aspectRatio: "1 / 0.97", borderRadius: "9.47px", overflow: "hidden", position: "relative", background: "#d5d5d5" }}>
                             <img src={card.img} alt={card.category} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", borderRadius: "9.47px" }} />
                           </div>
-                          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#888888", margin: 0 }}>
-                            {card.category}
+                          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.1vw, 18px)", color: "#6E6E6E", margin: 0 }}>
+                            {toTitleCase(card.category)}
                           </p>
-                          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(16px, 1.4vw, 22px)", lineHeight: "130%", letterSpacing: "-0.01em", color: "#060606", margin: 0 }}>
+                          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(18px, 1.6vw, 24px)", lineHeight: "130%", letterSpacing: "-0.01em", color: "#414141", margin: 0 }}>
                             {card.description}
                           </p>
-                          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#414141", margin: 0 }}>
-                            {card.tags}
+                          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "14px", letterSpacing: "0.08em", textTransform: "uppercase" as const, color: "#5F5F5F", margin: "auto 0 0" }}>
+                            {normalizeTags(card.tags)}
                           </p>
                         </motion.div>
                       ))}

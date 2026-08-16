@@ -184,7 +184,7 @@ export function SelectedWork() {
 
   // Smooth eased tween transition
   const transition = {
-    duration: 0.7,
+    duration: 0.95,
     ease: [0.16, 1, 0.3, 1] as [number, number, number, number]
   };
 
@@ -309,7 +309,8 @@ export function SelectedWork() {
 
           {/* Main Content Grid */}
           <div
-            className="flex flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-[40px] 2xl:gap-[60px] cursor-pointer"
+            className="flex flex-row items-center justify-center cursor-pointer"
+            style={{ columnGap: "clamp(0px, 0.3vw, 6px)" }}
             onClick={() => navigate('/portfolio')}
             onMouseEnter={() => {
               setVariant('button');
@@ -322,7 +323,7 @@ export function SelectedWork() {
           >
             
             {/* Left Column: Title (top=image top), Short Desc + Index/Client (bottom=image bottom) */}
-            <div className="w-full lg:flex-1 lg:max-w-[360px] xl:max-w-[480px] 2xl:max-w-[560px] flex flex-col justify-between h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-1 pb-6 xl:pb-8">
+            <div className="w-full lg:flex-1 flex flex-col justify-between h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-1" style={{ maxWidth: "clamp(190px, 16vw, 290px)", paddingBottom: "64px", marginLeft: "16px" }}>
 
               {/* Title — aligns with top margin of image. min-h (not a fixed clipping
                   height) since some titles wrap to 3 lines at narrower breakpoints. */}
@@ -330,12 +331,12 @@ export function SelectedWork() {
                 {projects.map((project, index) => (
                   <motion.div
                     key={project.id}
-                    className="absolute top-0 left-0 w-full h-full flex flex-col items-end text-right"
+                    className="absolute top-0 left-0 w-full h-full flex flex-col items-start text-left"
                     initial={false}
                     animate={getTextAnimation(index)}
                     transition={transition}
                   >
-                    <h3 className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-normal text-[#060606] font-['Cal_Sans',sans-serif] leading-tight uppercase">
+                    <h3 className="font-normal text-[#414141] font-['Cal_Sans',sans-serif] leading-tight uppercase" style={{ marginTop: "28px", fontSize: "clamp(18px, 1.9vw, 27px)", overflowWrap: "break-word" }}>
                       {project.title[0]}
                       <br />
                       {project.title[1]}
@@ -344,18 +345,20 @@ export function SelectedWork() {
                 ))}
               </div>
 
-              {/* Bottom group — client/type + index */}
-              <div className="flex flex-col gap-4 xl:gap-5">
-                {/* Client + Type */}
-                <div className="relative w-full" style={{ minHeight: "60px" }}>
-                  {projects.map((project, index) => (
-                    <motion.div
-                      key={project.id}
-                      className="absolute top-0 right-0 w-full flex flex-col items-end text-right"
-                      initial={false}
-                      animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 10 }}
-                      transition={transition}
-                    >
+              {/* Bottom group — brand/type + index, on the same line */}
+              <div className="relative w-full" style={{ minHeight: "64px" }}>
+                {projects.map((project, index) => (
+                  <motion.div
+                    key={project.id}
+                    className="absolute bottom-0 left-0 w-full flex flex-row items-baseline justify-start gap-4 xl:gap-6"
+                    initial={false}
+                    animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 26 }}
+                    transition={transition}
+                  >
+                    <span className="text-5xl lg:text-6xl font-['Sora',sans-serif] font-light leading-none tracking-tight shrink-0" style={{ color: "#5F5F5F", marginLeft: "-220px" }}>
+                      {index + 1}/{projects.length}
+                    </span>
+                    <div className="flex flex-col items-start text-left" style={{ marginLeft: "100px", flexShrink: 0, whiteSpace: "nowrap" }}>
                       <h4 className="text-lg xl:text-xl font-semibold text-[#5F5F5F] font-['Sora',sans-serif] leading-tight">
                         {project.client}
                       </h4>
@@ -364,30 +367,15 @@ export function SelectedWork() {
                           {project.type}
                         </p>
                       )}
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Index */}
-                <div className="relative" style={{ minHeight: "64px" }}>
-                  {projects.map((_, index) => (
-                    <motion.span
-                      key={index}
-                      className="absolute bottom-0 left-0 text-5xl lg:text-6xl font-['Sora',sans-serif] font-light leading-none tracking-tight" style={{ color: "#5F5F5F" }}
-                      initial={false}
-                      animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 12 }}
-                      transition={transition}
-                    >
-                      {index + 1}/{projects.length}
-                    </motion.span>
-                  ))}
-                </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
 
             </div>
 
             {/* Center Column: Image Stack */}
-            <div className="lg:flex-1 lg:min-w-[280px] lg:max-w-[400px] xl:max-w-[480px] flex justify-center items-center order-2 h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px]">
+            <div className="lg:flex-1 flex justify-center items-center order-2 h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px]" style={{ minWidth: "260px", maxWidth: "clamp(300px, 27vw, 460px)" }}>
               <div className="relative w-full aspect-[480/665] max-h-full max-w-full rounded-[12px]">
                 {projects.map((project, index) => {
                   const relativeIndex = index - activeIndex;
@@ -452,7 +440,7 @@ export function SelectedWork() {
             </div>
 
             {/* Right Column */}
-            <div className="relative w-full lg:flex-1 lg:max-w-[360px] xl:max-w-[480px] 2xl:max-w-[560px] flex flex-col h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-3">
+            <div className="relative w-full lg:flex-1 flex flex-col h-[500px] lg:h-[550px] xl:h-[600px] 2xl:h-[665px] order-3" style={{ maxWidth: "clamp(230px, 20vw, 340px)", marginLeft: "48px" }}>
 
               {/* Date — at image top */}
               <div className="relative w-full" style={{ minHeight: "48px" }}>
@@ -471,17 +459,17 @@ export function SelectedWork() {
                 ))}
               </div>
 
-              {/* Long Description — in the middle, with gap from date */}
-              <div className="relative w-full mt-auto pt-4 xl:pt-6" style={{ minHeight: "140px" }}>
+              {/* Long Description — vertically centered on the image */}
+              <div className="relative w-full" style={{ flex: 1, minHeight: 0 }}>
                 {projects.map((project, index) => (
                   <motion.div
                     key={project.id}
-                    style={{ position: "absolute", top: 0, left: 0, width: "100%" }}
+                    style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}
                     initial={false}
-                    animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 20 }}
-                    transition={transition}
+                    animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 10 }}
+                    transition={{ ...transition, duration: 0.8, delay: index === activeIndex ? 0.4 : 0 }}
                   >
-                    <p className="text-lg lg:text-xl xl:text-[22px] text-[#414141] leading-relaxed font-['Sora',sans-serif]">
+                    <p className="text-lg text-[#414141] font-['Sora',sans-serif]" style={{ lineHeight: 1.9 }}>
                       {project.longDescription}
                     </p>
                   </motion.div>
@@ -489,7 +477,7 @@ export function SelectedWork() {
               </div>
 
               {/* ROLE + Tags — aligned with bottom of card image */}
-              <div className="mt-auto flex flex-col gap-2" style={{ marginBottom: "36px" }}>
+              <div className="flex flex-col gap-4" style={{ marginBottom: "48px" }}>
                 <span className="text-base font-bold text-[#414141] uppercase tracking-widest font-['Sora',sans-serif]">Role</span>
                 <div className="relative" style={{ minHeight: "80px" }}>
                   {projects.map((project, index) => (

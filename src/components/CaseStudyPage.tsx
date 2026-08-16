@@ -198,15 +198,15 @@ function EmbeddedContactForm({ px }: { px: string }) {
 
   const inputStyle: React.CSSProperties = {
     background: "transparent", border: "none", outline: "none",
-    fontFamily: "'Poppins', sans-serif", fontWeight: 600,
-    fontSize: isMobile ? "clamp(14px, 4vw, 18px)" : "clamp(20px, 2.6vw, 40px)", color: "#6F6F6F",
+    fontFamily: "'Cal Sans', sans-serif", fontWeight: 400,
+    fontSize: isMobile ? "clamp(15px, 4.4vw, 20px)" : "clamp(22px, 2.9vw, 44px)", color: "#6F6F6F",
     lineHeight: 1, caretColor: "#2E2E2E", width: "100%",
   };
   const labelStyle: React.CSSProperties = {
-    fontFamily: "'Poppins', sans-serif", fontWeight: 400,
-    fontSize: "13px", letterSpacing: "0.04em",
+    fontFamily: "'Sora', sans-serif", fontWeight: 400,
+    fontSize: "13px", letterSpacing: "0.01em",
     textTransform: "uppercase", color: "#9D9D9D", margin: "0 0 8px",
-    textDecoration: "underline", textUnderlineOffset: "3px",
+    textDecoration: "underline", textUnderlineOffset: "4px",
   };
   const fieldStyle: React.CSSProperties = {
     borderBottom: "2px solid #8E8E8E", paddingBottom: "12px",
@@ -214,19 +214,22 @@ function EmbeddedContactForm({ px }: { px: string }) {
   const btnColor = submitted ? "#02A884" : submitting ? "rgba(0,0,0,0.25)" : "#8B8B8B";
 
   return (
-    <section style={{ background: "#E8ECFF", padding: `72px ${px}` }}>
-      <style>{`.ecf-input::placeholder { color: #6F6F6F; font-family: 'Poppins', sans-serif; font-weight: 600; }`}</style>
+    <section style={{ background: "#ffffff", padding: isMobile ? "16px" : "24px 32px" }}>
+    <div style={{ background: "#E8ECFF", border: "2px solid #ffffff", borderRadius: "20px", padding: isMobile ? "40px 24px" : "48px 56px" }}>
+      <style>{`.ecf-input::placeholder { color: #6F6F6F; font-family: 'Cal Sans', sans-serif; font-weight: 400; }`}</style>
 
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "24px" : "72px", marginBottom: isMobile ? "28px" : "64px", alignItems: "start" }}>
-        <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1.08, letterSpacing: "-0.04em", color: "#414141", margin: 0 }}>
-          Let's create work that drives real growth.
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "24px" : "96px", marginBottom: isMobile ? "28px" : "88px", alignItems: "start" }}>
+        <h2 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1.08, letterSpacing: "-0.02em", color: "#414141", margin: 0 }}>
+          Let's create work
+          <br />
+          that drives real growth.
         </h2>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1.2vw, 18px)", lineHeight: 1.3, color: "#474747", margin: 0, paddingTop: "8px" }}>
+        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(18px, 2vw, 28px)", lineHeight: 1.3, color: "#474747", margin: 0, paddingTop: "8px" }}>
           From strategy to creative, we help brands move with clarity, purpose, and measurable impact.
         </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "72px", rowGap: isMobile ? "32px" : "48px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "96px", rowGap: isMobile ? "32px" : "64px" }}>
         <div style={fieldStyle}>
           <p style={labelStyle}>Who you are</p>
           <input className="ecf-input" value={name} onChange={e => setName(filterTextOnly(e.target.value))} placeholder="[ Your Name ]" style={inputStyle} />
@@ -299,6 +302,7 @@ function EmbeddedContactForm({ px }: { px: string }) {
         </div>
         {submitError && <p style={{ gridColumn: "1 / -1", fontFamily: "'Space Grotesk',sans-serif", fontSize: "12px", color: "#ff4d4d", margin: "4px 0 0" }}>{submitError}</p>}
       </div>
+    </div>
     </section>
   );
 }
@@ -388,7 +392,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
         />
 
         {/* TopBar floats over the dark hero */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 100, height: "114px" }}>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 100, height: "96px" }}>
           <div style={{ position: "relative", width: "100%", height: "100%" }}>
             <TopBar dark logoSrc={xgLogoWhite} />
           </div>
@@ -590,7 +594,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               {label}
             </p>
             <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
@@ -615,7 +619,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               THE SOLUTION
             </p>
             <div className="cs-solution-col" style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
@@ -657,7 +661,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p className="cs-role-label" style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p className="cs-role-label" style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               ROLE & DELIVERABLES
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0 24px" }}>
@@ -686,7 +690,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               alignItems: "flex-start",
             }}
           >
-            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               TIMELINE
             </p>
             <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
@@ -710,7 +714,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             style={{ display: "flex", flexDirection: "column", gap: "28px", justifyContent: "flex-start", height: "100%", paddingTop: "40px", paddingBottom: "48px" }}
           >
-            <h2 style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: "clamp(18px, 1.5vw, 24px)", letterSpacing: "0.1em", textTransform: "uppercase", color: "#ffffff", margin: 0 }}>
+            <h2 style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(18px, 1.5vw, 24px)", letterSpacing: "0.04em", textTransform: "uppercase", color: "#ffffff", margin: 0 }}>
               BRAND DIRECTION
             </h2>
             <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.15vw, 18px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
@@ -723,7 +727,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
                 { label: "TYPOGRAPHY", body: "Headline, UI, microcopy scale — built for clarity at every size" },
               ].map(({ label, body }, i) => (
                 <div key={i} style={{ display: "flex", flexDirection: "column", gap: "8px", gridColumn: i === 2 ? "1 / -1" : "auto" }}>
-                  <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: "13px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>{label}</p>
+                  <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>{label}</p>
                   <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(13px, 1vw, 15px)", lineHeight: "1.6", color: "rgba(255,255,255,0.4)", margin: 0 }}>{body}</p>
                 </div>
               ))}
@@ -772,7 +776,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
               <div style={{ aspectRatio: "4/5", borderRadius: "6px", overflow: "hidden" }}>
                 <img src={src} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               </div>
-              <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "13px", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", margin: 0 }}>{label}</p>
+              <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "13px", letterSpacing: "0.05em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", margin: 0 }}>{label}</p>
             </div>
           ))}
         </motion.div>
@@ -866,7 +870,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
       <section style={{ background: "#0f0f0f", paddingTop: "48px", paddingBottom: "44px", paddingLeft: px, paddingRight: px }}>
         {/* Header row */}
         <div className="cs-content-grid" style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "48px", marginBottom: "32px" }}>
-          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, fontSize: "14px", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
             PROCESS OVERVIEW
           </p>
           <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(16px, 1.3vw, 20px)", lineHeight: "1.65", color: "rgba(255,255,255,0.45)", margin: 0 }}>
@@ -924,10 +928,10 @@ export function CaseStudyPage({ id }: { id?: string }) {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           style={{ textAlign: "center", marginBottom: "36px" }}
         >
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: "20px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#D6D6D6", margin: "0 0 16px" }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "20px", letterSpacing: "0.07em", textTransform: "uppercase", color: "#D6D6D6", margin: "0 0 16px" }}>
             OVERALL IMPACT
           </p>
-          <p style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.2vw, 18px)", lineHeight: "1.55", color: "rgba(255,255,255,0.55)", margin: "0 auto", maxWidth: "660px" }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.2vw, 18px)", lineHeight: "1.55", color: "rgba(255,255,255,0.55)", margin: "0 auto", maxWidth: "660px" }}>
             The work led to improved sign-ups, better onboarding flow completion, and a notable lift in active users.
           </p>
         </motion.div>

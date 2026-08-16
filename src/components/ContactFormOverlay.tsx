@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { submitContactForm } from "../lib/api";
 import arrowIcon from "../assets/arrow-icon.png";
-import closeIcon from "../assets/close-icon.png";
+import closeIcon from "../assets/whatmakesus/Screenshot_2026-07-11_at_3.56.05_PM-removebg-preview.png";
 
 
-function LeftBracket({ height = 52, arm = 12, stroke = 2, color = "rgba(255,255,255,0.75)" }: { height?: number; arm?: number; stroke?: number; color?: string }) {
+function LeftBracket({ height = 52, arm = 12, stroke = 3.5, color = "rgba(255,255,255,0.75)" }: { height?: number; arm?: number; stroke?: number; color?: string }) {
   return (
     <svg width={arm} height={height} viewBox={`0 0 ${arm} ${height}`} fill="none" style={{ display: "block", flexShrink: 0, overflow: "visible" }}>
       <path d={`M${arm} 0 H0 V${height} H${arm}`} stroke={color} strokeWidth={stroke} strokeLinecap="butt" strokeLinejoin="miter" />
@@ -13,7 +13,7 @@ function LeftBracket({ height = 52, arm = 12, stroke = 2, color = "rgba(255,255,
   );
 }
 
-function RightBracket({ height = 52, arm = 12, stroke = 2, color = "rgba(255,255,255,0.75)" }: { height?: number; arm?: number; stroke?: number; color?: string }) {
+function RightBracket({ height = 52, arm = 12, stroke = 3.5, color = "rgba(255,255,255,0.75)" }: { height?: number; arm?: number; stroke?: number; color?: string }) {
   return (
     <svg width={arm} height={height} viewBox={`0 0 ${arm} ${height}`} fill="none" style={{ display: "block", flexShrink: 0, overflow: "visible" }}>
       <path d={`M0 0 H${arm} V${height} H0`} stroke={color} strokeWidth={stroke} strokeLinecap="butt" strokeLinejoin="miter" />
@@ -21,14 +21,22 @@ function RightBracket({ height = 52, arm = 12, stroke = 2, color = "rgba(255,255
   );
 }
 
-function CloseXIcon({ size = 30 }: { size?: number }) {
+function CloseXIcon({ height = 40, width = 60, color = "#6E6E6E" }: { height?: number; width?: number; color?: string }) {
+  // Rendered via mask-image (not img+filter) so it can take an exact color
+  // instead of an approximated one. maxWidth: "none" overrides the global
+  // `img { max-width: 100% }` reset — without it, the icon was being capped
+  // to its hover-animated container's CURRENT width (30px at rest, 102px on
+  // hover), making it visibly grow on hover even though nothing here
+  // animates its size on purpose.
   return (
-    <img
-      src={closeIcon}
-      alt=""
-      width={size}
-      height={size}
-      style={{ display: "block", filter: "brightness(0) invert(1)", opacity: 0.75 }}
+    <div
+      style={{
+        display: "block", height, width, maxWidth: "none",
+        backgroundColor: color,
+        WebkitMaskImage: `url(${closeIcon})`, maskImage: `url(${closeIcon})`,
+        WebkitMaskSize: "100% 100%", maskSize: "100% 100%",
+        WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
+      }}
     />
   );
 }
@@ -42,7 +50,7 @@ function isValidEmail(val: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 }
 
-export function ContactFormContent({ onClose, embedded = false, onFieldInteract }: { onClose?: () => void; embedded?: boolean; onFieldInteract?: () => void }) {
+export function ContactFormContent({ onClose, embedded = false, onFieldInteract, hideClose = false }: { onClose?: () => void; embedded?: boolean; onFieldInteract?: () => void; hideClose?: boolean }) {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
@@ -104,7 +112,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
     fontWeight: 400,
     fontSize: "11px",
     letterSpacing: "0.08em",
-    color: "rgba(247,248,250,0.45)",
+    color: "#ffffff",
     textDecoration: "none",
     marginLeft: "8px",
   };
@@ -170,36 +178,38 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
             <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "18px", color: "#6E6E6E", margin: 0, lineHeight: 1.6, maxWidth: "240px" }}>
               {"We’d love to understand what you’re building."}
             </p>
-            <motion.button
-              onClick={() => onClose?.()}
-              initial="rest"
-              whileHover="hover"
-              className="cf-close-btn"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, height: "72px", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}
-            >
-              <LeftBracket color="#A3A3A3" />
-              <motion.div
-                variants={{ rest: { width: 30 }, hover: { width: 102 } }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}
+            {!hideClose && (
+              <motion.button
+                onClick={() => onClose?.()}
+                initial="rest"
+                whileHover="hover"
+                className="cf-close-btn"
+                style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, height: "56px", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}
               >
-                <motion.span
-                  variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }}
-                  transition={{ duration: 0.15 }}
-                  style={{ position: "absolute" }}
+                <LeftBracket height={52} color="#A3A3A3" />
+                <motion.div
+                  variants={{ rest: { width: 30 }, hover: { width: 102 } }}
+                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}
                 >
-                  <CloseXIcon />
-                </motion.span>
-                <motion.span
-                  variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }}
-                  transition={{ duration: 0.2, delay: 0.18 }}
-                  style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase", color: "#FF0000", whiteSpace: "nowrap", position: "absolute" }}
-                >
-                  CLOSE
-                </motion.span>
-              </motion.div>
-              <RightBracket color="#A3A3A3" />
-            </motion.button>
+                  <motion.span
+                    variants={{ rest: { opacity: 1 }, hover: { opacity: 0 } }}
+                    transition={{ duration: 0.15 }}
+                    style={{ position: "absolute" }}
+                  >
+                    <CloseXIcon height={38} width={62} />
+                  </motion.span>
+                  <motion.span
+                    variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }}
+                    transition={{ duration: 0.2, delay: 0.18 }}
+                    style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 500, fontSize: "32px", lineHeight: "1", letterSpacing: "0", textTransform: "uppercase", color: "#FF0000", whiteSpace: "nowrap", position: "absolute" }}
+                  >
+                    CLOSE
+                  </motion.span>
+                </motion.div>
+                <RightBracket height={52} color="#A3A3A3" />
+              </motion.button>
+            )}
           </div>
         </div>
 
@@ -306,13 +316,15 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract 
               {mobileValidationError}
             </p>
           )}
-          <div className="cf-mobile-actions" style={{ display: isMobile ? "flex" : "none", gridColumn: "1 / -1", justifyContent: "space-between", alignItems: "center", paddingTop: "16px" }}>
+          <div className="cf-mobile-actions" style={{ display: isMobile ? "flex" : "none", gridColumn: "1 / -1", justifyContent: hideClose ? "flex-end" : "space-between", alignItems: "center", paddingTop: "16px" }}>
             {/* Close/Next button */}
-            <motion.button onClick={() => onClose?.()} initial="rest" whileHover="hover" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, height: "52px", display: "flex", alignItems: "center", gap: "4px" }}>
-              <LeftBracket height={40} arm={8} color="#A3A3A3" />
-              <CloseXIcon size={26} />
-              <RightBracket height={40} arm={8} color="#A3A3A3" />
-            </motion.button>
+            {!hideClose && (
+              <motion.button onClick={() => onClose?.()} initial="rest" whileHover="hover" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, height: "44px", display: "flex", alignItems: "center", gap: "4px" }}>
+                <LeftBracket height={40} arm={8} color="#A3A3A3" />
+                <CloseXIcon height={30} width={50} />
+                <RightBracket height={40} arm={8} color="#A3A3A3" />
+              </motion.button>
+            )}
             {/* Submit */}
             <motion.button disabled={submitting || submitted} onClick={handleSubmit} initial="rest" whileHover={!submitting && !submitted ? "hover" : "rest"} style={{ background: "none", border: "none", cursor: submitting || submitted ? "default" : "pointer", padding: 0, height: "52px", display: "flex", alignItems: "center", gap: "4px" }}>
               <LeftBracket height={40} arm={8} color={submitted ? "#02A884" : "#F7F8FA"} />
@@ -343,6 +355,11 @@ export function ContactFormOverlay({ open, onClose }: ContactFormOverlayProps) {
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          // Stops wheel events from bubbling to window — otherwise the home
+          // page's hero carousel (which listens on window for horizontal
+          // scroll) still advances underneath this fixed overlay, even
+          // though it's fully covered on screen.
+          onWheel={(e) => e.stopPropagation()}
           style={{
             position: "fixed",
             inset: 0,
