@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useNavigationType } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import type { Variants } from "motion/react";
 import { TopBar } from "./landing/FinalLayout";
 import { Footer } from "./Footer";
 import { useContactForm } from "./ContactFormContext";
@@ -467,6 +468,26 @@ function MobileServiceCard({ service, active = true }: { service: ServiceData; a
   );
 }
 
+// ─── Stacked-deck transform ────────────────────────────────────────────────
+// Cards already scrolled past don't just shrink in place — each one steps up
+// and back a little further than the last, so a few of them peek out above
+// the active card like a real card pile. Depth is capped so cards beyond it
+// sit exactly on top of the last visible layer (hidden underneath it) rather
+// than continuing to shrink indefinitely.
+function stackedTransform(
+  relative: number,
+  { yStep = 14, scaleStep = 0.045, opacityStep = 0.05, maxDepth = 3 } = {}
+): { y: string; scale: number; opacity: number } {
+  if (relative > 0) return { y: "100%", scale: 1, opacity: 0 }; // not yet reached
+  if (relative === 0) return { y: "0%", scale: 1, opacity: 1 }; // current
+  const depth = Math.min(-relative, maxDepth); // already passed
+  return {
+    y: `${-depth * yStep}px`,
+    scale: 1 - depth * scaleStep,
+    opacity: 1 - depth * opacityStep,
+  };
+}
+
 // ─── Single card (absolutely positioned inside shared deck) ──────────────────
 function CardSlide({
   service,
@@ -498,22 +519,14 @@ function CardSlide({
     return () => observer.disconnect();
   }, []);
 
-  const isLast = index === total - 1;
   const relative = index - activeIndex;
   const isActive = relative === 0;
 
   // Not yet reached: waiting off-screen below.
-  // Already passed: peeled back behind the current card (unless it's the last one).
+  // Already passed: stacked behind the current card, each one further back
+  // peeking out a little more above it.
   // Current: fully in place, front and center.
-  let y = "0%";
-  let scale = 1;
-  let opacity = 1;
-  if (relative > 0) {
-    y = "100%";
-    opacity = 0;
-  } else if (relative < 0) {
-    scale = isLast ? 1 : 0.88;
-  }
+  const { y, scale, opacity } = stackedTransform(relative);
 
   // The "Let's Talk" button starts already in its hover look (no animated
   // entry), then eases backward into rest once this card scrolls into place —
@@ -536,7 +549,7 @@ function CardSlide({
       id={sectionId}
       initial={false}
       animate={{ y, scale, opacity }}
-      transition={{ duration: 0.95, ease: [0.65, 0, 0.35, 1] }}
+      transition={{ duration: 0.75, ease: [0.65, 0, 0.35, 1] }}
       style={{
         position: "absolute",
         top: 0,
@@ -908,25 +921,16 @@ function MobileCardSlide({
   total: number;
   activeIndex: number;
 }) {
-  const isLast = index === total - 1;
   const relative = index - activeIndex;
   const isActive = relative === 0;
 
-  let y = "0%";
-  let scale = 1;
-  let opacity = 1;
-  if (relative > 0) {
-    y = "100%";
-    opacity = 0;
-  } else if (relative < 0) {
-    scale = isLast ? 1 : 0.92;
-  }
+  const { y, scale, opacity } = stackedTransform(relative, { yStep: 10, scaleStep: 0.035, opacityStep: 0.04 });
 
   return (
     <motion.div
       initial={false}
       animate={{ y, scale, opacity }}
-      transition={{ duration: 0.95, ease: [0.65, 0, 0.35, 1] }}
+      transition={{ duration: 0.75, ease: [0.65, 0, 0.35, 1] }}
       style={{
         position: "absolute",
         top: 16,
@@ -942,18 +946,40 @@ function MobileCardSlide({
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-const STEP_LOCK_MS = 950;
+const STEP_LOCK_MS = 750;
 const SWIPE_THRESHOLD = 40;
 // Trackpad "flicks" fire a long tail of wheel events (momentum scrolling) well
 // after the physical gesture ends. Events closer together than this count as
 // the same gesture — only the first one in a burst steps the deck; the rest
 // are swallowed (not re-armed) until the stream goes quiet for this long.
 const GESTURE_IDLE_MS = 220;
+// Hard minimum dwell time on the grid finale before a forward scroll can
+// release into the footer — see exitBoundaryCooldownUntilRef.
+const EXIT_BOUNDARY_COOLDOWN_MS = 900;
+// Persists the deck's last position across a "View Works"/"Let's talk" trip
+// away and a browser-back return to this page (see the slideIndex init below).
+const SERVICES_SLIDE_INDEX_KEY = "xg-services-slide-index";
+
+// Grid finale — instead of all 9 tiles popping in as one flat fade, each one
+// cascades in slightly after the last via staggerChildren, so the reveal
+// reads as a wave rather than a single abrupt pop.
+const GRID_CONTAINER_VARIANTS: Variants = {
+  hidden: { opacity: 0, transition: { duration: 0.35, ease: "easeInOut" } },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.3, ease: "easeInOut", staggerChildren: 0.045, delayChildren: 0.08 },
+  },
+};
+const GRID_ITEM_VARIANTS: Variants = {
+  hidden: { opacity: 0, y: 14, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
+};
 
 export function ServicesPage() {
   const total = SERVICES.length;
   const location = useLocation();
   const navigate = useNavigate();
+  const navigationType = useNavigationType();
   const { open: openContactForm } = useContactForm();
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 1024 : false
@@ -961,14 +987,43 @@ export function ServicesPage() {
 
   // slideIndex ranges 0..total on desktop (total = the finale grid) and
   // 0..total-1 on mobile (no grid finale there). One scroll/swipe tick = one step.
+  //
+  // Landing here via the browser's back/forward button ("POP") restores
+  // wherever the deck was left — e.g. clicking "View Works" off the grid
+  // finale and then hitting back should land back on the grid, not reset to
+  // the first card — by reading the last position persisted below. This has
+  // to take priority over location.state.serviceIndex on a POP: several links
+  // (footer, landing page service cards) navigate here with an explicit
+  // serviceIndex, and that state stays attached to the history entry forever
+  // — without this ordering, going back would keep re-reading whatever
+  // service the page was ORIGINALLY opened to rather than where it was left.
+  // A fresh forward visit (nav link, direct URL) has no persisted position to
+  // restore, so it honors an explicit serviceIndex, or otherwise starts at
+  // the first card.
   const [slideIndex, setSlideIndex] = useState<number>(() => {
+    if (navigationType === "POP") {
+      const stored = Number(sessionStorage.getItem(SERVICES_SLIDE_INDEX_KEY));
+      if (Number.isFinite(stored) && stored > 0) return Math.min(stored, total);
+    }
     const idx = (location.state as { serviceIndex?: number } | null)?.serviceIndex;
     return idx != null ? Math.min(Math.max(idx, 0), total) : 0;
   });
 
+  // Keep that persisted position current as the user scrolls through the deck.
+  useEffect(() => {
+    sessionStorage.setItem(SERVICES_SLIDE_INDEX_KEY, String(slideIndex));
+  }, [slideIndex]);
+
   const isMobileRef = useRef(isMobile);
   const slideIndexRef = useRef(slideIndex);
   const isAnimatingRef = useRef(false);
+  // Minimum time the exit boundary (the grid finale) must be dwelt on before
+  // any wheel input is allowed to release forward into the footer — set the
+  // instant step() lands there. A trackpad's momentum tail after a big flick
+  // can have gaps between its decelerating ticks that exceed GESTURE_IDLE_MS,
+  // so the gesture-freshness check alone can misread the tail as a new
+  // gesture and release immediately; this is a hard backstop under it.
+  const exitBoundaryCooldownUntilRef = useRef(0);
   useEffect(() => { isMobileRef.current = isMobile; }, [isMobile]);
   useEffect(() => { slideIndexRef.current = slideIndex; }, [slideIndex]);
 
@@ -994,20 +1049,25 @@ export function ServicesPage() {
 
   // Jump to the target service card whenever location.state carries a
   // serviceIndex — on mount, and on every same-page navigate (e.g. clicking
-  // a service link from the footer while already on /services).
+  // a service link from the footer while already on /services). Skipped on a
+  // POP (browser back/forward): that's the persisted-position restore's job
+  // (see the slideIndex init above) — location.state.serviceIndex there is
+  // just whatever this history entry originally carried, not a fresh request.
   useEffect(() => {
+    if (navigationType === "POP") return;
     const idx = (location.state as { serviceIndex?: number } | null)?.serviceIndex;
     if (idx == null) return;
     setSlideIndex(Math.min(Math.max(idx, 0), total));
     requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
-  }, [location, total]);
+  }, [location, total, navigationType]);
 
   // Scroll-locked navigation: while the deck is pinned at the top of the page
   // (scrollY === 0), scrolling/swiping DOWN advances exactly one slide
-  // (service card, then — on desktop — the finale grid). Upward scroll does
-  // nothing to the deck — there's nothing to go back to via scroll. At the
-  // last slide, the next downward tick releases the lock and lets the page
-  // scroll normally into the footer.
+  // (service card, then — on desktop — the finale grid), and UP brings back
+  // the previous one (grid → last card → ... → first card). At the first
+  // slide, upward input simply does nothing (nothing above it to reveal). At
+  // the last slide, the next downward tick releases the lock and lets the
+  // page scroll normally into the footer.
   useEffect(() => {
     function step() {
       if (isAnimatingRef.current) return;
@@ -1015,6 +1075,20 @@ export function ServicesPage() {
       setSlideIndex((prev) => {
         const max = isMobileRef.current ? total - 1 : total;
         const next = Math.min(prev + 1, max);
+        slideIndexRef.current = next;
+        if (next === max && prev < max) {
+          exitBoundaryCooldownUntilRef.current = Date.now() + EXIT_BOUNDARY_COOLDOWN_MS;
+        }
+        return next;
+      });
+      window.setTimeout(() => { isAnimatingRef.current = false; }, STEP_LOCK_MS);
+    }
+
+    function stepBack() {
+      if (isAnimatingRef.current) return;
+      isAnimatingRef.current = true;
+      setSlideIndex((prev) => {
+        const next = Math.max(prev - 1, 0);
         slideIndexRef.current = next;
         return next;
       });
@@ -1026,26 +1100,52 @@ export function ServicesPage() {
       return slideIndexRef.current >= max;
     }
 
+    function atEntryBoundary() {
+      return slideIndexRef.current <= 0;
+    }
+
     // A trackpad flick keeps firing wheel events (momentum) long after the
     // physical gesture ends. gestureActive collapses that whole burst — plus
     // its momentum tail — into a single step, resetting only once the event
-    // stream has gone quiet for GESTURE_IDLE_MS.
+    // stream has gone quiet for GESTURE_IDLE_MS. gestureDir additionally
+    // makes a reversal mid-burst (rare, but possible on a trackpad) count as
+    // a fresh gesture rather than being swallowed by the outgoing one.
     let gestureActive = false;
+    let gestureDir = 0;
     let gestureTimer: ReturnType<typeof window.setTimeout> | null = null;
     function markGestureAlive() {
       if (gestureTimer != null) window.clearTimeout(gestureTimer);
-      gestureTimer = window.setTimeout(() => { gestureActive = false; }, GESTURE_IDLE_MS);
+      gestureTimer = window.setTimeout(() => { gestureActive = false; gestureDir = 0; }, GESTURE_IDLE_MS);
     }
 
     function onWheel(e: WheelEvent) {
       if (window.scrollY > 0.5) return;
-      if (e.deltaY <= 0) return; // only downward scroll drives the deck
-      if (atExitBoundary()) return; // let the page scroll away into the footer
+      const dir = e.deltaY > 0 ? 1 : e.deltaY < 0 ? -1 : 0;
+      if (dir === 0) return;
+      const isNewGesture = !gestureActive || dir !== gestureDir;
+
+      if (dir > 0 && atExitBoundary()) {
+        // The same flick that just landed here (e.g. on the grid finale) keeps
+        // firing momentum wheel events afterward — those must NOT also release
+        // into the footer, or the grid blows past before it's even seen. A
+        // trackpad's decelerating momentum tail can pause for longer than
+        // GESTURE_IDLE_MS between ticks, so on top of requiring a genuinely
+        // new gesture, a flat cooldown since arrival is enforced regardless —
+        // neither the tail end of that flick nor an immediate next scroll can
+        // release before the grid has actually had a moment to be seen.
+        if (!isNewGesture || Date.now() < exitBoundaryCooldownUntilRef.current) {
+          e.preventDefault();
+          return;
+        }
+        return; // fresh gesture, cooldown elapsed — let the page scroll into the footer
+      }
+      if (dir < 0 && atEntryBoundary()) return; // nothing before the first card
+
       e.preventDefault(); // swallow the whole gesture, including its momentum tail
-      const isNewGesture = !gestureActive;
       gestureActive = true;
+      gestureDir = dir;
       markGestureAlive();
-      if (isNewGesture) step();
+      if (isNewGesture) (dir > 0 ? step() : stepBack());
     }
 
     let touchStartY: number | null = null;
@@ -1055,17 +1155,26 @@ export function ServicesPage() {
     function onTouchMove(e: TouchEvent) {
       if (touchStartY == null || window.scrollY > 0.5) return;
       const dy = touchStartY - (e.touches[0]?.clientY ?? touchStartY);
-      if (dy <= 0) return; // only an upward swipe (finger up = content down) drives the deck
-      if (!atExitBoundary()) e.preventDefault();
+      if (dy === 0) return;
+      if (dy > 0) {
+        if (!atExitBoundary()) e.preventDefault(); // upward swipe (finger up = content down) drives the deck forward
+      } else if (!atEntryBoundary()) {
+        e.preventDefault(); // downward swipe (finger down = content up) drives the deck backward
+      }
     }
     function onTouchEnd(e: TouchEvent) {
       if (touchStartY == null || window.scrollY > 0.5) return;
       const endY = e.changedTouches[0]?.clientY ?? touchStartY;
       const dy = touchStartY - endY;
       touchStartY = null;
-      if (dy < SWIPE_THRESHOLD) return;
-      if (atExitBoundary()) return;
-      step();
+      if (Math.abs(dy) < SWIPE_THRESHOLD) return;
+      if (dy > 0) {
+        if (atExitBoundary()) return;
+        step();
+      } else {
+        if (atEntryBoundary()) return;
+        stepBack();
+      }
     }
 
     window.addEventListener("wheel", onWheel, { passive: false });
@@ -1207,10 +1316,10 @@ export function ServicesPage() {
             {isGrid && (
               <motion.div
                 key="grid"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6, ease: "easeInOut" }}
+                variants={GRID_CONTAINER_VARIANTS}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
                 style={{
                   position: "absolute",
                   top: "8px",
@@ -1226,28 +1335,32 @@ export function ServicesPage() {
                 }}
               >
                 {SERVICES.map((svc) => (
-                  <GridServiceCard key={svc.title} service={svc} />
+                  <motion.div key={svc.title} variants={GRID_ITEM_VARIANTS} style={{ height: "100%" }}>
+                    <GridServiceCard service={svc} />
+                  </motion.div>
                 ))}
 
                 {/* View Works */}
-                <div
+                <motion.div
+                  variants={GRID_ITEM_VARIANTS}
                   onClick={() => navigate("/portfolio")}
                   style={{ background: "#F7F8FA", borderRadius: "12px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", cursor: "pointer", paddingBottom: "12px", paddingRight: "16px" }}
                 >
                   <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4.17vw, 80px)", lineHeight: "1.2", letterSpacing: "0em", color: "rgba(0,0,0,0.15)", userSelect: "none", textAlign: "right" }}>
                     View Works
                   </span>
-                </div>
+                </motion.div>
 
                 {/* Let's Talk */}
-                <div
+                <motion.div
+                  variants={GRID_ITEM_VARIANTS}
                   onClick={() => openContactForm()}
                   style={{ background: "#F7F8FA", borderRadius: "12px", display: "flex", alignItems: "flex-end", justifyContent: "flex-end", cursor: "pointer", paddingBottom: "12px", paddingRight: "16px" }}
                 >
                   <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 700, fontSize: "clamp(32px, 4.17vw, 80px)", lineHeight: "1.2", letterSpacing: "0em", color: "#636363", userSelect: "none", textAlign: "right" }}>
                     Let's talk
                   </span>
-                </div>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>

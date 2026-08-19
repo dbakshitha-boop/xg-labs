@@ -99,7 +99,7 @@ const PercentageDisplay = ({ durationMs }: { durationMs: number }) => {
   );
 };
 
-export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
+export function LoadingScreen({ onComplete, bare = false }: { onComplete?: () => void; bare?: boolean }) {
   const [isComplete, setIsComplete] = useState(false);
   
   const loopedWords = useMemo(() => {
@@ -135,47 +135,60 @@ export function LoadingScreen({ onComplete }: { onComplete?: () => void }) {
       ease: [0.22, 1, 0.36, 1],
       onComplete: () => {
         setIsComplete(true);
-        setTimeout(() => {
+        // In bare mode the caller owns background/lifecycle and crossfades this stage
+        // away itself, so there's no need for (and no benefit to) this extra delay.
+        if (bare) {
           onCompleteRef.current?.();
-        }, 150);
+        } else {
+          setTimeout(() => {
+            onCompleteRef.current?.();
+          }, 150);
+        }
       }
     });
 
     return () => controls.stop();
-  }, [endIndex, progress]);
+  }, [endIndex, progress, bare]);
+
+  const content = (
+    <motion.div
+      className="relative w-full h-full flex items-center"
+      style={{ opacity: globalOpacity }} // Apply the 98%-100% fade here
+    >
+      <PercentageDisplay durationMs={1600} />
+
+      {/* List Container */}
+      <div className="absolute left-[42%] md:left-[60%] top-0 bottom-0 w-[500px] pointer-events-none">
+        <div className="absolute top-1/2 left-0 w-full h-0">
+          {loopedWords.map((word, index) => (
+            <WordItem
+              key={`${word}-${index}`}
+              word={word}
+              index={index}
+              progress={progress}
+            />
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  // Bare mode: no own background or fade/unmount lifecycle — the caller (a persistent
+  // backdrop that crossfades between this and whatever comes next) owns all of that.
+  if (bare) return content;
 
   return (
     <motion.div
       className="fixed inset-0 bg-[#060606] z-50 flex items-center justify-center overflow-hidden"
-      animate={{ 
-        // We use the globalOpacity transform for the exit animation, 
+      animate={{
+        // We use the globalOpacity transform for the exit animation,
         // but this handles the final removal from DOM if needed.
-        opacity: isComplete ? 0 : 1 
+        opacity: isComplete ? 0 : 1
       }}
       transition={{ duration: 0.3 }}
       style={{ pointerEvents: isComplete ? "none" : "auto" }}
     >
-      <motion.div 
-        className="relative w-full h-full flex items-center"
-        style={{ opacity: globalOpacity }} // Apply the 98%-100% fade here
-      >
-        
-        <PercentageDisplay durationMs={1600} />
-
-        {/* List Container */}
-        <div className="absolute left-[42%] md:left-[60%] top-0 bottom-0 w-[500px] pointer-events-none">
-          <div className="absolute top-1/2 left-0 w-full h-0">
-            {loopedWords.map((word, index) => (
-              <WordItem 
-                key={`${word}-${index}`}
-                word={word} 
-                index={index} 
-                progress={progress} 
-              />
-            ))}
-          </div>
-        </div>
-      </motion.div>
+      {content}
     </motion.div>
   );
 }

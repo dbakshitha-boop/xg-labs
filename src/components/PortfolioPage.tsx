@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { Transition } from "motion/react";
 import { useNavigate as useRouterNavigate } from "react-router-dom";
@@ -77,14 +77,14 @@ const CAROUSEL_TRANSITION: Transition = { duration: 1.4, ease: [0.16, 1, 0.3, 1]
 // so page content lines up with the nav bar's left/right edges instead of using a fixed padding.
 const NAV_MARGIN = "max(20px, calc((100vw - min(1320px, calc(100vw - 56px))) / 2))";
 
-// Section 0: fades out; the 2 middle images animate via layoutId — that IS the expansion
+// Section 0: fades out in place
 const s0Variants = {
   initial: (dir: number) => ({ opacity: 0 }),
   animate: { opacity: 1 },
   exit:    (dir: number) => ({ opacity: 0 }),
 };
 
-// Section 1: fades in from s0 (layoutId images handle the movement); slides from s2
+// Section 1: fades in from s0 in place; slides from s2
 const s1Variants = {
   initial: (dir: number) => dir >= 0
     ? { opacity: 0, y: "0%" }
@@ -150,6 +150,7 @@ export function PortfolioPage() {
   useEffect(() => { sectionRef.current = section; }, [section]);
   useEffect(() => { navigateRef.current = navigate; }, [navigate]);
 
+
   // ── Carousel ──────────────────────────────────────────────────────────────
   const nextCard = useCallback(() => {
     setCarouselStart(s => (s >= maxCarouselStart ? 0 : s + 1));
@@ -176,6 +177,13 @@ export function PortfolioPage() {
   const CAROUSEL_GAP = 24;
   const PEEK_WIDTH = 100;
   const PEEK_GAP = 24;
+  // trackX/cardPxWidth start at 0 and are only measured from the container
+  // after mount — the track's own animate={{x:trackX}} would otherwise play
+  // that very first correction (0 → its real offset) as a visible 1.4s slide
+  // every time section 1 is entered. hasMeasuredRef makes that first snap
+  // instant; only genuine next/prev navigation afterward actually animates.
+  const hasMeasuredRef = useRef(false);
+  const [trackTransition, setTrackTransition] = useState<Transition>({ duration: 0 });
   const updateTrackX = useCallback(() => {
     const el = carouselContainerRef.current;
     if (!el) return;
@@ -183,9 +191,11 @@ export function PortfolioPage() {
     const w = (el.offsetWidth - reserved - CAROUSEL_GAP) / 2;
     setCardPxWidth(w);
     setTrackX(reserved - carouselStart * (w + CAROUSEL_GAP));
+    if (hasMeasuredRef.current) setTrackTransition(CAROUSEL_TRANSITION);
+    else hasMeasuredRef.current = true;
   }, [carouselStart]);
 
-  useEffect(() => { updateTrackX(); }, [updateTrackX]);
+  useLayoutEffect(() => { updateTrackX(); }, [updateTrackX]);
 
   useEffect(() => {
     const el = carouselContainerRef.current;
@@ -426,40 +436,23 @@ export function PortfolioPage() {
               ) : (
                 <div style={{ flex: 1, minHeight: 0, overflow: "hidden", marginTop: "70px" }}>
                   <div style={{ display: "flex", gap: "20px", height: "100%", transform: "translateX(-10vw)" }}>
-                    {STRIP_CARDS.map((card, i) => {
-                      const lid = i === 0 ? "pf-img-2" : i === 1 ? "pf-img-0" : i === 2 ? "pf-img-1" : undefined;
-                      return lid ? (
-                        <motion.div
-                          key={i}
-                          layoutId={lid}
-                          transition={{ layout: T }}
-                          style={{
-                            width: "20vw", flexShrink: 0, height: "100%",
-                            overflow: "hidden", background: "#d0d0d0", position: "relative",
-                            borderRadius: "16px 16px 0 0",
-                          }}
-                        >
-                          <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                        </motion.div>
-                      ) : (
-                        // Non-shared strip images fade out quickly on their own, so they
-                        // never linger mid-crossfade and overlap section 1's content —
-                        // only the two morphing (layoutId) images and the dedicated
-                        // section 1 peek sliver stay visible once the transition settles.
-                        <motion.div
-                          key={i}
-                          animate={{ opacity: section === 0 ? 1 : 0 }}
-                          transition={{ duration: 0.25 }}
-                          style={{
-                            width: "20vw", flexShrink: 0, height: "100%",
-                            overflow: "hidden", background: "#d0d0d0", position: "relative",
-                            borderRadius: "16px 16px 0 0",
-                          }}
-                        >
-                          <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                        </motion.div>
-                      );
-                    })}
+                    {STRIP_CARDS.map((card, i) => (
+                      // Fades out with the rest of section 0 on its own (no shared-layout
+                      // link to section 1) so it never lingers mid-crossfade or overlaps
+                      // section 1's content while scrolling between sections.
+                      <motion.div
+                        key={i}
+                        animate={{ opacity: section === 0 ? 1 : 0 }}
+                        transition={{ duration: 0.25 }}
+                        style={{
+                          width: "20vw", flexShrink: 0, height: "100%",
+                          overflow: "hidden", background: "#d0d0d0", position: "relative",
+                          borderRadius: "16px 16px 0 0",
+                        }}
+                      >
+                        <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -481,22 +474,15 @@ export function PortfolioPage() {
 
               {/* Carousel track */}
               <div ref={carouselContainerRef} style={{ height: "90%", flexShrink: 0, overflow: "hidden", position: "relative" }}>
-                {/* Peek — shares layoutId "pf-img-2" with the first hero-strip image,
-                    so it physically animates (bottom-to-up, then sideways) from its
-                    section 0 position into this aligned sliver as the transition plays,
-                    instead of just cutting to a static decorative crop. */}
+                {/* Peek — a static decorative sliver echoing the section 0 hero strip. */}
                 {!isMobile && (
-                  <motion.div
-                    layoutId="pf-img-2"
-                    transition={{ layout: T }}
-                    style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${PEEK_WIDTH}px`, overflow: "hidden", zIndex: 0 }}
-                  >
+                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${PEEK_WIDTH}px`, overflow: "hidden", zIndex: 0 }}>
                     <img src={STRIP_CARDS[0].img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                  </motion.div>
+                  </div>
                 )}
                 <motion.div
                   animate={{ x: trackX }}
-                  transition={CAROUSEL_TRANSITION}
+                  transition={trackTransition}
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={0.06}
@@ -507,7 +493,6 @@ export function PortfolioPage() {
                   style={{ display: "flex", gap: "24px", height: "100%", cursor: "grab" }}
                 >
                   {METRIC_CARDS.map((card, i) => {
-                    const lid = i === 0 ? "pf-img-0" : i === 1 ? "pf-img-1" : undefined;
                     return (
                     <div key={i} style={{
                       minWidth: cardPxWidth > 0 ? `${cardPxWidth}px` : "50%",
@@ -518,13 +503,9 @@ export function PortfolioPage() {
                       boxSizing: "border-box",
                     }}>
                       <div style={{ flex: 1, overflow: "hidden", minHeight: 0, borderRadius: "16px" }}>
-                        <motion.div
-                          layoutId={lid}
-                          transition={{ layout: T }}
-                          style={{ height: "100%", position: "relative", overflow: "hidden", borderRadius: "16px" }}
-                        >
+                        <div style={{ height: "100%", position: "relative", overflow: "hidden", borderRadius: "16px" }}>
                           <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                        </motion.div>
+                        </div>
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: "14px", paddingLeft: "24px" }}>
                         {i === 2 ? (

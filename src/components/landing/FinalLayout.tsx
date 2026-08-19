@@ -52,10 +52,10 @@ function TaglineContainer() {
   );
 }
 
-function TextContainer() {
+function TextContainer({ skipIntro = false }: { skipIntro?: boolean } = {}) {
   return (
     <motion.div
-      initial={{ scale: 0.8, opacity: 0 }}
+      initial={skipIntro ? false : { scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="absolute content-stretch flex flex-col gap-[24px] items-center justify-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] text-center"
@@ -83,7 +83,7 @@ function ArrowContainer({ onPrev, onNext }: { onPrev?: () => void; onNext?: () =
   const [hoverNext, setHoverNext] = useState(false);
 
   return (
-    <div className="content-stretch flex gap-[24px] items-center relative shrink-0">
+    <div className="content-stretch flex gap-[10px] items-center relative shrink-0">
       <div
         className="content-stretch flex items-center relative shrink-0 cursor-pointer"
         onClick={(e) => { e.stopPropagation(); onPrev?.(); }}
@@ -289,9 +289,9 @@ export function VerticalContent() {
 
 // --- Exported Components ---
 
-export function FinalGrid() {
+export function FinalGrid({ skipIntro = false }: { skipIntro?: boolean } = {}) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} className="absolute inset-0 pointer-events-none overflow-hidden">
+    <motion.div initial={skipIntro ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} className="absolute inset-0 pointer-events-none overflow-hidden">
       <div className="absolute inset-0 opacity-[0.02]">
         <div className="w-full h-full bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
@@ -299,10 +299,10 @@ export function FinalGrid() {
   )
 }
 
-export function FinalCircle() {
+export function FinalCircle({ skipIntro = false }: { skipIntro?: boolean } = {}) {
   return (
     <motion.div
-      initial={{ scale: 0.45, opacity: 0 }}
+      initial={skipIntro ? false : { scale: 0.45, opacity: 0 }}
       animate={{ scale: 0.8, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="absolute left-1/2 size-[1016px] top-1/2 translate-x-[-50%] translate-y-[-50%] pointer-events-none"
@@ -314,10 +314,10 @@ export function FinalCircle() {
   )
 }
 
-export function FinalOverlay() {
+export function FinalOverlay({ skipIntro = false }: { skipIntro?: boolean } = {}) {
   return (
     <div className="absolute inset-0 pointer-events-none">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+      <motion.div initial={skipIntro ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
         <WeAre />
         <TaglineContainer />
 
@@ -332,7 +332,7 @@ export function FinalOverlay() {
         </div>
       </motion.div>
 
-      <TextContainer />
+      <TextContainer skipIntro={skipIntro} />
     </div>
   );
 }
@@ -416,8 +416,8 @@ export function ScrollContainer({ onNext, onPrev, hideText }: { onNext?: () => v
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute bottom-[40px] content-stretch flex items-center justify-between left-0 px-[80px] z-20 pointer-events-auto"
-      style={{ width: "70vw" }}
+      className="absolute bottom-[40px] content-stretch flex items-center justify-between left-0 pr-[80px] z-20 pointer-events-auto"
+      style={{ width: "70vw", paddingLeft: "calc(max(20px, calc((70vw - min(1200px, calc(70vw - 40px))) / 2)) + 24px)" }}
     >
       <ArrowContainer onPrev={onPrev} onNext={onNext} />
       <motion.p
@@ -463,7 +463,7 @@ const SERVICE_IMG_MAP: Record<string, string> = {
   influencer,
 };
 
-export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk = false, barHeight = 56 }: { dark?: boolean; containerWidth?: string; logoSrc?: string; refinedLetsTalk?: boolean; barHeight?: number }) {
+export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk = false, barHeight = 56, skipIntro = false }: { dark?: boolean; containerWidth?: string; logoSrc?: string; refinedLetsTalk?: boolean; barHeight?: number; skipIntro?: boolean }) {
   const navigate = useNavigate();
   const [serviceOpen, setServiceOpen] = useState(false);
   const [hoveredSlug, setHoveredSlug] = useState<string>("performance-marketing");
@@ -586,7 +586,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
 
       {/* ── Nav bar (unchanged desktop layout) ── */}
       <motion.div
-      initial={{ y: -16, opacity: 0 }}
+      initial={skipIntro ? false : { y: -16, opacity: 0 }}
       animate={{
         y: 0,
         opacity: 1,

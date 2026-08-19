@@ -254,7 +254,7 @@ export function Logo() {
     );
 }
 
-export function LogoGroup({ animateState, scale = 1 }: { animateState?: string; scale?: number }) {
+export function LogoGroup({ animateState, scale = 1, skipIntro = false }: { animateState?: string; scale?: number; skipIntro?: boolean }) {
   return (
     <div
         className="absolute inset-0"
@@ -263,7 +263,7 @@ export function LogoGroup({ animateState, scale = 1 }: { animateState?: string; 
       <motion.div
           className="absolute inset-0"
           variants={containerVariants}
-          initial="hidden"
+          initial={skipIntro ? false : "hidden"}
           animate={animateState}
       >
         <Logo />

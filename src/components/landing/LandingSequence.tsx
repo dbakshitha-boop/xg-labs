@@ -24,27 +24,31 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
     const navigate = useNavigate();
     const { open: openContactForm } = useContactForm();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [containerExpanded, setContainerExpanded] = useState(false);
-    const [showLogos, setShowLogos] = useState(false);
-    const [slideLogos, setSlideLogos] = useState(false);
-    const [fullScreen, setFullScreen] = useState(false);
-    
-    // Split final state into phases
-    const [layoutShift, setLayoutShift] = useState(false); // 1. Container resizes, Moves Left, Image Grid enters
-    const [logoExiting, setLogoExiting] = useState(false); // 2. Logo shrinks/fades
-    const [showContent, setShowContent] = useState(false); // 3. Text/Nav enters
+    // Returning visits (skipIntro) start every phase already-settled so nothing
+    // replays the intro montage — see the initial={false} guards on the motion
+    // elements these flags drive further down.
+    const [containerExpanded, setContainerExpanded] = useState(skipIntro);
+    const [showLogos, setShowLogos] = useState(skipIntro);
+    const [slideLogos, setSlideLogos] = useState(skipIntro);
+    const [fullScreen, setFullScreen] = useState(skipIntro);
 
-    // Scroll State
-    const [scrollStep, setScrollStep] = useState(0);
+    // Split final state into phases
+    const [layoutShift, setLayoutShift] = useState(skipIntro); // 1. Container resizes, Moves Left, Image Grid enters
+    const [logoExiting, setLogoExiting] = useState(skipIntro); // 2. Logo shrinks/fades
+    const [showContent, setShowContent] = useState(skipIntro); // 3. Text/Nav enters
+
+    // Scroll State — jump straight to the last step on arrival when returning via
+    // back-navigation or a deep link meant to land past the hero (see jumpPastHero).
+    const [scrollStep, setScrollStep] = useState(skipIntro && jumpPastHero ? 3 : 0);
     const lastStepTime = useRef(0);       // when the last step fired (for throttle)
     const lastEventTime = useRef(0);      // when the last wheel event arrived (for gesture reset)
     const scrollDeltaAccumulator = useRef(0);
     const gestureLocked = useRef(false);  // once a step fires, ignore the rest of this same trackpad gesture (momentum tail)
     const { scrollY } = useScroll();
     const transitionOpacity = useTransform(scrollY, [0, 800], [0, 1]);
-    
+
     // Overflow state for glow effect
-    const [overflowVisible, setOverflowVisible] = useState(false);
+    const [overflowVisible, setOverflowVisible] = useState(skipIntro);
 
     // Viewport width — drives all horizontal scroll math
     const [viewWidth, setViewWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1440);
@@ -143,18 +147,18 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
         }
     }, [logoExiting, skipIntro]);
 
-    // 8. Arriving via back-navigation or a deep link meant to land further down the page —
-    // jump straight past the horizontal carousel's last step so real page scroll unlocks
-    // immediately, instead of requiring the user to manually wheel through it again.
-    useEffect(() => {
-        if (showContent && skipIntro && jumpPastHero) {
-            setScrollStep(3);
-        }
-    }, [showContent, skipIntro, jumpPastHero]);
-
     // Lock Body Scroll when in Horizontal Mode
     useEffect(() => {
         if (!showContent) {
+            // The intro (logo formation, or the horizontal carousel once it's showing) only
+            // makes sense playing from the top of the page. Forcing it here — rather than
+            // trusting ScrollToTop's own reload-to-top handling to land first — means this
+            // holds regardless of effect ordering between sibling components, or the
+            // browser's own scroll restoration nudging position after the fact: if the page
+            // was left scrolled deep before a reload replays this intro, it'd otherwise play
+            // out entirely off-screen while the body stays locked, non-scrollable, at the old
+            // position — invisible until the lock lifts and the page snaps back down to it.
+            window.scrollTo(0, 0);
             document.body.style.overflow = "hidden";
             return () => { document.body.style.overflow = "auto"; };
         }
@@ -249,6 +253,33 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
         onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
+    }, [showContent, scrollStep]);
+
+    // The nav bar is visible on the hero's "Strategy First" panel (scrollStep
+    // 0) and its settled About/Contact panel (scrollStep 2) — hidden during
+    // the transition between them (scrollStep 1) and once scrollStep reaches
+    // 3 (Contact fully settled, and the rest of the page beyond that). As a
+    // convenience, once hidden it fades back in if the user stops scrolling
+    // and stays on the same section for more than 10s; scrolling again hides
+    // it and restarts the wait.
+    const [navDwellReveal, setNavDwellReveal] = useState(false);
+    useEffect(() => {
+        if (!(showContent && scrollStep === 3)) {
+            setNavDwellReveal(false);
+            return;
+        }
+        let timer: ReturnType<typeof window.setTimeout> | null = null;
+        const arm = () => {
+            if (timer != null) window.clearTimeout(timer);
+            timer = window.setTimeout(() => setNavDwellReveal(true), 10000);
+        };
+        const onScroll = () => { setNavDwellReveal(false); arm(); };
+        arm();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            if (timer != null) window.clearTimeout(timer);
+        };
     }, [showContent, scrollStep]);
 
     const getLogoState = () => {
@@ -715,28 +746,28 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
             {/* Horizontal Section - Sticky so it stays while we scroll horizontally */}
             <div className="h-screen sticky top-0 overflow-hidden">
                 {/* White Container Strip / Hero Area */}
-                <motion.div 
-                    initial={{ height: 0, width: "100%", left: "50%", top: "50%", x: "-50%", y: "-50%" }}
+                <motion.div
+                    initial={skipIntro ? false : { height: 0, width: "100%", left: "50%", top: "50%", x: "-50%", y: "-50%" }}
                     animate={getContainerAnimate()}
                     className={`absolute bg-[#f7f8fa] z-10 ${overflowVisible ? "overflow-visible" : "overflow-hidden"}`}
                 >
                     {/* Background Grid - Early layout shift */}
-                    {layoutShift && <FinalGrid />}
-                    
+                    {layoutShift && <FinalGrid skipIntro={skipIntro} />}
+
                     {/* Background Circle - Late text entry */}
-                    {showContent && <FinalCircle />}
+                    {showContent && <FinalCircle skipIntro={skipIntro} />}
 
                     {/* Original Logo Sequence */}
-                    <LogoGroup animateState={getLogoState()} />
-                    
+                    <LogoGroup animateState={getLogoState()} skipIntro={skipIntro} />
+
                     {/* New Content (We Are, Tagline, Text) - On Top */}
-                    {showContent && <FinalOverlay />}
+                    {showContent && <FinalOverlay skipIntro={skipIntro} />}
                 </motion.div>
 
                 {/* Work Section - Appearing in Final State */}
                 {layoutShift && (
                     <motion.div
-                        initial={{ x: "30%", opacity: 0 }}
+                        initial={skipIntro ? false : { x: "30%", opacity: 0 }}
                         animate={showContent ? { x: -scrollStep * viewWidth * 0.7, opacity: 1 } : { x: 0, opacity: 1 }}
                         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: showContent ? 0 : 0.1 }}
                         className="absolute inset-0 pointer-events-none"
@@ -750,7 +781,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                 {/* About Section - Only visible via scroll */}
                 {showContent && (
                     <motion.div
-                        initial={{ x: 0 }}
+                        initial={skipIntro ? false : { x: 0 }}
                         animate={{ x: -scrollStep * viewWidth * 0.7 }}
                         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute inset-0 pointer-events-none"
@@ -764,7 +795,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                 {/* Contact Section - Only visible via scroll */}
                 {showContent && (
                     <motion.div
-                        initial={{ x: 0 }}
+                        initial={skipIntro ? false : { x: 0 }}
                         animate={{ x: -scrollStep * viewWidth * 0.7 }}
                         transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                         className="absolute inset-0 pointer-events-none"
@@ -800,12 +831,12 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                         </motion.div>
 
                         <motion.div
-                             animate={{ width: scrollStep === 3 ? "100vw" : "70vw", opacity: (scrollStep === 0 || scrollStep === 2) ? 1 : 0 }}
+                             animate={{ width: scrollStep === 3 ? "100vw" : "70vw", opacity: (scrollStep === 0 || scrollStep === 2 || navDwellReveal) ? 1 : 0 }}
                              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                              className="absolute top-0 left-0 h-full z-50 pointer-events-none"
                         >
                             <div className="pointer-events-none absolute inset-0">
-                                <TopBar containerWidth={scrollStep === 3 ? "100vw" : "70vw"} />
+                                <TopBar containerWidth={scrollStep === 3 ? "100vw" : "70vw"} skipIntro={skipIntro} />
                             </div>
                         </motion.div>
 

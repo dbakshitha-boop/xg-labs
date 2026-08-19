@@ -13,8 +13,11 @@ function useIsMobile(breakpoint = 768) {
   return isMobile;
 }
 
-// Vertical offset for each card — creates the staggered waterfall layout
-const OFFSETS = [0, 64, 16, 108, 48, 92, 24, 72];
+// Vertical offset for the waterfall layout — every odd card (1st, 3rd, 5th...) shares
+// ODD_OFFSET and every even card shares EVEN_OFFSET, so within each group the position is
+// exactly identical rather than each card having its own individually-tuned value.
+const ODD_OFFSET = 0;
+const EVEN_OFFSET = 64;
 
 function pad(n: number) {
   return String(n).padStart(3, "0");
@@ -262,7 +265,7 @@ export function BlogInsightsSection() {
           paddingLeft: isMobile ? "20px" : "72px",
           paddingRight: isMobile ? "20px" : "72px",
           paddingTop: "4px",
-          paddingBottom: (isMobile ? 24 : 40) + Math.max(...OFFSETS),
+          paddingBottom: (isMobile ? 24 : 40) + Math.max(ODD_OFFSET, EVEN_OFFSET),
           scrollbarWidth: "none",
           msOverflowStyle: "none",
         }}
@@ -278,7 +281,7 @@ export function BlogInsightsSection() {
           }}
         >
           {cards.map((article, i) => {
-            const offset = isMobile ? 0 : OFFSETS[i % OFFSETS.length];
+            const offset = isMobile ? 0 : (i % 2 === 0 ? ODD_OFFSET : EVEN_OFFSET);
 
             return (
               <motion.div
@@ -287,7 +290,11 @@ export function BlogInsightsSection() {
                 whileInView={{ opacity: 1, y: offset }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={isMobile ? { duration: 0 } : {
-                  delay: i * 0.09,
+                  // Grouped by odd/even (not a per-card i * 0.09 stagger) so every odd
+                  // card enters in lockstep with card 1, and every even card with card 2 —
+                  // a linear per-index delay would put card 3 noticeably behind card 1
+                  // instead of matching it.
+                  delay: i % 2 === 0 ? 0 : 0.09,
                   duration: 1.05,
                   ease: [0.16, 1, 0.3, 1],
                 }}
@@ -298,6 +305,16 @@ export function BlogInsightsSection() {
                 <motion.div
                   animate={{ y: hoveredCard === i ? -offset : 0 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  // Cards with a non-zero waterfall offset (i.e. every card but 001) actually
+                  // move on hover, and this is what keeps the overlay glued to them while
+                  // they do. The separate requestAnimationFrame loop above re-measures every
+                  // frame too, but its timing relative to Framer's own per-frame DOM update
+                  // isn't guaranteed — it could occasionally read a not-yet-updated position,
+                  // showing up as a thin flash of the page background between the card and
+                  // the overlay right as the lift starts. onUpdate fires only once Framer has
+                  // already applied that frame's transform, so this measurement is always
+                  // reading the real, current position.
+                  onUpdate={() => { if (hoveredCard === i) measureOverlay(i); }}
                   style={{ display: "flex", flexDirection: "column", gap: "12px", flex: isMobile ? "1 1 auto" : undefined, minHeight: 0 }}
                 >
                   {/* Number + label row */}

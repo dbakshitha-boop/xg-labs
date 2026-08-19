@@ -355,15 +355,19 @@ export function SelectedWork() {
                     animate={{ opacity: index === activeIndex ? 1 : 0, y: index === activeIndex ? 0 : 26 }}
                     transition={transition}
                   >
-                    <span className="text-5xl lg:text-6xl font-['Sora',sans-serif] font-light leading-none tracking-tight shrink-0" style={{ color: "#5F5F5F", marginLeft: "-220px" }}>
+                    {/* Shifted visually via transform (not margin) so it doesn't drag the
+                        client/type block along with it — that block gets the same -80px
+                        it used to inherit from this element's margin, kept explicit here
+                        so it stays exactly where it already is regardless of this offset. */}
+                    <span className="text-5xl lg:text-6xl font-['Sora',sans-serif] font-light leading-none tracking-tight shrink-0" style={{ color: "#5F5F5F", transform: "translateX(-200px)" }}>
                       {index + 1}/{projects.length}
                     </span>
-                    <div className="flex flex-col items-start text-left" style={{ marginLeft: "100px", flexShrink: 0, whiteSpace: "nowrap" }}>
-                      <h4 className="text-lg xl:text-xl font-semibold text-[#5F5F5F] font-['Sora',sans-serif] leading-tight">
+                    <div className="flex flex-col items-start text-left" style={{ flexShrink: 0, marginLeft: index === 1 ? "-100px" : "-80px" }}>
+                      <h4 className="text-lg xl:text-xl font-semibold text-[#5F5F5F] font-['Sora',sans-serif] leading-tight whitespace-nowrap">
                         {project.client}
                       </h4>
                       {project.type && (
-                        <p className="text-xs text-[#9A9A9A] font-['Sora',sans-serif] uppercase tracking-wide mt-1">
+                        <p className="text-xs text-[#9A9A9A] font-['Sora',sans-serif] uppercase tracking-wide mt-1" style={{ maxWidth: "240px" }}>
                           {project.type}
                         </p>
                       )}

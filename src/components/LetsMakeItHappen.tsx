@@ -106,11 +106,14 @@ const MOBILE_COLUMNS: ColumnConfig[] = buildAlternatingColumns(
 const TALK_START = 0.78; // Let's Talk begins sliding up in the final stretch of progress — wider range, more gradual
 
 // How much accumulated wheel/touch delta (px) it takes to travel the whole
-// sequence from arrival to Let's Talk fully revealed.
-const SCROLL_DISTANCE = 3400;
+// sequence from arrival to Let's Talk fully revealed. Lower = same scroll
+// input covers more progress = the images travel faster.
+const SCROLL_DISTANCE = 2700;
 // Spring-smoothing on the raw accumulated delta — this is what makes the
-// motion glide instead of snapping, however jerky the raw input is.
-const PROGRESS_SPRING = { stiffness: 110, damping: 28, mass: 0.7 };
+// motion glide instead of snapping, however jerky the raw input is. Slightly
+// stiffer/less damped than before so it also tracks the (now faster) input
+// more snappily instead of trailing behind it.
+const PROGRESS_SPRING = { stiffness: 130, damping: 26, mass: 0.6 };
 
 // ─── Column ────────────────────────────────────────────────────────────────────
 function Column({
@@ -177,11 +180,27 @@ export function LetsMakeItHappen() {
   useEffect(() => progress.on("change", (v) => setTalkRevealed(v >= 0.985)), [progress]);
 
   // The moment Let's Talk finishes revealing, open the contact form
-  // automatically — no extra scroll tick needed.
+  // automatically — no extra scroll tick needed. Scrolling back up out of
+  // that revealed state closes the form again just as automatically (see the
+  // release() effect below), so scrolling up from the fully-revealed end
+  // state takes you back toward the previous section instead of leaving the
+  // form stuck open with nothing responding.
   const [formOpen, setFormOpen] = useState(false);
   useEffect(() => {
-    if (talkRevealed) setFormOpen(true);
+    setFormOpen(talkRevealed);
   }, [talkRevealed]);
+
+  // The overlay itself takes 1.7s to slide fully into view. Scroll input that
+  // arrives before that finishes must not act on it yet — otherwise a user who's
+  // still scrolling down at the moment the form opens (which is the normal case:
+  // that's exactly the scroll that just triggered it) immediately satisfies the
+  // "already at the end" release condition and the form starts sliding back out
+  // again before it ever fully arrived. Only once this is true does scrolling up
+  // or down do anything (reverse to the previous section, or release to the footer).
+  const [formFullyRevealed, setFormFullyRevealed] = useState(false);
+  useEffect(() => {
+    if (formOpen) setFormFullyRevealed(false);
+  }, [formOpen]);
 
   // The screen itself stays completely locked in place while this section is
   // engaged — every wheel tick or touch drag, up or down, is absorbed and
@@ -200,6 +219,46 @@ export function LetsMakeItHappen() {
   // to line it up exactly and engages the lock from there.
   const lockedRef = useRef(false);
   const releaseCooldownUntilRef = useRef(0);
+  // Mirrors formFullyRevealed for the window-level listeners below, whose effect only
+  // depends on [rawProgress] and so would otherwise close over a stale value of it.
+  const formFullyRevealedRef = useRef(false);
+  useEffect(() => { formFullyRevealedRef.current = formFullyRevealed; }, [formFullyRevealed]);
+  // Mirrors formOpen for the same reason — the "wait for reveal" guard below must only
+  // apply once the form has actually opened, not during the ordinary image-panning phase
+  // that precedes it (where formFullyRevealed is also still false, but nothing should be
+  // blocked yet).
+  const formOpenRef = useRef(false);
+  useEffect(() => { formOpenRef.current = formOpen; }, [formOpen]);
+
+  // Releasing the lock. Backward (scrolling up past the start) just hands
+  // control back to native scrolling — that already glides fine on its own.
+  // Forward (scrolling down past the fully-revealed form) can't rely on the
+  // next native wheel/touch event to carry the page down to the footer: the
+  // overlay that's still on-screen during its 1.7s exit has its own
+  // `overflowY: auto` content area, so a wheel tick right after release can
+  // get absorbed scrolling the form's own content instead of the page.
+  //
+  // The page is jumped to the footer INSTANTLY rather than smooth-scrolled —
+  // the overlay is a full-screen, solid, position:fixed panel for its entire
+  // 1.7s exit, so the jump is completely invisible at the instant it happens.
+  // A smooth window scroll here would instead run on its own (much shorter,
+  // browser-controlled) timeline racing independently against the overlay's
+  // slide-away, finishing early and leaving the footer visible alongside the
+  // still-sliding form. Jumping first means the overlay's own slide-down is
+  // the ONLY visible motion — a single, smooth reveal of the (already
+  // correctly positioned) footer as it uncovers it.
+  function releaseLock(forward: boolean) {
+    lockedRef.current = false;
+    releaseCooldownUntilRef.current = Date.now() + (forward ? 1200 : 500);
+    if (forward) {
+      const el = sectionRef.current;
+      if (el) {
+        const target = window.scrollY + el.getBoundingClientRect().height;
+        window.scrollTo(0, target);
+      }
+    }
+    setFormOpen(false);
+  }
   useEffect(() => {
     function tryEngage() {
       if (lockedRef.current || Date.now() < releaseCooldownUntilRef.current) return;
@@ -210,11 +269,6 @@ export function LetsMakeItHappen() {
         if (rect.top !== 0) window.scrollBy(0, rect.top);
         lockedRef.current = true;
       }
-    }
-
-    function release() {
-      lockedRef.current = false;
-      releaseCooldownUntilRef.current = Date.now() + 500;
     }
 
     function onScroll() {
@@ -232,9 +286,23 @@ export function LetsMakeItHappen() {
     function onWheel(e: WheelEvent) {
       tryEngage();
       if (!lockedRef.current) return;
+      // The contact form overlay intercepts wheel events itself once it's open (see its
+      // own onWheel), so this branch is mostly a defensive backstop — but it mirrors the
+      // same "ignore input until the 1.7s reveal finishes" rule for consistency.
+      if (formOpenRef.current && !formFullyRevealedRef.current) { e.preventDefault(); return; }
       const current = rawProgress.get();
-      if (e.deltaY > 0 && current >= SCROLL_DISTANCE) { release(); return; } // fully forward — release down
-      if (e.deltaY < 0 && current <= 0) { release(); return; } // fully back — release up
+      if (e.deltaY > 0 && current >= SCROLL_DISTANCE) {
+        // rawProgress (set directly from input deltas) reaches this cap before the
+        // spring-smoothed progress that actually drives talkRevealed/formOpen has
+        // caught up — releasing on raw alone would jump the page to the footer
+        // before the form has even opened, so it reopens moments later already
+        // sitting on top of it. Release must wait for the same "fully revealed"
+        // signal as everything else, not just the raw input hitting its ceiling.
+        if (!formFullyRevealedRef.current) { e.preventDefault(); return; }
+        releaseLock(true);
+        return;
+      }
+      if (e.deltaY < 0 && current <= 0) { releaseLock(false); return; } // fully back — release up
       e.preventDefault();
       rawProgress.set(Math.min(Math.max(current + e.deltaY, 0), SCROLL_DISTANCE));
     }
@@ -246,13 +314,25 @@ export function LetsMakeItHappen() {
     function onTouchMove(e: TouchEvent) {
       if (lastTouchY == null) return;
       tryEngage();
-      if (!lockedRef.current) return;
       const currentY = e.touches[0]?.clientY ?? lastTouchY;
       const dy = lastTouchY - currentY; // finger up → dy > 0 → same sense as wheel deltaY > 0
-      lastTouchY = currentY;
+      lastTouchY = currentY; // tracked unconditionally, even while ignored below, so the
+      // delta doesn't jump once processing resumes
+      if (!lockedRef.current) return;
+      // Touch events aren't intercepted by the overlay the way wheel events are, so this
+      // is the actual, load-bearing guard on mobile: without it, continuing to swipe
+      // down (the same swipe that just triggered the form to open) immediately releases
+      // and starts closing it again before the 1.7s reveal ever finishes.
+      if (formOpenRef.current && !formFullyRevealedRef.current) { e.preventDefault(); return; }
       const current = rawProgress.get();
-      if (dy > 0 && current >= SCROLL_DISTANCE) { release(); return; }
-      if (dy < 0 && current <= 0) { release(); return; }
+      if (dy > 0 && current >= SCROLL_DISTANCE) {
+        // Same race as the wheel handler above — rawProgress caps out before the
+        // spring-smoothed progress driving the reveal has caught up.
+        if (!formFullyRevealedRef.current) { e.preventDefault(); return; }
+        releaseLock(true);
+        return;
+      }
+      if (dy < 0 && current <= 0) { releaseLock(false); return; }
       e.preventDefault();
       rawProgress.set(Math.min(Math.max(current + dy, 0), SCROLL_DISTANCE));
     }
@@ -432,10 +512,37 @@ export function LetsMakeItHappen() {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ duration: 1.7, ease: [0.16, 1, 0.3, 1] }}
-            // Stops wheel events from bubbling to window — otherwise the home
-            // page's hero carousel (which listens on window for horizontal
-            // scroll) still advances underneath this fixed overlay.
-            onWheel={(e) => e.stopPropagation()}
+            onAnimationComplete={() => setFormFullyRevealed(true)}
+            // While still locked, stops wheel events from bubbling to window — otherwise
+            // the home page's hero carousel (which listens on window regardless of
+            // scroll position) still reacts to them underneath this fixed overlay. That
+            // means this can't just let events through to the lock effect's own window
+            // listener above to reverse progress — it has to replicate that same
+            // decrement/release logic itself, directly, so scrolling up from here closes
+            // the form and reverses the images back toward the previous section, and
+            // scrolling down releases forward the same way it would anywhere else in the
+            // sequence. Once actually released, this stops intercepting entirely and lets
+            // events bubble normally — AnimatePresence keeps this overlay mounted (and
+            // this handler attached) for its whole 1.7s exit slide-away, and continuing
+            // to swallow every event for that entire stretch would make real scrolling
+            // (and the footer coming into view) feel stuck for nearly two seconds after
+            // release, rather than resuming immediately on the very next tick.
+            //
+            // Everything above only applies once formFullyRevealed — until the 1.7s
+            // slide-in finishes, scroll input is fully absorbed and ignored. Without that,
+            // continuing to scroll down (the same scroll that just triggered the form to
+            // open) would immediately hit the "already at the end" release branch and
+            // start closing it again before it ever fully arrived.
+            onWheel={(e) => {
+              if (!lockedRef.current) return;
+              e.stopPropagation();
+              e.preventDefault();
+              if (!formFullyRevealed) return;
+              const current = rawProgress.get();
+              if (e.deltaY > 0 && current >= SCROLL_DISTANCE) { releaseLock(true); return; }
+              if (e.deltaY < 0 && current <= 0) { releaseLock(false); return; }
+              rawProgress.set(Math.min(Math.max(current + e.deltaY, 0), SCROLL_DISTANCE));
+            }}
             style={{
               position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
               zIndex: 300, background: "#0e0e0e",
