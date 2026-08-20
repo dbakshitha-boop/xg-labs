@@ -303,6 +303,16 @@ export function LetsMakeItHappen() {
       if (rect.top <= 0 && rect.bottom > 0) {
         if (rect.top !== 0) window.scrollBy(0, rect.top);
         lockedRef.current = true;
+        // Applied synchronously here, not just via setLocked below (which only takes
+        // effect once React re-renders and runs the body-lock effect) — otherwise
+        // there's a real gap, right at this instant, where the scroll position has
+        // just been corrected but the page is still natively scrollable. Any
+        // continued momentum in that gap nudges it off again, gets corrected again,
+        // and that rapid back-and-forth is what reads as the section "shaking"
+        // right as it's reached. setLocked still runs, both to keep the state
+        // truthful for anything else reading it and so the effect's cleanup
+        // correctly resets this on release.
+        document.body.style.overflow = "hidden";
         setLocked(true);
       }
     }
