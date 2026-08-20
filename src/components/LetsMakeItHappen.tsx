@@ -114,6 +114,13 @@ const SCROLL_DISTANCE = 2700;
 // stiffer/less damped than before so it also tracks the (now faster) input
 // more snappily instead of trailing behind it.
 const PROGRESS_SPRING = { stiffness: 130, damping: 26, mass: 0.6 };
+// Touch deltas are raw finger-travel pixels, bounded by the screen itself —
+// one full swipe on a ~800px-tall phone only covers ~800px, meaning the
+// SCROLL_DISTANCE above takes 3+ full swipes to get through. Wheel deltas
+// don't have that ceiling (a single trackpad flick or a few notches can
+// already cover it), so this amplifies touch input specifically to bring the
+// two into a comparable number of gestures, without changing desktop's pacing.
+const TOUCH_SENSITIVITY = 1.8;
 
 // ─── Column ────────────────────────────────────────────────────────────────────
 function Column({
@@ -344,9 +351,11 @@ export function LetsMakeItHappen() {
       if (lastTouchY == null) return;
       tryEngage();
       const currentY = e.touches[0]?.clientY ?? lastTouchY;
-      const dy = lastTouchY - currentY; // finger up → dy > 0 → same sense as wheel deltaY > 0
-      lastTouchY = currentY; // tracked unconditionally, even while ignored below, so the
-      // delta doesn't jump once processing resumes
+      // finger up → dy > 0 → same sense as wheel deltaY > 0; amplified by TOUCH_SENSITIVITY
+      // so a swipe covers more progress than its raw travel distance would alone.
+      const dy = (lastTouchY - currentY) * TOUCH_SENSITIVITY;
+      lastTouchY = currentY; // tracked unconditionally (raw position, not the scaled delta),
+      // even while ignored below, so the delta doesn't jump once processing resumes
       if (!lockedRef.current) return;
       // Touch events aren't intercepted by the overlay the way wheel events are, so this
       // is the actual, load-bearing guard on mobile: without it, continuing to swipe
