@@ -481,6 +481,34 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // On mobile, the nav bar stays out of the way by default and only reveals
+  // itself if the user stops scrolling and stays on the same section for
+  // more than 10s — scrolling again hides it and restarts the wait. Always
+  // visible on desktop, and always visible while the hamburger menu is open.
+  const [isMobileNav, setIsMobileNav] = useState(() => typeof window !== "undefined" ? window.innerWidth < 1024 : false);
+  useEffect(() => {
+    const onResize = () => setIsMobileNav(window.innerWidth < 1024);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  const [mobileNavDwellVisible, setMobileNavDwellVisible] = useState(false);
+  useEffect(() => {
+    if (!isMobileNav) { setMobileNavDwellVisible(false); return; }
+    let timer: ReturnType<typeof window.setTimeout> | null = null;
+    const arm = () => {
+      if (timer != null) window.clearTimeout(timer);
+      timer = window.setTimeout(() => setMobileNavDwellVisible(true), 10000);
+    };
+    const onScroll = () => { setMobileNavDwellVisible(false); arm(); };
+    arm();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (timer != null) window.clearTimeout(timer);
+    };
+  }, [isMobileNav]);
+  const mobileNavVisible = !isMobileNav || mobileMenuOpen || mobileNavDwellVisible;
+
   return (
     <>
       <style>{`
@@ -589,7 +617,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
       initial={skipIntro ? false : { y: -16, opacity: 0 }}
       animate={{
         y: 0,
-        opacity: 1,
+        opacity: mobileNavVisible ? 1 : 0,
         boxShadow: dark || mobileMenuOpen
           ? "none"
           : scrolled
@@ -602,10 +630,11 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
         boxShadow: { duration: 0.3, ease: "easeInOut" },
       }}
       onMouseLeave={() => setServiceOpen(false)}
-      className={`fixed flex flex-col ${mobileMenuOpen ? "top-0" : "top-[40px]"} z-50 pointer-events-auto ${mobileMenuOpen ? "rounded-none" : "rounded-[8px] topbar-pill"} ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
+      className={`fixed flex flex-col ${mobileMenuOpen ? "top-0" : "top-[40px]"} z-50 ${mobileMenuOpen ? "rounded-none" : "rounded-[8px] topbar-pill"} ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
       style={(() => {
+        const pointerEvents = mobileNavVisible ? "auto" as const : "none" as const;
         if (mobileMenuOpen) {
-          return { left: "0px", width: "100%", ...(dark ? { background: "#2A2A2A" } : {}) };
+          return { left: "0px", width: "100%", pointerEvents, ...(dark ? { background: "#2A2A2A" } : {}) };
         }
         const w = containerWidth ?? "100vw";
         const pad = containerWidth ? "40px" : "56px";
@@ -615,6 +644,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
         return {
           left: barLeft,
           width: barW,
+          pointerEvents,
           ...(dark ? { background: "#2A2A2A" } : {}),
         };
       })()}

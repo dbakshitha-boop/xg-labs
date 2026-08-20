@@ -71,7 +71,11 @@ function normalizeTags(str: string): string {
 // ─── Animation constants ──────────────────────────────────────────────────────
 
 const T: Transition = { duration: 1.0, ease: [0.16, 1, 0.3, 1] };
-const CAROUSEL_TRANSITION: Transition = { duration: 1.4, ease: [0.16, 1, 0.3, 1] };
+const CAROUSEL_TRANSITION: Transition = { type: "spring", stiffness: 110, damping: 24, mass: 0.9 };
+
+// Carousel track sizing — accounts for the 24px track gap so two cards plus
+// the gap between them exactly fill the container (no overflow-clipped sliver).
+const CAROUSEL_GAP = 24;
 
 // Matches TopBar's horizontal inset exactly (FinalLayout.tsx: min(1320px, 100vw - 56px), centered)
 // so page content lines up with the nav bar's left/right edges instead of using a fixed padding.
@@ -116,6 +120,10 @@ export function PortfolioPage() {
 
   const [carouselStart, setCarouselStart] = useState(0);
   const [activeFilter, setActiveFilter] = useState("ALL");
+  // The carouselStart===0 resting position is 0 — a fixed constant, not
+  // something that needs measuring — so this is already correct on the very
+  // first frame, with no dependency on exactly when a layout effect fires
+  // relative to mount.
   const [trackX, setTrackX] = useState(0);
   const [cardPxWidth, setCardPxWidth] = useState(0);
 
@@ -170,32 +178,39 @@ export function PortfolioPage() {
     return () => clearTimeout(t);
   }, [section, carouselStart, nextCard, maxCarouselStart]);
 
-  // Pixel-accurate card width — accounts for the 24px track gap so two cards
-  // plus the gap between them exactly fill the container (no overflow-clipped sliver).
-  // PEEK_WIDTH/PEEK_GAP reserve a permanent sliver on the left for the decorative
-  // peek of the last hero-strip image, echoing the section 0 → section 1 transition.
-  const CAROUSEL_GAP = 24;
-  const PEEK_WIDTH = 100;
-  const PEEK_GAP = 24;
-  // trackX/cardPxWidth start at 0 and are only measured from the container
-  // after mount — the track's own animate={{x:trackX}} would otherwise play
-  // that very first correction (0 → its real offset) as a visible 1.4s slide
-  // every time section 1 is entered. hasMeasuredRef makes that first snap
-  // instant; only genuine next/prev navigation afterward actually animates.
+  // cardPxWidth starts at 0 and is only measured from the container after
+  // mount, so it falls back to "50%" until then (see minWidth below) — a
+  // plain style value, so it just snaps to the real width once measured, no
+  // animation involved. trackX doesn't have that luxury (its animate prop
+  // does animate every change), which is why it's seeded correctly above
+  // instead. hasMeasuredRef still guards the transition itself, since a
+  // ResizeObserver-driven correction (e.g. window resize) should also snap
+  // instantly rather than replaying the slide.
   const hasMeasuredRef = useRef(false);
   const [trackTransition, setTrackTransition] = useState<Transition>({ duration: 0 });
   const updateTrackX = useCallback(() => {
     const el = carouselContainerRef.current;
     if (!el) return;
-    const reserved = PEEK_WIDTH + PEEK_GAP;
-    const w = (el.offsetWidth - reserved - CAROUSEL_GAP) / 2;
+    const w = (el.offsetWidth - CAROUSEL_GAP) / 2;
     setCardPxWidth(w);
-    setTrackX(reserved - carouselStart * (w + CAROUSEL_GAP));
+    setTrackX(-carouselStart * (w + CAROUSEL_GAP));
     if (hasMeasuredRef.current) setTrackTransition(CAROUSEL_TRANSITION);
     else hasMeasuredRef.current = true;
   }, [carouselStart]);
 
-  useLayoutEffect(() => { updateTrackX(); }, [updateTrackX]);
+  // The very first measurement runs synchronously before paint (useLayoutEffect,
+  // mount only) so there's never a flash of the un-measured x:0 position. Every
+  // later carouselStart change (a genuine next/prev navigation) instead runs
+  // through a normal, post-paint effect — running that one synchronously too
+  // would apply the new x target before the browser ever painted the previous
+  // one, leaving Framer nothing to animate from and making the slide look instant.
+  const skipNextNormalEffectRef = useRef(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => { updateTrackX(); }, []);
+  useEffect(() => {
+    if (skipNextNormalEffectRef.current) { skipNextNormalEffectRef.current = false; return; }
+    updateTrackX();
+  }, [carouselStart]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const el = carouselContainerRef.current;
@@ -264,12 +279,12 @@ export function PortfolioPage() {
     return (
       <div style={{ minHeight: "100dvh", background: "#E9F0FF", overflowY: "auto" }}>
         {/* TopBar */}
-        <div style={{ position: "sticky", top: 0, zIndex: 100, height: "96px" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 100, height: "76px" }}>
           <TopBar refinedLetsTalk />
         </div>
 
         {/* Hero text */}
-        <div style={{ padding: "32px 40px 28px" }}>
+        <div style={{ padding: "20px 40px 28px" }}>
           <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: "clamp(32px, 9vw, 48px)", lineHeight: "94%", letterSpacing: "-0.04em", textTransform: "uppercase", color: "#414141", margin: "0 0 16px" }}>
             A curated selection of our most impactful projects.
           </h1>
@@ -474,12 +489,6 @@ export function PortfolioPage() {
 
               {/* Carousel track */}
               <div ref={carouselContainerRef} style={{ height: "90%", flexShrink: 0, overflow: "hidden", position: "relative" }}>
-                {/* Peek — a static decorative sliver echoing the section 0 hero strip. */}
-                {!isMobile && (
-                  <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${PEEK_WIDTH}px`, overflow: "hidden", zIndex: 0 }}>
-                    <img src={STRIP_CARDS[0].img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                  </div>
-                )}
                 <motion.div
                   animate={{ x: trackX }}
                   transition={trackTransition}

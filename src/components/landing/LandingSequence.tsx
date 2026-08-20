@@ -369,6 +369,28 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
     // Clamp so the 600px-wide logo mark fits ~78% of the viewport width.
     const logoScale = Math.min(0.85, Math.max(0.4, (viewWidth * 0.78) / 600));
 
+    // On mobile, the fixed navbar below stays out of the way by default and
+    // only reveals itself if the user stops scrolling and stays on the same
+    // section for more than 10s — scrolling again hides it and restarts the
+    // wait. Always visible while the hamburger menu itself is open.
+    const [mobileNavDwellVisible, setMobileNavDwellVisible] = useState(false);
+    useEffect(() => {
+        if (!(isMobile && showContent)) { setMobileNavDwellVisible(false); return; }
+        let timer: ReturnType<typeof window.setTimeout> | null = null;
+        const arm = () => {
+            if (timer != null) window.clearTimeout(timer);
+            timer = window.setTimeout(() => setMobileNavDwellVisible(true), 10000);
+        };
+        const onScroll = () => { setMobileNavDwellVisible(false); arm(); };
+        arm();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            if (timer != null) window.clearTimeout(timer);
+        };
+    }, [isMobile, showContent]);
+    const mobileNavVisible = mobileMenuOpen || mobileNavDwellVisible;
+
     // ── Mobile layout — completely bypasses the JS horizontal scroll animation ──
     if (isMobile) {
         const NAV_ITEMS = ["Our Edge", "Services", "Portfolio", "Blog", "Contact"] as const;
@@ -491,7 +513,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                 </AnimatePresence>
 
                 {/* ── Fixed mobile/tablet navbar ── */}
-                <div style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", width: "calc(100% - 40px)", maxWidth: isTablet ? 880 : 600, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 0 15px rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 12px 4px 6px", height: 52 }}>
+                <div style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", width: "calc(100% - 40px)", maxWidth: isTablet ? 880 : 600, zIndex: 200, background: "#fff", borderRadius: 8, boxShadow: "0 0 15px rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 12px 4px 6px", height: 52, opacity: mobileNavVisible ? 1 : 0, pointerEvents: mobileNavVisible ? "auto" : "none", transition: "opacity 0.35s ease" }}>
                     <img alt="XG Labs" src={mobileLogo} style={{ height: 42, width: "auto", display: "block", cursor: "pointer" }} onClick={() => navigate("/", { state: { skipLoading: true } })} />
                     <div style={{ display: "flex", alignItems: "center", gap: isTablet ? 22 : 10 }}>
                         {/* Let's Talk button — tablet only */}
@@ -664,12 +686,12 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                 </div>
 
                 {/* ── WE'RE XG LABS section ── */}
-                <div ref={mobileFormPrevRef} style={{ position: "relative", background: "#f7f8fa", height: isTablet ? 755 : 790, overflow: "hidden" }}>
+                <div ref={mobileFormPrevRef} style={{ position: "relative", background: "#f7f8fa", height: isTablet ? 755 : 745, overflow: "hidden" }}>
                     <FinalGrid />
                     {/* Circle — sized so text fits inside it */}
                     <div style={{
                         position: "absolute", left: "50%",
-                        top: isTablet ? "340px" : "300px",
+                        top: isTablet ? "340px" : "255px",
                         transform: "translate(-50%, -50%)",
                         width: isTablet ? "min(78vw, 600px)" : "min(88vw, 460px)",
                         height: isTablet ? "min(78vw, 600px)" : "min(88vw, 460px)",
@@ -686,7 +708,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                     {/* Text block — centered on the circle's center point */}
                     <div style={{
                         position: "absolute", left: "50%",
-                        top: isTablet ? "340px" : "300px",
+                        top: isTablet ? "340px" : "255px",
                         transform: "translate(-50%, -50%)",
                         zIndex: 1,
                         width: isTablet ? "min(62vw, 480px)" : "min(68vw, 300px)",
@@ -722,7 +744,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                     </motion.div>
                     </div>
                     {/* Cards — same collage on phone and tablet, just scaled up for the bigger circle. */}
-                    {startSequence && <CardImages isVisible={true} scale={isTablet ? 1.65 : 1.25} top={isTablet ? 390 : 510} />}
+                    {startSequence && <CardImages isVisible={true} scale={isTablet ? 1.65 : 1.25} top={isTablet ? 390 : 465} />}
                 </div>
 
                 {/* ── Contact form section (mobile/tablet) ── */}

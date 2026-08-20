@@ -115,12 +115,12 @@ export function BlogPage() {
     return (
       <div style={{ minHeight: "100vh", background: "#F7F8FA" }}>
         {/* Sticky TopBar */}
-        <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%", height: "96px" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 100, width: "100%", height: "76px" }}>
           <TopBar />
         </div>
 
         {/* Hero */}
-        <section style={{ background: "#F7F8FA", padding: "16px 40px 32px" }}>
+        <section style={{ background: "#F7F8FA", padding: "8px 40px 32px" }}>
           <h1 style={{ fontFamily: "'Cal Sans'", fontWeight: 400, fontSize: "clamp(24px, 7vw, 34px)", lineHeight: "1.05", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#414141", margin: "0 0 14px" }}>
             Ideas that help brands grow smarter and scale faster.
           </h1>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion, useScroll } from "motion/react";
+import { motion } from "motion/react";
 import svgPaths from "../../imports/svg-0jzj7gw8ha";
 import imgAndhraSH from "figma:asset/e90f2a5c8227a9547e792870f22472272f9fc188.png";
 import imgGoWheels from "../../assets/3_gowheels.png";
@@ -251,7 +251,7 @@ function ContentContainer({ description, title, id, isInView }: { description: s
       <SubheaderContainer title={title} id={id} />
       <div className="flex flex-col w-full">
         {description.map((line, idx) => (
-             <div key={idx} className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(24px, 3.2vw, 38px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
+             <div key={idx} className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(19px, 3.2vw, 38px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
                 <RevealText delay={idx * 0.1} isActive={isInView}>
                   {line}
                 </RevealText>
@@ -300,20 +300,14 @@ export function WhatMakesUsDifferent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" ? window.innerWidth < 1024 : false);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [subProgress, setSubProgress] = useState(0);
-  const [hasSeen, setHasSeen] = useState(false);
   const [engaged, setEngaged] = useState(false);
   // Bumped every time the section (re-)engages, from either edge. Forces the active card's
   // title/description to remount and replay its reveal animation right at that moment,
-  // rather than relying only on `hasSeen`'s viewport-crossing timing — which can toggle
-  // true a little before the lock actually engages, so the reveal plays out during the
-  // last bit of ordinary scrolling and looks like it never happened by the time you land.
+  // rather than relying on viewport-crossing timing alone — which can toggle true a little
+  // before the lock actually engages, so the reveal plays out during the last bit of
+  // ordinary scrolling and looks like it never happened by the time you land.
   const [revealGen, setRevealGen] = useState(0);
 
   // Mirrors `engaged`, but assigned synchronously at every call site below instead of via
@@ -336,34 +330,18 @@ export function WhatMakesUsDifferent() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Mobile keeps the original continuous scroll-through-400vh behavior below — wheel
-  // events (used to lock desktop to one card per gesture, further down) never fire for
-  // touch scrolling, so there's no equivalent discrete "gesture" to hook into there.
-  useEffect(() => {
-    if (!isMobile) return;
-    return scrollYProgress.on("change", (latest) => {
-      const raw = latest * 4;
-      const index = Math.min(Math.floor(raw), 3);
-      const sub = (index === 3 && raw >= 4) ? 1 : raw % 1;
-      setActiveIndex(index);
-      setSubProgress(sub);
-    });
-  }, [scrollYProgress, isMobile]);
-
-  // Desktop: capture real scroll the instant this section's top edge (scrolling down) or
+  // Capture real scroll the instant this section's top edge (scrolling down) or
   // bottom edge (scrolling up, re-entering from the section below) crosses the viewport —
   // then the wheel handler further down steps through cards one at a time, instead of
   // however many a fast native scroll's momentum would otherwise blow past. Detected as a
   // crossing (previous sample outside, current sample inside) rather than a level check,
   // so it still fires correctly even when a single fast scroll jumps a long way in one go.
   useEffect(() => {
-    if (isMobile) return;
     const el = containerRef.current;
     if (!el) return;
 
     const onScroll = () => {
       const rect = el.getBoundingClientRect();
-      setHasSeen(rect.top <= 0 && rect.bottom > 0);
       if (engagedRef.current) {
         prevRectRef.current = null;
         return;
@@ -394,78 +372,106 @@ export function WhatMakesUsDifferent() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll(); // run once on mount in case the page already scrolled here
     return () => window.removeEventListener("scroll", onScroll);
-  }, [isMobile]);
+  }, []);
 
   // Lock real page scroll while stepping through cards by hand.
   useEffect(() => {
-    if (isMobile || !engaged) return;
+    if (!engaged) return;
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = "auto"; };
-  }, [engaged, isMobile]);
+  }, [engaged]);
 
-  // One wheel gesture = one card. Same throttle/gesture-lock pattern as the hero's
+  // One wheel/swipe gesture = one card. Same throttle/gesture-lock pattern as the hero's
   // horizontal carousel: accumulate delta, require a pause between gestures (so one
-  // trackpad flick can't cascade through several cards), and ignore the rest of a
-  // gesture's momentum tail once a step has already fired for it.
+  // trackpad flick or swipe can't cascade through several cards), and ignore the rest of
+  // a gesture's momentum tail once a step has already fired for it. Touch doesn't fire
+  // wheel events, so touchstart/touchmove/touchend drive the same accumulator on mobile.
   useEffect(() => {
-    if (isMobile || !engaged) return;
-    const handleWheel = (e: WheelEvent) => {
-      const now = Date.now();
+    if (!engaged) return;
 
-      // A pause since the last wheel event starts a clean sum — this just keeps a single
-      // trackpad swipe's scattered small deltas together, separate from the next swipe.
+    function stepForward() {
+      scrollDeltaAccumulator.current = 0;
+      lastStepTime.current = Date.now();
+      setActiveIndex(prev => {
+        if (prev >= CONTENT_DATA.length - 1) {
+          engagedRef.current = false;
+          setEngaged(false);
+          prevRectRef.current = null;
+          return prev;
+        }
+        setSubProgress(0);
+        return prev + 1;
+      });
+    }
+
+    function stepBackward() {
+      scrollDeltaAccumulator.current = 0;
+      lastStepTime.current = Date.now();
+      setActiveIndex(prev => {
+        if (prev <= 0) {
+          engagedRef.current = false;
+          setEngaged(false);
+          prevRectRef.current = null;
+          return prev;
+        }
+        setSubProgress(0);
+        return prev - 1;
+      });
+    }
+
+    // Whether a step is actually allowed right now is purely time-based — a cooldown
+    // since the last step, not "wait for the gesture to go quiet first". That quiet-gap
+    // requirement was the bug: a mouse wheel notched at a normal pace, or someone
+    // scrolling continuously, rarely leaves a 200ms silent gap, so it could stay
+    // "locked" for several scroll actions in a row before finally resetting. A plain
+    // cooldown still stops one continuous gesture from cascading through several cards,
+    // without requiring the input to stop first.
+    function tryStep(delta: number) {
+      const now = Date.now();
       if (now - lastEventTime.current > 200) {
         scrollDeltaAccumulator.current = 0;
       }
       lastEventTime.current = now;
-      scrollDeltaAccumulator.current += e.deltaY;
+      scrollDeltaAccumulator.current += delta;
 
-      // Whether a step is actually allowed right now is purely time-based — a cooldown
-      // since the last step, not "wait for the gesture to go quiet first". That quiet-gap
-      // requirement was the bug: a mouse wheel notched at a normal pace, or someone
-      // scrolling continuously, rarely leaves a 200ms silent gap, so it could stay
-      // "locked" for several scroll actions in a row before finally resetting. A plain
-      // cooldown still stops one continuous swipe from cascading through several cards,
-      // without requiring the input to stop first.
       if (now - lastStepTime.current < 1100) return;
 
-      if (scrollDeltaAccumulator.current > 140) {
-        scrollDeltaAccumulator.current = 0;
-        lastStepTime.current = now;
-        setActiveIndex(prev => {
-          if (prev >= CONTENT_DATA.length - 1) {
-            engagedRef.current = false;
-            setEngaged(false);
-            prevRectRef.current = null;
-            return prev;
-          }
-          setSubProgress(0);
-          return prev + 1;
-        });
-      } else if (scrollDeltaAccumulator.current < -140) {
-        scrollDeltaAccumulator.current = 0;
-        lastStepTime.current = now;
-        setActiveIndex(prev => {
-          if (prev <= 0) {
-            engagedRef.current = false;
-            setEngaged(false);
-            prevRectRef.current = null;
-            return prev;
-          }
-          setSubProgress(0);
-          return prev - 1;
-        });
-      }
-    };
-    window.addEventListener("wheel", handleWheel, { passive: true });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [isMobile, engaged]);
+      if (scrollDeltaAccumulator.current > 140) stepForward();
+      else if (scrollDeltaAccumulator.current < -140) stepBackward();
+    }
 
-  // Animate the image grid's fill toward complete for whichever card is now active —
-  // previously driven by continuous scroll fraction through that card's slice of the
-  // 400vh region; stepping is discrete now, so this is the time-based equivalent.
+    const handleWheel = (e: WheelEvent) => tryStep(e.deltaY);
+    window.addEventListener("wheel", handleWheel, { passive: true });
+
+    let lastTouchY: number | null = null;
+    function onTouchStart(e: TouchEvent) {
+      lastTouchY = e.touches[0]?.clientY ?? null;
+    }
+    function onTouchMove(e: TouchEvent) {
+      if (lastTouchY == null) return;
+      const currentY = e.touches[0]?.clientY ?? lastTouchY;
+      const dy = lastTouchY - currentY; // finger up → dy > 0 → same sense as wheel deltaY > 0
+      lastTouchY = currentY;
+      e.preventDefault(); // locked — absorb the drag instead of letting the page scroll
+      tryStep(dy);
+    }
+    function onTouchEnd() {
+      lastTouchY = null;
+    }
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [engaged]);
+
+  // Animate the image grid's fill toward complete for whichever card is now active.
   useEffect(() => {
-    if (isMobile) return;
     let raf = 0;
     const start = performance.now();
     const duration = 900;
@@ -476,42 +482,40 @@ export function WhatMakesUsDifferent() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [activeIndex, isMobile]);
+  }, [activeIndex]);
 
   return (
     <div
       ref={containerRef}
       id="what-makes-us-different"
       className="relative"
-      style={{ height: isMobile ? "400vh" : "100vh" }}
+      style={{ height: "100vh" }}
       data-name="Scroll Container"
     >
-      <div className={isMobile ? "sticky top-0 h-screen overflow-hidden bg-white" : "h-screen overflow-hidden bg-white"}>
+      <div className="h-screen overflow-hidden bg-white">
         <div className="content-stretch flex flex-col lg:flex-row items-stretch relative w-full h-full">
           {/* Image side */}
           <div
             className="w-full lg:w-1/2 relative overflow-hidden shrink-0"
-            style={{ height: isMobile ? "48vh" : "100%" }}
+            style={{ height: isMobile ? "36vh" : "100%" }}
           >
              <ImageContainer
                progress={subProgress}
                activeIndex={activeIndex}
-               circleSize={isMobile ? "min(42vh, 76vw)" : "min(620px, 56vw)"}
+               circleSize={isMobile ? "min(32vh, 68vw)" : "min(620px, 56vw)"}
              />
           </div>
           {/* Text side */}
           <div
             className="w-full lg:w-1/2 overflow-hidden flex flex-col shrink-0"
-            style={{ height: isMobile ? "52vh" : "100%" }}
+            style={{ height: isMobile ? "64vh" : "100%" }}
           >
-            {/* Desktop reveal is tied to the lock itself (`engaged`), not `hasSeen` — hasSeen
-                just tracks "is this section anywhere in the viewport", which turns true
-                gradually while still approaching from below, *before* scroll actually
-                re-locks into place. Gating on that let the reveal fire (and finish) during
-                that ordinary pre-lock scrolling, so by the time you actually landed on the
-                card it looked like nothing had happened. Mobile has no lock concept, so it
-                keeps using hasSeen. */}
-            <TextContainer activeIndex={activeIndex} isInView={isMobile ? hasSeen : engaged} revealGen={revealGen} />
+            {/* Reveal is tied to the lock itself (`engaged`), not a plain viewport-visibility
+                check — the latter turns true gradually while still approaching from below,
+                *before* scroll actually re-locks into place, which let the reveal fire (and
+                finish) during ordinary pre-lock scrolling so it looked like nothing had
+                happened by the time you actually landed. */}
+            <TextContainer activeIndex={activeIndex} isInView={engaged} revealGen={revealGen} />
           </div>
         </div>
       </div>

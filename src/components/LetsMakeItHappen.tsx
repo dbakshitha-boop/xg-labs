@@ -121,11 +121,13 @@ function Column({
   progress,
   colIndex,
   totalCols,
+  isMobile,
 }: {
   config: ColumnConfig;
   progress: MotionValue<number>;
   colIndex: number;
   totalCols: number;
+  isMobile: boolean;
 }) {
   const { start, end } = config;
   // Bottom-of-viewport to above-the-top — vh units so the travel spans the
@@ -142,7 +144,10 @@ function Column({
         left: `calc(${colIndex} * (100% / ${totalCols}) + 10px)`,
         width: `calc(100% / ${totalCols} - 20px)`,
         top: 0,
-        height: "260px",
+        // Mobile has half as many, much narrower columns (4 vs 8) — the same
+        // 260px height there made each image look badly elongated (a ~77px-wide
+        // column at that height is over 3x taller than wide).
+        height: isMobile ? "150px" : "260px",
         zIndex: 5,
         pointerEvents: "none",
         y,
@@ -218,7 +223,23 @@ export function LetsMakeItHappen() {
   // moment the section has reached or passed the top, snaps the page back
   // to line it up exactly and engages the lock from there.
   const lockedRef = useRef(false);
+  // React-state mirror of lockedRef, purely to drive the body-scroll-lock effect below
+  // (the ref itself is what every listener reads/writes synchronously — see its own note).
+  const [locked, setLocked] = useState(false);
   const releaseCooldownUntilRef = useRef(0);
+  // Blocks the page from scrolling at all while engaged, instead of only reactively
+  // snapping it back after the fact (see onScroll's own correction further down). That
+  // reactive-only approach is what every OTHER locked-scroll section in this codebase
+  // avoids — letting the browser start a scroll and then yanking it back on the next
+  // event is what produces visible stutter, especially under trackpad momentum, which
+  // can keep nudging the position between corrections. This is the primary defense;
+  // onScroll's own correction stays as a fallback for the same iOS Safari rubber-band
+  // edge cases documented in the other locked sections.
+  useEffect(() => {
+    if (!locked) return;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = "auto"; };
+  }, [locked]);
   // Mirrors formFullyRevealed for the window-level listeners below, whose effect only
   // depends on [rawProgress] and so would otherwise close over a stale value of it.
   const formFullyRevealedRef = useRef(false);
@@ -249,6 +270,13 @@ export function LetsMakeItHappen() {
   // correctly positioned) footer as it uncovers it.
   function releaseLock(forward: boolean) {
     lockedRef.current = false;
+    setLocked(false);
+    // setLocked(false) is async — the body-lock effect's cleanup (which resets
+    // overflow back to "auto") won't actually run until React re-renders after
+    // this function returns. window.scrollTo below needs it lifted right now,
+    // synchronously, or the body is still overflow:hidden at that instant and
+    // the scroll silently does nothing.
+    document.body.style.overflow = "auto";
     releaseCooldownUntilRef.current = Date.now() + (forward ? 1200 : 500);
     if (forward) {
       const el = sectionRef.current;
@@ -268,6 +296,7 @@ export function LetsMakeItHappen() {
       if (rect.top <= 0 && rect.bottom > 0) {
         if (rect.top !== 0) window.scrollBy(0, rect.top);
         lockedRef.current = true;
+        setLocked(true);
       }
     }
 
@@ -397,6 +426,7 @@ export function LetsMakeItHappen() {
               progress={progress}
               colIndex={colIndex}
               totalCols={totalCols}
+              isMobile={isMobile}
             />
           ))}
 

@@ -1197,7 +1197,7 @@ export function ServicesPage() {
     return (
       <div style={{ background: "#060606" }}>
         {/* Sticky nav */}
-        <div style={{ position: "sticky", top: 0, zIndex: 200, height: "96px", pointerEvents: "none" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 200, height: "76px", pointerEvents: "none" }}>
           <div style={{ position: "relative", width: "100%", height: "100%", pointerEvents: "auto" }}>
             <TopBar dark logoSrc={xgLogoWhite} />
           </div>
@@ -1207,7 +1207,7 @@ export function ServicesPage() {
         <div
           style={{
             position: "relative",
-            height: "calc(100vh - 96px)",
+            height: "calc(100vh - 76px)",
             overflow: "hidden",
             boxSizing: "border-box",
           }}
