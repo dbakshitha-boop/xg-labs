@@ -481,33 +481,33 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // On mobile, the nav bar stays out of the way by default and only reveals
-  // itself if the user stops scrolling and stays on the same section for
-  // more than 10s — scrolling again hides it and restarts the wait. Always
-  // visible on desktop, and always visible while the hamburger menu is open.
+  // On mobile, the nav bar appears while the user scrolls up (back toward
+  // the top) and hides while they scroll down (further into the page) — the
+  // usual auto-hide nav pattern. Always visible near the very top of the
+  // page, always visible on desktop, and always visible while the hamburger
+  // menu is open.
   const [isMobileNav, setIsMobileNav] = useState(() => typeof window !== "undefined" ? window.innerWidth < 1024 : false);
   useEffect(() => {
     const onResize = () => setIsMobileNav(window.innerWidth < 1024);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
-  const [mobileNavDwellVisible, setMobileNavDwellVisible] = useState(false);
+  const [mobileNavScrollVisible, setMobileNavScrollVisible] = useState(true);
   useEffect(() => {
-    if (!isMobileNav) { setMobileNavDwellVisible(false); return; }
-    let timer: ReturnType<typeof window.setTimeout> | null = null;
-    const arm = () => {
-      if (timer != null) window.clearTimeout(timer);
-      timer = window.setTimeout(() => setMobileNavDwellVisible(true), 10000);
+    if (!isMobileNav) { setMobileNavScrollVisible(true); return; }
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const dy = y - lastY;
+      lastY = y;
+      if (y <= 20) { setMobileNavScrollVisible(true); return; }
+      if (dy < -4) setMobileNavScrollVisible(true); // scrolling up
+      else if (dy > 4) setMobileNavScrollVisible(false); // scrolling down
     };
-    const onScroll = () => { setMobileNavDwellVisible(false); arm(); };
-    arm();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (timer != null) window.clearTimeout(timer);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, [isMobileNav]);
-  const mobileNavVisible = !isMobileNav || mobileMenuOpen || mobileNavDwellVisible;
+  const mobileNavVisible = !isMobileNav || mobileMenuOpen || mobileNavScrollVisible;
 
   return (
     <>
@@ -630,7 +630,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
         boxShadow: { duration: 0.3, ease: "easeInOut" },
       }}
       onMouseLeave={() => setServiceOpen(false)}
-      className={`fixed flex flex-col ${mobileMenuOpen ? "top-0" : "top-[40px]"} z-50 ${mobileMenuOpen ? "rounded-none" : "rounded-[8px] topbar-pill"} ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
+      className={`fixed flex flex-col ${mobileMenuOpen ? "top-0" : isMobileNav ? "top-[26px]" : "top-[40px]"} z-50 ${mobileMenuOpen ? "rounded-none" : "rounded-[8px] topbar-pill"} ${dark ? "ring-1 ring-white/[0.15]" : "bg-white"}`}
       style={(() => {
         const pointerEvents = mobileNavVisible ? "auto" as const : "none" as const;
         if (mobileMenuOpen) {

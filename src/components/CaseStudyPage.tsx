@@ -363,7 +363,8 @@ export function CaseStudyPage({ id }: { id?: string }) {
           .cs-deliverables-grid { grid-template-columns: 1fr 1fr !important; }
           .cs-bullet-grid { grid-template-columns: 1fr 1fr !important; }
           .cs-images-grid { grid-template-columns: 1fr 1fr !important; gap: 22px !important; }
-          .cs-bullet-item { padding-left: 4px !important; }
+          .cs-bullet-row { padding-left: 0 !important; padding-right: 0 !important; }
+          .cs-bullet-item { padding-left: 4px !important; padding-right: 8px !important; font-size: 12px !important; line-height: 1.45 !important; }
           .cs-quote-text { font-size: clamp(18px, 5vw, 28px) !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
@@ -664,7 +665,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
             <p className="cs-role-label" style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
               ROLE & DELIVERABLES
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0 24px" }}>
+            <div className="cs-deliverables-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px 24px" }}>
               {(study as any).deliverables.map((d: string, i: number) => (
                 <p key={i} style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.6", color: "rgba(255,255,255,0.45)", margin: 0 }}>
                   {d}
@@ -694,7 +695,16 @@ export function CaseStudyPage({ id }: { id?: string }) {
               TIMELINE
             </p>
             <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.72", color: "rgba(255,255,255,0.45)", margin: 0 }}>
-              {(study as any).timeline}
+              {(() => {
+                // "4 Months • January to April" style timelines break cleanly on their own
+                // "•" separator — duration on its own line, date range on the next — instead
+                // of wrapping wherever the container happens to run out of width (which cut
+                // mid-phrase, e.g. "...January" / "to April"). Anything without that
+                // separator (e.g. the plain fallback copy) just renders as before.
+                const text = String((study as any).timeline ?? "");
+                const parts = text.split(" • ");
+                return parts.length === 2 ? (<>{parts[0]}<br />{parts[1]}</>) : text;
+              })()}
             </p>
           </motion.div>
         )}
@@ -817,6 +827,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
 
         {/* Bullet points row — above the images */}
         <div
+          className="cs-bullet-row"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(4, 1fr)",

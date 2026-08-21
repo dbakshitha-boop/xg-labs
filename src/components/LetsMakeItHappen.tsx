@@ -114,13 +114,16 @@ const SCROLL_DISTANCE = 2700;
 // stiffer/less damped than before so it also tracks the (now faster) input
 // more snappily instead of trailing behind it.
 const PROGRESS_SPRING = { stiffness: 130, damping: 26, mass: 0.6 };
-// Touch deltas are raw finger-travel pixels, bounded by the screen itself —
-// one full swipe on a ~800px-tall phone only covers ~800px, meaning the
-// SCROLL_DISTANCE above takes 3+ full swipes to get through. Wheel deltas
-// don't have that ceiling (a single trackpad flick or a few notches can
-// already cover it), so this amplifies touch input specifically to bring the
-// two into a comparable number of gestures, without changing desktop's pacing.
-const TOUCH_SENSITIVITY = 1.8;
+// Touch doesn't accumulate continuously like wheel does — each complete swipe
+// (touchstart to touchend, past MOBILE_SWIPE_THRESHOLD) advances progress by
+// exactly one uniform MOBILE_STEPS-th of SCROLL_DISTANCE, regardless of how
+// far or fast that particular swipe travelled. Continuous pixel-accumulation
+// made the total number of swipes needed depend on individual swipe length —
+// inconsistent between users/gestures, and easy to end up "continuously
+// scrolling" through many small swipes. This guarantees exactly MOBILE_STEPS
+// swipes to get all the way through, every time.
+const MOBILE_STEPS = 4;
+const MOBILE_SWIPE_THRESHOLD = 40;
 
 // ─── Column ────────────────────────────────────────────────────────────────────
 function Column({
@@ -179,6 +182,7 @@ export function LetsMakeItHappen() {
   }, []);
 
   const sectionRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   // Raw accumulated wheel/touch delta, clamped to [0, SCROLL_DISTANCE], smoothed
   // through a spring so the motion glides continuously with the input instead
@@ -230,6 +234,10 @@ export function LetsMakeItHappen() {
   // moment the section has reached or passed the top, snaps the page back
   // to line it up exactly and engages the lock from there.
   const lockedRef = useRef(false);
+  // True only during the brief eased scroll-into-alignment animation that precedes
+  // actually engaging the lock — see tryEngage's own comment for why this can't just
+  // lock immediately and animate underneath that.
+  const snappingRef = useRef(false);
   // React-state mirror of lockedRef, purely to drive the body-scroll-lock effect below
   // (the ref itself is what every listener reads/writes synchronously — see its own note).
   const [locked, setLocked] = useState(false);
@@ -291,30 +299,111 @@ export function LetsMakeItHappen() {
         const target = window.scrollY + el.getBoundingClientRect().height;
         window.scrollTo(0, target);
       }
+      // Otherwise rawProgress just sits at SCROLL_DISTANCE forever — nothing else ever
+      // touches it once released. Scrolling back up from the footer would then re-lock
+      // the section while it's still sitting fully revealed, "Let's Talk" bar fully
+      // docked and clickable — and the instant scroll-snap tryEngage does to align it
+      // can easily land right under the finger that's still on-screen from the swipe
+      // that caused re-entry, reading as a stray click straight onto that bar and
+      // reopening the form immediately. Resetting here means re-entering from below
+      // always starts from a clean slate, requiring an actual swipe through again.
+      rawProgress.set(0);
     }
     setFormOpen(false);
   }
+
+  // Mirrors the overlay's own onWheel handler above (same reasoning: can't rely on the
+  // window-level listener further down, since events need to be intercepted here first)
+  // — but for touch specifically. The overlay is itself scrollable (overflowY: auto) to
+  // fit its own form content, so a swipe starting on it is a strong candidate for the
+  // browser's native scroll machinery to claim before a *window*-level touchmove listener
+  // ever gets a clean shot at it — attaching directly to the overlay element itself doesn't
+  // have that problem. This also has to be a real DOM listener via addEventListener, not
+  // React's onTouchMove prop — React attaches touch listeners as passive by default, which
+  // silently makes preventDefault() inside them a no-op.
   useEffect(() => {
+    if (!formOpen) return;
+    const el = overlayRef.current;
+    if (!el) return;
+
+    let lastY: number | null = null;
+    function onTouchStart(e: TouchEvent) {
+      lastY = e.touches[0]?.clientY ?? null;
+    }
+    function onTouchMove(e: TouchEvent) {
+      if (!lockedRef.current) return;
+      e.stopPropagation();
+      e.preventDefault();
+      if (!formFullyRevealedRef.current) return;
+      if (lastY == null) return;
+      const currentY = e.touches[0]?.clientY ?? lastY;
+      const dy = lastY - currentY;
+      lastY = currentY;
+      const current = rawProgress.get();
+      if (dy > 0 && current >= SCROLL_DISTANCE) { releaseLock(true); return; }
+      if (dy < 0 && current <= 0) { releaseLock(false); return; }
+      rawProgress.set(Math.min(Math.max(current + dy, 0), SCROLL_DISTANCE));
+    }
+    function onTouchEnd() {
+      lastY = null;
+    }
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [formOpen, rawProgress]);
+
+  useEffect(() => {
+    function engageNow() {
+      lockedRef.current = true;
+      // Applied synchronously here, not just via setLocked below (which only takes
+      // effect once React re-renders and runs the body-lock effect) — otherwise
+      // there's a real gap, right at this instant, where the scroll position has
+      // just been corrected but the page is still natively scrollable. Any
+      // continued momentum in that gap nudges it off again, gets corrected again,
+      // and that rapid back-and-forth is what reads as the section "shaking"
+      // right as it's reached. setLocked still runs, both to keep the state
+      // truthful for anything else reading it and so the effect's cleanup
+      // correctly resets this on release.
+      document.body.style.overflow = "hidden";
+      setLocked(true);
+    }
+
     function tryEngage() {
-      if (lockedRef.current || Date.now() < releaseCooldownUntilRef.current) return;
+      if (lockedRef.current || snappingRef.current || Date.now() < releaseCooldownUntilRef.current) return;
       const el = sectionRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      if (rect.top <= 0 && rect.bottom > 0) {
-        if (rect.top !== 0) window.scrollBy(0, rect.top);
-        lockedRef.current = true;
-        // Applied synchronously here, not just via setLocked below (which only takes
-        // effect once React re-renders and runs the body-lock effect) — otherwise
-        // there's a real gap, right at this instant, where the scroll position has
-        // just been corrected but the page is still natively scrollable. Any
-        // continued momentum in that gap nudges it off again, gets corrected again,
-        // and that rapid back-and-forth is what reads as the section "shaking"
-        // right as it's reached. setLocked still runs, both to keep the state
-        // truthful for anything else reading it and so the effect's cleanup
-        // correctly resets this on release.
-        document.body.style.overflow = "hidden";
-        setLocked(true);
+      if (!(rect.top <= 0 && rect.bottom > 0)) return;
+      if (rect.top === 0) { engageNow(); return; }
+      // Off by more than a few px (typical when this is caught mid-scroll rather than
+      // right at the boundary) — ease into exact alignment over a fixed, controlled
+      // duration instead of an instant jump, then lock once that settles. A plain
+      // window.scrollBy here reads as an abrupt snap, especially re-entering from
+      // below after scrolling up from the footer. Can't just hand this to the
+      // browser's own smooth-scroll and lock immediately after — overflow:hidden
+      // would freeze the scroll position mid-animation. Runs before locking (the page
+      // is still natively scrollable for its ~350ms), so wheel/touch below also check
+      // snappingRef to keep the user's own continued input from fighting it.
+      snappingRef.current = true;
+      const startY = window.scrollY;
+      const endY = startY + rect.top;
+      const duration = 350;
+      const startTime = performance.now();
+      function step(now: number) {
+        const t = Math.min(1, (now - startTime) / duration);
+        const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+        window.scrollTo(0, startY + (endY - startY) * eased);
+        if (t < 1) { requestAnimationFrame(step); return; }
+        snappingRef.current = false;
+        engageNow();
       }
+      requestAnimationFrame(step);
     }
 
     function onScroll() {
@@ -331,6 +420,7 @@ export function LetsMakeItHappen() {
 
     function onWheel(e: WheelEvent) {
       tryEngage();
+      if (snappingRef.current) { e.preventDefault(); return; }
       if (!lockedRef.current) return;
       // The contact form overlay intercepts wheel events itself once it's open (see its
       // own onWheel), so this branch is mostly a defensive backstop — but it mirrors the
@@ -353,39 +443,44 @@ export function LetsMakeItHappen() {
       rawProgress.set(Math.min(Math.max(current + e.deltaY, 0), SCROLL_DISTANCE));
     }
 
-    let lastTouchY: number | null = null;
+    let touchStartY: number | null = null;
     function onTouchStart(e: TouchEvent) {
-      lastTouchY = e.touches[0]?.clientY ?? null;
+      tryEngage();
+      touchStartY = e.touches[0]?.clientY ?? null;
     }
     function onTouchMove(e: TouchEvent) {
-      if (lastTouchY == null) return;
-      tryEngage();
-      const currentY = e.touches[0]?.clientY ?? lastTouchY;
-      // finger up → dy > 0 → same sense as wheel deltaY > 0; amplified by TOUCH_SENSITIVITY
-      // so a swipe covers more progress than its raw travel distance would alone.
-      const dy = (lastTouchY - currentY) * TOUCH_SENSITIVITY;
-      lastTouchY = currentY; // tracked unconditionally (raw position, not the scaled delta),
-      // even while ignored below, so the delta doesn't jump once processing resumes
+      if (snappingRef.current) { e.preventDefault(); return; }
       if (!lockedRef.current) return;
-      // Touch events aren't intercepted by the overlay the way wheel events are, so this
-      // is the actual, load-bearing guard on mobile: without it, continuing to swipe
-      // down (the same swipe that just triggered the form to open) immediately releases
-      // and starts closing it again before the 1.7s reveal ever finishes.
-      if (formOpenRef.current && !formFullyRevealedRef.current) { e.preventDefault(); return; }
-      const current = rawProgress.get();
-      if (dy > 0 && current >= SCROLL_DISTANCE) {
-        // Same race as the wheel handler above — rawProgress caps out before the
-        // spring-smoothed progress driving the reveal has caught up.
-        if (!formFullyRevealedRef.current) { e.preventDefault(); return; }
-        releaseLock(true);
-        return;
-      }
-      if (dy < 0 && current <= 0) { releaseLock(false); return; }
+      // Absorb the drag itself — progress only actually updates once on touchend, as a
+      // single uniform step, not continuously while dragging. Still needs preventDefault
+      // throughout, or the page would visibly scroll along with the finger in the meantime.
       e.preventDefault();
-      rawProgress.set(Math.min(Math.max(current + dy, 0), SCROLL_DISTANCE));
     }
-    function onTouchEnd() {
-      lastTouchY = null;
+    function onTouchEnd(e: TouchEvent) {
+      if (!lockedRef.current || touchStartY == null) { touchStartY = null; return; }
+      const endY = e.changedTouches[0]?.clientY ?? touchStartY;
+      const dy = touchStartY - endY; // finger up → dy > 0 → same sense as wheel deltaY > 0
+      touchStartY = null;
+      if (Math.abs(dy) < MOBILE_SWIPE_THRESHOLD) return; // too small to count as a real swipe
+      // Touch events aren't intercepted by the overlay the way wheel events are, so this
+      // is the actual, load-bearing guard on mobile: without it, the same swipe that just
+      // triggered the form to open could immediately register as the next step/release
+      // before the 1.7s reveal ever finishes.
+      if (formOpenRef.current && !formFullyRevealedRef.current) return;
+      const current = rawProgress.get();
+      if (dy > 0) {
+        if (current >= SCROLL_DISTANCE) {
+          // Same race as the wheel handler above — rawProgress caps out before the
+          // spring-smoothed progress driving the reveal has caught up.
+          if (!formFullyRevealedRef.current) return;
+          releaseLock(true);
+          return;
+        }
+        rawProgress.set(Math.min(current + SCROLL_DISTANCE / MOBILE_STEPS, SCROLL_DISTANCE));
+      } else {
+        if (current <= 0) { releaseLock(false); return; }
+        rawProgress.set(Math.max(current - SCROLL_DISTANCE / MOBILE_STEPS, 0));
+      }
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -557,6 +652,7 @@ export function LetsMakeItHappen() {
       <AnimatePresence>
         {formOpen && (
           <motion.div
+            ref={overlayRef}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -599,7 +695,11 @@ export function LetsMakeItHappen() {
               display: "flex", flexDirection: "column",
             }}
           >
-            <ContactFormContent onClose={() => setFormOpen(false)} hideClose />
+            {/* releaseLock(false), not a plain setFormOpen(false) — this section's scroll
+                lock (lockedRef, document.body.style.overflow) only ever gets released by
+                that function. Just closing the form's own state would leave the page stuck
+                unable to scroll, since nothing else would reset the lock. */}
+            <ContactFormContent onClose={() => releaseLock(false)} />
           </motion.div>
         )}
       </AnimatePresence>

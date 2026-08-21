@@ -369,27 +369,27 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
     // Clamp so the 600px-wide logo mark fits ~78% of the viewport width.
     const logoScale = Math.min(0.85, Math.max(0.4, (viewWidth * 0.78) / 600));
 
-    // On mobile, the fixed navbar below stays out of the way by default and
-    // only reveals itself if the user stops scrolling and stays on the same
-    // section for more than 10s — scrolling again hides it and restarts the
-    // wait. Always visible while the hamburger menu itself is open.
-    const [mobileNavDwellVisible, setMobileNavDwellVisible] = useState(false);
+    // On mobile, the fixed navbar below appears while the user scrolls up
+    // (back toward the top) and hides while they scroll down (further into
+    // the page) — the usual auto-hide nav pattern. Always visible near the
+    // very top of the page, and always visible while the hamburger menu
+    // itself is open.
+    const [mobileNavScrollVisible, setMobileNavScrollVisible] = useState(true);
     useEffect(() => {
-        if (!(isMobile && showContent)) { setMobileNavDwellVisible(false); return; }
-        let timer: ReturnType<typeof window.setTimeout> | null = null;
-        const arm = () => {
-            if (timer != null) window.clearTimeout(timer);
-            timer = window.setTimeout(() => setMobileNavDwellVisible(true), 10000);
+        if (!(isMobile && showContent)) { setMobileNavScrollVisible(true); return; }
+        let lastY = window.scrollY;
+        const onScroll = () => {
+            const y = window.scrollY;
+            const dy = y - lastY;
+            lastY = y;
+            if (y <= 20) { setMobileNavScrollVisible(true); return; }
+            if (dy < -4) setMobileNavScrollVisible(true); // scrolling up
+            else if (dy > 4) setMobileNavScrollVisible(false); // scrolling down
         };
-        const onScroll = () => { setMobileNavDwellVisible(false); arm(); };
-        arm();
         window.addEventListener("scroll", onScroll, { passive: true });
-        return () => {
-            window.removeEventListener("scroll", onScroll);
-            if (timer != null) window.clearTimeout(timer);
-        };
+        return () => window.removeEventListener("scroll", onScroll);
     }, [isMobile, showContent]);
-    const mobileNavVisible = mobileMenuOpen || mobileNavDwellVisible;
+    const mobileNavVisible = mobileMenuOpen || mobileNavScrollVisible;
 
     // ── Mobile layout — completely bypasses the JS horizontal scroll animation ──
     if (isMobile) {

@@ -188,7 +188,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract,
               >
                 <LeftBracket height={52} color="#A3A3A3" />
                 <motion.div
-                  variants={{ rest: { width: 30 }, hover: { width: 102 } }}
+                  variants={{ rest: { width: 75 }, hover: { width: 102 } }}
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                   style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}
                 >
@@ -197,7 +197,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract,
                     transition={{ duration: 0.15 }}
                     style={{ position: "absolute" }}
                   >
-                    <CloseXIcon height={38} width={62} />
+                    <CloseXIcon height={46} width={75} />
                   </motion.span>
                   <motion.span
                     variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }}

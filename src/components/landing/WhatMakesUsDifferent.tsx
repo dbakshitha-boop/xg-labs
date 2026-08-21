@@ -319,6 +319,29 @@ export function WhatMakesUsDifferent() {
   // correctly landing on the first one. Setting this inline keeps it truthful immediately.
   const engagedRef = useRef(false);
 
+  // Drives the reveal text's visibility — separate from `engaged` itself. Releasing the
+  // lock at a boundary (trying to move past the first/last card) sets `engaged` false the
+  // instant it happens, but the section is still visibly on screen for a moment after that
+  // as the user's continued scroll actually carries it away. Tying the reveal directly to
+  // `engaged` blanked the text out right at that instant, well before the card had actually
+  // left the viewport. This stays true through that whole transition, only clearing once
+  // the section has genuinely scrolled out of view.
+  const [revealVisible, setRevealVisible] = useState(false);
+  useEffect(() => {
+    if (engaged) { setRevealVisible(true); return; }
+    const el = containerRef.current;
+    if (!el) { setRevealVisible(false); return; }
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect();
+      if (!(rect.bottom > 0 && rect.top < window.innerHeight)) {
+        setRevealVisible(false);
+        window.removeEventListener("scroll", onScroll);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [engaged]);
+
   const lastStepTime = useRef(0);     // when the last step fired (cooldown between steps)
   const lastEventTime = useRef(0);    // when the last wheel event arrived (for gesture reset)
   const scrollDeltaAccumulator = useRef(0);
@@ -510,12 +533,15 @@ export function WhatMakesUsDifferent() {
             className="w-full lg:w-1/2 overflow-hidden flex flex-col shrink-0"
             style={{ height: isMobile ? "64vh" : "100%" }}
           >
-            {/* Reveal is tied to the lock itself (`engaged`), not a plain viewport-visibility
-                check — the latter turns true gradually while still approaching from below,
-                *before* scroll actually re-locks into place, which let the reveal fire (and
-                finish) during ordinary pre-lock scrolling so it looked like nothing had
-                happened by the time you actually landed. */}
-            <TextContainer activeIndex={activeIndex} isInView={engaged} revealGen={revealGen} />
+            {/* Reveal is tied to `revealVisible` (derived from the lock, `engaged`), not a
+                plain viewport-visibility check on its own — the latter turns true gradually
+                while still approaching from below, *before* scroll actually re-locks into
+                place, which would let the reveal fire (and finish) during ordinary pre-lock
+                scrolling so it looked like nothing had happened by the time you actually
+                landed. See revealVisible's own comment for why it isn't just `engaged`
+                directly, though — releasing at a boundary needs the text to stay up a
+                little longer than that. */}
+            <TextContainer activeIndex={activeIndex} isInView={revealVisible} revealGen={revealGen} />
           </div>
         </div>
       </div>
