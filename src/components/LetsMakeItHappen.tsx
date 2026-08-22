@@ -3,6 +3,15 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import type { MotionValue } from "motion/react";
 import { ContactFormContent } from "./ContactFormOverlay";
 
+// Eases the glide into and back out of each mobile image's mid-journey pause
+// (see ColumnImageEl) — gentle quint power curves so it reads as slowing down
+// and gliding through that point rather than braking to a stop. Plain math
+// rather than motion's own cubicBezier helper — that lives in "motion-utils",
+// a package this project only ever gets transitively (via "motion") and never
+// declares itself, not worth relying on here.
+const HOLD_EASE_IN = (t: number) => 1 - Math.pow(1 - t, 5); // easeOutQuint
+const HOLD_EASE_OUT = (t: number) => Math.pow(t, 5); // easeInQuint
+
 import img1 from "../assets/letsmakeithappenscroll/1st row.png";
 import img2 from "../assets/letsmakeithappenscroll/2nd row.png";
 import img3 from "../assets/letsmakeithappenscroll/3rd row 1st.png";
@@ -28,11 +37,15 @@ function GridLines({ dark = false, cols = 4 }: { dark?: boolean; cols?: number }
 }
 
 // ─── Columns ─────────────────────────────────────────────────────────────────
-// 8 columns total, one image each. Each column's image travels the full
-// height of the section — entering from below it and exiting above it, like
-// a real bottom-to-top scroll — rather than nudging into a fixed resting
-// spot. Which image lands in which column is shuffled once per page load.
-type ColumnConfig = { src: string; start: number; end: number };
+// Desktop: 8 columns, one image each. Mobile: 4 columns, two images travelling
+// through each one in sequence, so all 8 still show up despite there being
+// half as many columns to fit them into. Each image travels the full height
+// of the section — entering from below it and exiting above it, like a real
+// bottom-to-top scroll — rather than nudging into a fixed resting spot. Which
+// image lands where, and which timing window it gets, is shuffled once per
+// page load.
+type ColumnImage = { src: string; start: number; end: number; holdY?: string };
+type ColumnConfig = ColumnImage[];
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -43,16 +56,12 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-// Each column has its own [start, end] window over the normalized 0..1
+// Each image gets its own [start, end] window over the normalized 0..1
 // progress range during which it travels bottom → top and off the top edge.
-// The two timing groups are pinned to ALTERNATING columns (even: 0,2,4,6
-// then odd: 1,3,5,7) — never two adjacent columns in the same group — so the
-// first wave is visibly spread across the whole row, not clustered on one
-// side. Within a group each window has a different width AND start, so
-// those 4 images travel the same 155vh distance at different speeds and
-// pass each other rather than moving in lockstep. Which image lands where,
-// and which of the 4 window variants each column in a group gets, are both
-// reshuffled every time.
+// Within a timing group each window has a different width AND start, so
+// those images travel the same distance at different speeds and pass each
+// other rather than moving in lockstep. Which image lands where, and which
+// window variant it gets, are both reshuffled every time.
 const DESKTOP_EARLY_WINDOWS: Array<[number, number]> = [
   [0.03, 0.22], [0.06, 0.40], [0.12, 0.36], [0.02, 0.44],
 ];
@@ -60,13 +69,24 @@ const DESKTOP_LATE_WINDOWS: Array<[number, number]> = [
   [0.46, 0.66], [0.50, 0.84], [0.56, 0.80], [0.45, 0.87],
 ];
 
-const MOBILE_EARLY_WINDOWS: Array<[number, number]> = [
-  [0.03, 0.24], [0.10, 0.44],
-];
-const MOBILE_LATE_WINDOWS: Array<[number, number]> = [
-  [0.47, 0.68], [0.44, 0.86],
+// Mobile shows just 4 images total, one per column — but two of them travel
+// at once: columns 0 & 2 (the first pair, non-adjacent so they don't sit side
+// by side) both fall in the first half of progress, columns 1 & 3 (the second
+// pair) both fall in the second half. Within a pair the two windows differ
+// slightly in width/offset so they move at their own pace rather than in
+// lockstep. Each image's own journey also gets a brief hold partway through
+// (see ColumnImageEl) instead of sliding straight through, so it's actually
+// paused and clearly visible for a beat before continuing on and out.
+const MOBILE_WINDOWS: Array<[number, number]> = [
+  [0.02, 0.48], // col 0 — first half, slow/full
+  [0.54, 0.98], // col 1 — second half, slow/full
+  [0.08, 0.42], // col 2 — first half, fast/narrow
+  [0.58, 0.92], // col 3 — second half, fast/narrow
 ];
 
+// One image per column (desktop's layout) — column i gets one early- or one
+// late-window image, alternating so the first wave is spread across the
+// whole row rather than clustered on one side.
 function buildAlternatingColumns(
   images: string[],
   evenCols: number[],
@@ -79,12 +99,33 @@ function buildAlternatingColumns(
   const late = shuffle(lateWindows);
   const slots: (ColumnConfig | undefined)[] = new Array(images.length);
   evenCols.forEach((col, i) => {
-    slots[col] = { src: shuffledImages[col], start: early[i][0], end: early[i][1] };
+    slots[col] = [{ src: shuffledImages[col], start: early[i][0], end: early[i][1] }];
   });
   oddCols.forEach((col, i) => {
-    slots[col] = { src: shuffledImages[col], start: late[i][0], end: late[i][1] };
+    slots[col] = [{ src: shuffledImages[col], start: late[i][0], end: late[i][1] }];
   });
   return slots as ColumnConfig[];
+}
+
+// One image per column, one column per swipe — picks just `windows.length` of
+// the given images (randomly, for variety across loads) and pins each to its
+// own column and its own quarter, unshuffled, so column 0 always travels
+// during swipe 1, column 1 during swipe 2, and so on. Each also gets its own
+// random resting height for its mid-journey hold (see ColumnImageEl) — kept
+// inside the section's visible band (roughly 15vh–65vh, clear of the top/
+// bottom mask fade) but otherwise different every column, every load, so they
+// don't all pause at the same spot.
+function buildOnePerColumn(
+  images: string[],
+  windows: Array<[number, number]>
+): ColumnConfig[] {
+  const shuffledImages = shuffle(images).slice(0, windows.length);
+  return windows.map((w, col) => [{
+    src: shuffledImages[col],
+    start: w[0],
+    end: w[1],
+    holdY: `${Math.round(15 + Math.random() * 50)}vh`,
+  }]);
 }
 
 const DESKTOP_COLUMNS: ColumnConfig[] = buildAlternatingColumns(
@@ -95,12 +136,9 @@ const DESKTOP_COLUMNS: ColumnConfig[] = buildAlternatingColumns(
   DESKTOP_LATE_WINDOWS
 );
 
-const MOBILE_COLUMNS: ColumnConfig[] = buildAlternatingColumns(
-  [img1, img2, img3, img4],
-  [0, 2],
-  [1, 3],
-  MOBILE_EARLY_WINDOWS,
-  MOBILE_LATE_WINDOWS
+const MOBILE_COLUMNS: ColumnConfig[] = buildOnePerColumn(
+  [img1, img2, img3, img4, img5, img6, img7, img8],
+  MOBILE_WINDOWS
 );
 
 const TALK_START = 0.78; // Let's Talk begins sliding up in the final stretch of progress — wider range, more gradual
@@ -126,6 +164,70 @@ const MOBILE_STEPS = 4;
 const MOBILE_SWIPE_THRESHOLD = 40;
 
 // ─── Column ────────────────────────────────────────────────────────────────────
+// One image's own bottom-to-top journey through a column — its own component
+// (rather than looping inside Column) so each image gets its own useTransform
+// hook call, one per image regardless of how many share the column.
+function ColumnImageEl({
+  image,
+  progress,
+  isMobile,
+}: {
+  image: ColumnImage;
+  progress: MotionValue<number>;
+  isMobile: boolean;
+}) {
+  // Bottom-of-viewport to above-the-top — vh units so the travel spans the
+  // whole screen regardless of the image box's own (small, fixed) height, a
+  // real journey through and out, not a nudge into a resting spot. The
+  // section's mask-image (see below) fades it out softly right at the top
+  // and bottom edges instead of a hard pop.
+  // Mobile gets one extra stop in the middle of that same journey — the image
+  // arrives, glides down to its own random resting height (image.holdY — NOT
+  // "0vh", which is the box's own untranslated top-of-column position, i.e.
+  // pinned to the very top of the screen) slowing almost to a stop right at
+  // that point, then eases back away and continues on and out. There's no
+  // literal flat/frozen stretch at holdY — that's what read as "locking" —
+  // just a single point the glide slows into and back out of, so it stays
+  // legible for a beat without ever fully stopping.
+  const holdY = image.holdY ?? "40vh";
+  const mid = image.start + (image.end - image.start) * 0.5;
+  const inputs = isMobile
+    ? [image.start, mid, image.end]
+    : [image.start, image.end];
+  const outputs = isMobile
+    ? ["105vh", holdY, "-50vh"]
+    : ["105vh", "-50vh"];
+  const y = useTransform(
+    progress,
+    inputs,
+    outputs,
+    isMobile ? { ease: [HOLD_EASE_IN, HOLD_EASE_OUT] } : undefined
+  );
+
+  return (
+    <motion.div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        // Mobile has narrower columns — the same 260px height there made each
+        // image look badly elongated (a ~77px-wide column at that height is
+        // over 3x taller than wide).
+        height: isMobile ? "150px" : "260px",
+        pointerEvents: "none",
+        y,
+      }}
+    >
+      <img
+        src={image.src}
+        alt=""
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+      />
+    </motion.div>
+  );
+}
+
 function Column({
   config,
   progress,
@@ -139,36 +241,22 @@ function Column({
   totalCols: number;
   isMobile: boolean;
 }) {
-  const { start, end } = config;
-  // Bottom-of-viewport to above-the-top — vh units so the travel spans the
-  // whole screen regardless of the image box's own (small, fixed) height, a
-  // real journey through and out, not a nudge into a resting spot. The
-  // section's mask-image (see below) fades it out softly right at the top
-  // and bottom edges instead of a hard pop.
-  const y = useTransform(progress, [start, end], ["105vh", "-50vh"]);
-
   return (
-    <motion.div
+    <div
       style={{
         position: "absolute",
         left: `calc(${colIndex} * (100% / ${totalCols}) + 10px)`,
         width: `calc(100% / ${totalCols} - 20px)`,
         top: 0,
-        // Mobile has half as many, much narrower columns (4 vs 8) — the same
-        // 260px height there made each image look badly elongated (a ~77px-wide
-        // column at that height is over 3x taller than wide).
-        height: isMobile ? "150px" : "260px",
+        height: "100%",
         zIndex: 5,
         pointerEvents: "none",
-        y,
       }}
     >
-      <img
-        src={config.src}
-        alt=""
-        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-      />
-    </motion.div>
+      {config.map((image, i) => (
+        <ColumnImageEl key={i} image={image} progress={progress} isMobile={isMobile} />
+      ))}
+    </div>
   );
 }
 
@@ -234,14 +322,25 @@ export function LetsMakeItHappen() {
   // moment the section has reached or passed the top, snaps the page back
   // to line it up exactly and engages the lock from there.
   const lockedRef = useRef(false);
-  // True only during the brief eased scroll-into-alignment animation that precedes
-  // actually engaging the lock — see tryEngage's own comment for why this can't just
-  // lock immediately and animate underneath that.
-  const snappingRef = useRef(false);
   // React-state mirror of lockedRef, purely to drive the body-scroll-lock effect below
   // (the ref itself is what every listener reads/writes synchronously — see its own note).
   const [locked, setLocked] = useState(false);
   const releaseCooldownUntilRef = useRef(0);
+  // window.scrollY at the instant engageNow locks — position:fixed (see engageNow/
+  // releaseLock) needs this to restore the exact same position on release, since a
+  // fixed body doesn't track scroll offset on its own.
+  const savedScrollYRef = useRef(0);
+  // Set once the user has scrolled all the way through — past the fully-revealed
+  // form — out into the footer (see releaseLock's forward branch). From then on
+  // tryEngage refuses to re-lock this section at all: rawProgress resets to 0 on
+  // that same exit (needed so the form can open again on a later fresh pass — see
+  // releaseLock's own comment), which meant scrolling back up from the footer,
+  // before this flag existed, re-triggered the lock and snapped straight back to
+  // the section's very start content — a jarring jump backward for someone who'd
+  // already been through the whole thing. This makes the footer transition final:
+  // once you're past it, this section just scrolls by normally like any other,
+  // rather than replaying itself in reverse.
+  const hasCompletedRef = useRef(false);
   // Blocks the page from scrolling at all while engaged, instead of only reactively
   // snapping it back after the fact (see onScroll's own correction further down). That
   // reactive-only approach is what every OTHER locked-scroll section in this codebase
@@ -266,49 +365,37 @@ export function LetsMakeItHappen() {
   const formOpenRef = useRef(false);
   useEffect(() => { formOpenRef.current = formOpen; }, [formOpen]);
 
-  // Releasing the lock. Backward (scrolling up past the start) just hands
-  // control back to native scrolling — that already glides fine on its own.
-  // Forward (scrolling down past the fully-revealed form) can't rely on the
-  // next native wheel/touch event to carry the page down to the footer: the
-  // overlay that's still on-screen during its 1.7s exit has its own
-  // `overflowY: auto` content area, so a wheel tick right after release can
-  // get absorbed scrolling the form's own content instead of the page.
-  //
-  // The page is jumped to the footer INSTANTLY rather than smooth-scrolled —
-  // the overlay is a full-screen, solid, position:fixed panel for its entire
-  // 1.7s exit, so the jump is completely invisible at the instant it happens.
-  // A smooth window scroll here would instead run on its own (much shorter,
-  // browser-controlled) timeline racing independently against the overlay's
-  // slide-away, finishing early and leaving the footer visible alongside the
-  // still-sliding form. Jumping first means the overlay's own slide-down is
-  // the ONLY visible motion — a single, smooth reveal of the (already
-  // correctly positioned) footer as it uncovers it.
+  // Releasing the lock, either direction, just hands control back to native
+  // scrolling from exactly where the page was pinned — no jump. The footer sits
+  // as the plain next section right below this one in the document, so once
+  // unlocked it's reached by the user's own next scroll, the same as any other
+  // section boundary, rather than being programmatically snapped into place.
   function releaseLock(forward: boolean) {
     lockedRef.current = false;
     setLocked(false);
-    // setLocked(false) is async — the body-lock effect's cleanup (which resets
-    // overflow back to "auto") won't actually run until React re-renders after
-    // this function returns. window.scrollTo below needs it lifted right now,
-    // synchronously, or the body is still overflow:hidden at that instant and
-    // the scroll silently does nothing.
+    // setLocked(false) is async — the body-lock effect's cleanup won't actually run
+    // until React re-renders after this function returns. Restoring the body's own
+    // position/overflow right now, synchronously, matters more than usual here: with
+    // position:fixed (see engageNow), the document has no scroll offset of its own to
+    // scroll to — it has to be back in normal flow before scrollTo below does anything.
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
     document.body.style.overflow = "auto";
     releaseCooldownUntilRef.current = Date.now() + (forward ? 1200 : 500);
-    if (forward) {
-      const el = sectionRef.current;
-      if (el) {
-        const target = window.scrollY + el.getBoundingClientRect().height;
-        window.scrollTo(0, target);
-      }
-      // Otherwise rawProgress just sits at SCROLL_DISTANCE forever — nothing else ever
-      // touches it once released. Scrolling back up from the footer would then re-lock
-      // the section while it's still sitting fully revealed, "Let's Talk" bar fully
-      // docked and clickable — and the instant scroll-snap tryEngage does to align it
-      // can easily land right under the finger that's still on-screen from the swipe
-      // that caused re-entry, reading as a stray click straight onto that bar and
-      // reopening the form immediately. Resetting here means re-entering from below
-      // always starts from a clean slate, requiring an actual swipe through again.
-      rawProgress.set(0);
-    }
+    if (forward) hasCompletedRef.current = true;
+    window.scrollTo(0, savedScrollYRef.current);
+    // Otherwise rawProgress just sits at SCROLL_DISTANCE forever — nothing else ever
+    // touches it once released. Re-entering the section later (scrolling back up from
+    // the footer, or scrolling down again after closing the form via its own X button —
+    // that's releaseLock(false) too, and rawProgress is just as pinned at the max right
+    // then) would re-lock it while still sitting fully revealed: talkRevealed never
+    // actually flips back to false, so the effect that opens the form off of it never
+    // fires again on the next pass, permanently stuck closed after the very first time.
+    // Resetting here — on every release, not just the forward one — means re-entering
+    // always starts from a clean slate, requiring an actual swipe through again.
+    rawProgress.set(0);
     setFormOpen(false);
   }
 
@@ -361,6 +448,15 @@ export function LetsMakeItHappen() {
   useEffect(() => {
     function engageNow() {
       lockedRef.current = true;
+      savedScrollYRef.current = window.scrollY;
+      // position:fixed, not just overflow:hidden — on mobile Safari/Chrome,
+      // overflow:hidden on the body doesn't reliably stop a scroll gesture that's
+      // already in momentum from continuing to carry the page regardless, which was
+      // sailing straight through this entire locked section into the footer beneath
+      // it without ever holding for the image/reveal sequence. Pinning position:fixed
+      // removes the scrollable context entirely instead of just hiding overflow on
+      // top of it, which momentum can't fight the same way.
+      //
       // Applied synchronously here, not just via setLocked below (which only takes
       // effect once React re-renders and runs the body-lock effect) — otherwise
       // there's a real gap, right at this instant, where the scroll position has
@@ -370,40 +466,22 @@ export function LetsMakeItHappen() {
       // right as it's reached. setLocked still runs, both to keep the state
       // truthful for anything else reading it and so the effect's cleanup
       // correctly resets this on release.
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${savedScrollYRef.current}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
       setLocked(true);
     }
 
     function tryEngage() {
-      if (lockedRef.current || snappingRef.current || Date.now() < releaseCooldownUntilRef.current) return;
+      if (lockedRef.current || hasCompletedRef.current || Date.now() < releaseCooldownUntilRef.current) return;
       const el = sectionRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       if (!(rect.top <= 0 && rect.bottom > 0)) return;
-      if (rect.top === 0) { engageNow(); return; }
-      // Off by more than a few px (typical when this is caught mid-scroll rather than
-      // right at the boundary) — ease into exact alignment over a fixed, controlled
-      // duration instead of an instant jump, then lock once that settles. A plain
-      // window.scrollBy here reads as an abrupt snap, especially re-entering from
-      // below after scrolling up from the footer. Can't just hand this to the
-      // browser's own smooth-scroll and lock immediately after — overflow:hidden
-      // would freeze the scroll position mid-animation. Runs before locking (the page
-      // is still natively scrollable for its ~350ms), so wheel/touch below also check
-      // snappingRef to keep the user's own continued input from fighting it.
-      snappingRef.current = true;
-      const startY = window.scrollY;
-      const endY = startY + rect.top;
-      const duration = 350;
-      const startTime = performance.now();
-      function step(now: number) {
-        const t = Math.min(1, (now - startTime) / duration);
-        const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
-        window.scrollTo(0, startY + (endY - startY) * eased);
-        if (t < 1) { requestAnimationFrame(step); return; }
-        snappingRef.current = false;
-        engageNow();
-      }
-      requestAnimationFrame(step);
+      if (rect.top !== 0) window.scrollBy(0, rect.top);
+      engageNow();
     }
 
     function onScroll() {
@@ -420,7 +498,6 @@ export function LetsMakeItHappen() {
 
     function onWheel(e: WheelEvent) {
       tryEngage();
-      if (snappingRef.current) { e.preventDefault(); return; }
       if (!lockedRef.current) return;
       // The contact form overlay intercepts wheel events itself once it's open (see its
       // own onWheel), so this branch is mostly a defensive backstop — but it mirrors the
@@ -430,10 +507,10 @@ export function LetsMakeItHappen() {
       if (e.deltaY > 0 && current >= SCROLL_DISTANCE) {
         // rawProgress (set directly from input deltas) reaches this cap before the
         // spring-smoothed progress that actually drives talkRevealed/formOpen has
-        // caught up — releasing on raw alone would jump the page to the footer
-        // before the form has even opened, so it reopens moments later already
-        // sitting on top of it. Release must wait for the same "fully revealed"
-        // signal as everything else, not just the raw input hitting its ceiling.
+        // caught up — releasing on raw alone would let this scroll straight past
+        // into the footer before the form has even had a chance to open. Release
+        // must wait for the same "fully revealed" signal as everything else, not
+        // just the raw input hitting its ceiling.
         if (!formFullyRevealedRef.current) { e.preventDefault(); return; }
         releaseLock(true);
         return;
@@ -449,7 +526,6 @@ export function LetsMakeItHappen() {
       touchStartY = e.touches[0]?.clientY ?? null;
     }
     function onTouchMove(e: TouchEvent) {
-      if (snappingRef.current) { e.preventDefault(); return; }
       if (!lockedRef.current) return;
       // Absorb the drag itself — progress only actually updates once on touchend, as a
       // single uniform step, not continuously while dragging. Still needs preventDefault
@@ -488,12 +564,26 @@ export function LetsMakeItHappen() {
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
+
+    // Backstop for engagement specifically — everything above only ever tries to
+    // engage reactively, off of a scroll/wheel/touchstart event actually firing at
+    // the right moment. IntersectionObserver instead gets a direct callback the
+    // instant the section enters the viewport by any means, independent of
+    // whether/how those other events happen to fire, so a swipe that scrolls it
+    // into place without ever producing a usable scroll/touchstart tick still locks.
+    const observer = new IntersectionObserver(
+      (entries) => { if (entries[0]?.isIntersecting) tryEngage(); },
+      { threshold: 0 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
+      observer.disconnect();
     };
   }, [rawProgress]);
 

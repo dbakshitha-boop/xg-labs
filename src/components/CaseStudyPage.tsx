@@ -355,16 +355,17 @@ export function CaseStudyPage({ id }: { id?: string }) {
           .cs-para-row { grid-template-columns: 96px 1fr !important; gap: 36px !important; padding-top: 16px !important; padding-bottom: 16px !important; }
           .cs-solution-col { gap: 16px !important; }
           .cs-role-label { font-size: 12px !important; }
+          .cs-role-label-second { display: block !important; }
           .cs-brand-section { padding-top: 32px !important; }
           .cs-brand-text { padding-top: 0px !important; }
           .cs-brand-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
           .cs-steps-grid { grid-template-columns: 1fr 1fr !important; }
           .cs-stats-grid { grid-template-columns: 1fr 1fr !important; }
-          .cs-deliverables-grid { grid-template-columns: 1fr 1fr !important; }
-          .cs-bullet-grid { grid-template-columns: 1fr 1fr !important; }
+          .cs-deliverables-grid { grid-template-columns: 1fr !important; row-gap: 10px !important; }
+          .cs-deliverable-item { font-size: clamp(11px, 3vw, 14px) !important; white-space: nowrap !important; }
           .cs-images-grid { grid-template-columns: 1fr 1fr !important; gap: 22px !important; }
-          .cs-bullet-row { padding-left: 0 !important; padding-right: 0 !important; }
-          .cs-bullet-item { padding-left: 4px !important; padding-right: 8px !important; font-size: 12px !important; line-height: 1.45 !important; }
+          .cs-bullet-row { grid-template-columns: 1fr !important; padding-top: 28px !important; padding-left: 24px !important; padding-right: 24px !important; row-gap: 18px !important; }
+          .cs-bullet-item { padding-left: 4px !important; padding-right: 4px !important; font-size: clamp(10px, 3.6vw, 13px) !important; line-height: 1.5 !important; white-space: nowrap !important; text-align: center !important; }
           .cs-quote-text { font-size: clamp(18px, 5vw, 28px) !important; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
@@ -649,7 +650,7 @@ export function CaseStudyPage({ id }: { id?: string }) {
         {/* ROLE & DELIVERABLES */}
         {(study as any).deliverables && (
           <motion.div
-            className="cs-para-row"
+            className="cs-para-row cs-deliverables-row"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
@@ -663,11 +664,11 @@ export function CaseStudyPage({ id }: { id?: string }) {
             }}
           >
             <p className="cs-role-label" style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "14px", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", margin: 0 }}>
-              ROLE & DELIVERABLES
+              ROLE &{" "}<span className="cs-role-label-second">DELIVERABLES</span>
             </p>
             <div className="cs-deliverables-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px 24px" }}>
               {(study as any).deliverables.map((d: string, i: number) => (
-                <p key={i} style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.6", color: "rgba(255,255,255,0.45)", margin: 0 }}>
+                <p key={i} className="cs-deliverable-item" style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(14px, 1.05vw, 16px)", lineHeight: "1.6", color: "rgba(255,255,255,0.45)", margin: 0 }}>
                   {d}
                 </p>
               ))}

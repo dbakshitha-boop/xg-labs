@@ -21,6 +21,11 @@ interface ServiceItemProps {
   title: string;
   subtitle: string;
   contentLines: string[];
+  // Mobile-only override of the line breaks above — contentLines' break points are
+  // tuned for desktop's much wider column, and reusing them as-is on mobile can land
+  // mid-phrase (e.g. "growth —" stranded alone before the highlighted portion wraps
+  // to its own line below it). Falls back to contentLines when not given.
+  mobileContentLines?: string[];
   deliverables: string[];
   image: string;
 }
@@ -32,6 +37,11 @@ const services: ServiceItemProps[] = [
     contentLines: [
       "Data-driven campaigns built for real",
       "growth — no waste, no guesswork."
+    ],
+    mobileContentLines: [
+      "Data-driven campaigns built",
+      "for real growth —",
+      "no waste, no guesswork."
     ],
     deliverables: ["Strategy & audit", "Creative production", "Campaign setup"],
     image: imgPerformanceNew,
@@ -212,6 +222,7 @@ function ServiceCard({
   title,
   subtitle,
   contentLines,
+  mobileContentLines,
   deliverables,
   image,
   index,
@@ -386,22 +397,26 @@ function ServiceCard({
           </div>
           {/* content lines — same curtain-sweep reveal as desktop, driven by auto-reveal-on-scroll */}
           <div className="flex flex-col gap-0">
-            {contentLines.map((line, idx) => {
-              const highlightText =
-                index === 0 && idx === 1 ? "no waste, no guesswork." :
-                index === 1 && idx === 1 ? "demand over time." :
-                index === 2 && idx === 1 ? "convert traffic into action." :
-                index === 3 && idx === 1 ? "clarity and control." :
-                index === 4 && idx === 1 ? "attention and drive engagement." :
-                index === 5 && idx === 1 ? "relevance, reach, and structure." :
-                index === 6 && idx === 1 ? "scale consistently." : undefined;
+            {(mobileContentLines ?? contentLines).map((line, idx) => {
+              // Cards with a mobileContentLines override put the highlighted phrase on its
+              // own final line instead of contentLines' fixed idx===1 (a desktop-width break
+              // point) — everything else keeps the original behavior unchanged.
+              const highlightIdx = mobileContentLines ? mobileContentLines.length - 1 : 1;
+              const highlightText = idx !== highlightIdx ? undefined :
+                index === 0 ? "no waste, no guesswork." :
+                index === 1 ? "demand over time." :
+                index === 2 ? "convert traffic into action." :
+                index === 3 ? "clarity and control." :
+                index === 4 ? "attention and drive engagement." :
+                index === 5 ? "relevance, reach, and structure." :
+                index === 6 ? "scale consistently." : undefined;
 
               return (
                 <motion.div
                   key={idx}
                   className="relative leading-[1.25] tracking-[-0.02em]"
                   style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(18px, 5vw, 22px)", color: "#6E6E6E" }}
-                  animate={idx === 1 ? { x: active ? 0 : 80 } : { x: 0 }}
+                  animate={idx === highlightIdx ? { x: active ? 0 : 80 } : { x: 0 }}
                   transition={{
                     duration: 0.5,
                     ease: [0.16, 1, 0.3, 1],

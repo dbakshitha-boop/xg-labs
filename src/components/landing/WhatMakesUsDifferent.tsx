@@ -189,7 +189,7 @@ function ImageContainer({ progress, activeIndex, circleSize }: { progress: numbe
 function HeaderTextContainer() {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0" data-name="Header Text Container">
-      <p className="font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic relative shrink-0 text-[#414141] uppercase whitespace-normal" style={{ fontSize: "clamp(20px, 2.2vw, 32px)" }}>What makes us Different</p>
+      <p className="font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic relative shrink-0 text-[#414141] uppercase whitespace-normal" style={{ fontSize: "clamp(23px, 2.2vw, 32px)" }}>What makes us Different</p>
     </div>
   );
 }
@@ -198,7 +198,7 @@ function HeaderContainer() {
   return (
     <div className="content-stretch flex flex-col gap-[12px] lg:gap-[20px] items-start relative shrink-0 w-full" data-name="Header Container">
       <HeaderTextContainer />
-      <p className="font-['Sora',sans-serif] font-normal leading-[1.4] relative text-[#5f5f5f] tracking-normal w-full max-w-none line-clamp-3 lg:line-clamp-none" style={{ fontSize: "clamp(13px, 2vw, 28px)" }}>
+      <p className="font-['Sora',sans-serif] font-normal leading-[1.4] relative text-[#5f5f5f] tracking-normal w-full max-w-none line-clamp-3 lg:line-clamp-none" style={{ fontSize: "clamp(16px, 2vw, 28px)" }}>
         We blend strategy, design, and storytelling into work that feels modern, intentional, and built to move brands forward. Every idea is crafted with clarity and purpose — no noise, no filler, just high-impact creative that works.
       </p>
     </div>
@@ -239,7 +239,7 @@ function RevealText({ children, delay = 0, isActive }: { children: React.ReactNo
 
 function SubheaderContainer({ title, id }: { title: string, id: string }) {
   return (
-    <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#060606] uppercase w-full" style={{ fontSize: "clamp(16px, 1.6vw, 24px)" }} data-name="Subheader Container">
+    <div className="content-stretch flex font-['Cal_Sans',sans-serif] font-normal gap-[12px] lg:gap-[24px] items-start leading-[1.2] tracking-[-0.02em] relative shrink-0 text-[#060606] uppercase w-full" style={{ fontSize: "clamp(19px, 1.6vw, 24px)" }} data-name="Subheader Container">
       <p className="basis-0 grow min-h-px min-w-px relative shrink-0">{title}</p>
     </div>
   );
@@ -251,7 +251,7 @@ function ContentContainer({ description, title, id, isInView }: { description: s
       <SubheaderContainer title={title} id={id} />
       <div className="flex flex-col w-full">
         {description.map((line, idx) => (
-             <div key={idx} className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(19px, 3.2vw, 38px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
+             <div key={idx} className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(32px, 3.2vw, 38px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
                 <RevealText delay={idx * 0.1} isActive={isInView}>
                   {line}
                 </RevealText>
