@@ -189,7 +189,7 @@ function ImageContainer({ progress, activeIndex, circleSize }: { progress: numbe
 function HeaderTextContainer() {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0" data-name="Header Text Container">
-      <p className="font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic relative shrink-0 text-[#414141] uppercase whitespace-normal" style={{ fontSize: "clamp(23px, 2.2vw, 32px)" }}>What makes us Different</p>
+      <p className="font-['Cal_Sans',sans-serif] leading-[1.2] tracking-[-0.02em] not-italic relative shrink-0 text-[#414141] uppercase whitespace-normal" style={{ fontSize: "clamp(20px, 2.2vw, 28px)" }}>What makes us Different</p>
     </div>
   );
 }
@@ -198,7 +198,7 @@ function HeaderContainer() {
   return (
     <div className="content-stretch flex flex-col gap-[12px] lg:gap-[20px] items-start relative shrink-0 w-full" data-name="Header Container">
       <HeaderTextContainer />
-      <p className="font-['Sora',sans-serif] font-normal leading-[1.4] relative text-[#5f5f5f] tracking-normal w-full max-w-none line-clamp-3 lg:line-clamp-none" style={{ fontSize: "clamp(16px, 2vw, 28px)" }}>
+      <p className="font-['Sora',sans-serif] font-normal leading-[1.4] relative text-[#5f5f5f] tracking-normal w-full max-w-none line-clamp-3 lg:line-clamp-none" style={{ fontSize: "clamp(14px, 1.8vw, 24px)" }}>
         We blend strategy, design, and storytelling into work that feels modern, intentional, and built to move brands forward. Every idea is crafted with clarity and purpose — no noise, no filler, just high-impact creative that works.
       </p>
     </div>
@@ -256,7 +256,7 @@ function ContentContainer({ description, title, id, isInView, isMobile }: { desc
           // larger relative font) produced oddly short lines with a lot of trailing empty
           // space (e.g. "and" alone on its own line). Joining into one paragraph lets it
           // wrap naturally at whatever width is actually available.
-          <div className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(26px, 3.2vw, 32px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
+          <div className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(30px, 3.2vw, 36px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
             <RevealText isActive={isInView}>
               {description.join(" ")}
             </RevealText>
@@ -355,6 +355,28 @@ export function WhatMakesUsDifferent() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [engaged]);
+  // A second, independent path to the same state — deliberately decoupled from `engaged`
+  // and its stricter, alignment-sensitive triggers (the crossing-detection above, and the
+  // near-100%-visible IntersectionObserver further down) entirely. Those exist to gate
+  // *card-stepping* — locking one card at a time needs a precise, deliberate trigger — but
+  // the text going blank is a much simpler, more common case: the section resting at some
+  // ordinary, imperfect scroll position (not fully aligned top-to-bottom) that never
+  // satisfies either of those, where there's no good reason for the text to stay hidden.
+  // Simple visibility should always be enough on its own, independent of whether stepping
+  // ever locks in.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry && entry.intersectionRatio >= 0.4) setRevealVisible(true);
+      },
+      { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const lastStepTime = useRef(0);     // when the last step fired (cooldown between steps)
   const lastEventTime = useRef(0);    // when the last wheel event arrived (for gesture reset)
@@ -409,6 +431,37 @@ export function WhatMakesUsDifferent() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll(); // run once on mount in case the page already scrolled here
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Backstop for the crossing-detection above — it needs two consecutive scroll samples
+  // to recognize a crossing (previous outside, current inside), so there's no way for it
+  // to catch the section already filling the viewport with nothing to compare against:
+  // right after mount, or scrolling back to a position it happens to settle at without
+  // any further scroll event ever firing. That left engaged/revealVisible stuck false —
+  // and with them the title+description, which are opacity-gated on revealVisible — even
+  // though the section was sitting fully on screen. This fires independently of scroll
+  // events entirely, off of the section's actual on-screen presence, and doesn't care how
+  // it got there. Deliberately doesn't touch activeIndex — whatever it's currently at
+  // (freshly mounted at 0, or wherever an earlier session left it) is exactly what should
+  // resume, not be reset.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry || engagedRef.current) return;
+        if (entry.intersectionRatio >= 0.98) {
+          engagedRef.current = true;
+          setSubProgress(0);
+          setEngaged(true);
+          setRevealGen(g => g + 1);
+        }
+      },
+      { threshold: [0.98] }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   // Lock real page scroll while stepping through cards by hand.
@@ -559,6 +612,23 @@ export function WhatMakesUsDifferent() {
           </div>
         </div>
       </div>
+      {/* Temporary dev-only debug readout — remove once the "last card blank on
+          re-entry" issue is confirmed fixed. */}
+      {import.meta.env.DEV && (
+        <div
+          style={{
+            position: "fixed", bottom: 8, right: 8, zIndex: 9999,
+            background: "rgba(0,0,0,0.85)", color: "#0f0",
+            fontFamily: "monospace", fontSize: 11, lineHeight: 1.6,
+            padding: "8px 10px", borderRadius: 6, pointerEvents: "none", whiteSpace: "pre",
+          }}
+        >
+          {`activeIndex: ${activeIndex}
+engaged: ${engaged}
+revealVisible: ${revealVisible}
+revealGen: ${revealGen}`}
+        </div>
+      )}
     </div>
   );
 }

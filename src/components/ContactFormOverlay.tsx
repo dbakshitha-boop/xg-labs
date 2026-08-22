@@ -163,10 +163,10 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract,
       `}</style>
 
       {/* Full layout */}
-      <div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column", justifyContent: embedded ? "center" : "flex-start", gap: embedded ? "40px" : "0", padding: embedded ? "40px max(40px, calc((100% - 1224px) / 2)) 100px" : "60px max(40px, calc((100% - 1224px) / 2)) 72px" }}>
+      <div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column", justifyContent: embedded ? "center" : "flex-start", gap: embedded ? "40px" : "0", padding: embedded ? "40px max(40px, calc((100% - 1224px) / 2)) 100px" : isMobile ? "28px max(24px, calc((100% - 1224px) / 2)) 32px" : "60px max(40px, calc((100% - 1224px) / 2)) 72px" }}>
 
         {/* Header */}
-        <div className="cf-header" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "72px", marginBottom: embedded ? "0" : "80px" }}>
+        <div className="cf-header" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", columnGap: "72px", marginBottom: embedded ? "0" : isMobile ? "32px" : "80px" }}>
           <h2
             className="cf-title"
             style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontStyle: "normal", fontSize: "80px", color: "#6E6E6E", margin: 0, letterSpacing: "-0.04em", lineHeight: "120%" }}
