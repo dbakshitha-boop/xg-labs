@@ -456,6 +456,16 @@ export function WhatMakesUsDifferent() {
           setSubProgress(0);
           setEngaged(true);
           setRevealGen(g => g + 1);
+          // Unlike the crossing-detection above, arriving here doesn't imply any
+          // particular alignment — 98%+ visible still leaves room for a several-px
+          // gap at the top or bottom, which is what "not locked in the right place"
+          // was: the section engaging (locking further scroll) exactly wherever it
+          // happened to be sitting, gap and all, instead of snapped flush like a
+          // normal crossing-triggered engage. Same correction as that does, since
+          // the container is a fixed 100vh — closing rect.top to 0 also closes
+          // rect.bottom to window.innerHeight in the same move.
+          const rect = el.getBoundingClientRect();
+          if (rect.top !== 0) window.scrollTo({ top: window.scrollY + rect.top, behavior: "auto" });
         }
       },
       { threshold: [0.98] }
