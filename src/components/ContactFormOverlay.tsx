@@ -186,9 +186,9 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract,
                 className="cf-close-btn"
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, height: "56px", display: "flex", alignItems: "center", justifyContent: "center", gap: "2px" }}
               >
-                <LeftBracket height={52} color="#A3A3A3" />
+                <LeftBracket height={48} color="#A3A3A3" />
                 <motion.div
-                  variants={{ rest: { width: 75 }, hover: { width: 102 } }}
+                  variants={{ rest: { width: 48 }, hover: { width: 102 } }}
                   transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                   style={{ overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", height: "52px", flexShrink: 0 }}
                 >
@@ -197,7 +197,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract,
                     transition={{ duration: 0.15 }}
                     style={{ position: "absolute" }}
                   >
-                    <CloseXIcon height={46} width={75} />
+                    <CloseXIcon height={42} width={48} />
                   </motion.span>
                   <motion.span
                     variants={{ rest: { opacity: 0 }, hover: { opacity: 1 } }}
@@ -207,7 +207,7 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract,
                     CLOSE
                   </motion.span>
                 </motion.div>
-                <RightBracket height={52} color="#A3A3A3" />
+                <RightBracket height={48} color="#A3A3A3" />
               </motion.button>
             )}
           </div>
@@ -319,9 +319,9 @@ export function ContactFormContent({ onClose, embedded = false, onFieldInteract,
           <div className="cf-mobile-actions" style={{ display: isMobile ? "flex" : "none", gridColumn: "1 / -1", justifyContent: hideClose ? "flex-end" : "space-between", alignItems: "center", paddingTop: "16px" }}>
             {/* Close/Next button */}
             {!hideClose && (
-              <motion.button onClick={() => onClose?.()} initial="rest" whileHover="hover" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, height: "44px", display: "flex", alignItems: "center", gap: "4px" }}>
+              <motion.button onClick={() => onClose?.()} initial="rest" whileHover="hover" style={{ background: "none", border: "none", cursor: "pointer", padding: 0, height: "52px", display: "flex", alignItems: "center", gap: "2px" }}>
                 <LeftBracket height={40} arm={8} color="#A3A3A3" />
-                <CloseXIcon height={30} width={50} />
+                <CloseXIcon height={28} width={22} />
                 <RightBracket height={40} arm={8} color="#A3A3A3" />
               </motion.button>
             )}

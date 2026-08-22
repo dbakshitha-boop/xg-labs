@@ -263,7 +263,7 @@ function ContentContainer({ description, title, id, isInView, isMobile }: { desc
           </div>
         ) : (
           description.map((line, idx) => (
-             <div key={idx} className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(32px, 3.2vw, 38px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
+             <div key={idx} className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(32px, 3.6vw, 46px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
                 <RevealText delay={idx * 0.1} isActive={isInView}>
                   {line}
                 </RevealText>
@@ -301,7 +301,7 @@ function RealContent({ activeIndex, isInView, revealGen, isMobile }: { activeInd
 
 function TextContainer({ activeIndex, isInView, revealGen, isMobile }: { activeIndex: number; isInView: boolean; revealGen: number; isMobile: boolean }) {
   return (
-    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full" style={{ padding: "clamp(24px, 4vw, 64px)", paddingTop: "clamp(32px, 4vw, 56px)", justifyContent: "flex-start", gap: "clamp(40px, 9vw, 150px)" }} data-name="Text Container">
+    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full" style={{ padding: "clamp(24px, 4vw, 64px)", paddingTop: isMobile ? "clamp(32px, 4vw, 56px)" : "clamp(56px, 8vw, 110px)", justifyContent: "flex-start", gap: "clamp(40px, 9vw, 150px)" }} data-name="Text Container">
       <HeaderContainer />
       <div>
         <RealContent activeIndex={activeIndex} isInView={isInView} revealGen={revealGen} isMobile={isMobile} />
@@ -474,11 +474,32 @@ export function WhatMakesUsDifferent() {
     return () => observer.disconnect();
   }, []);
 
-  // Lock real page scroll while stepping through cards by hand.
+  // Lock real page scroll while stepping through cards by hand. position:fixed, not
+  // just overflow:hidden — on mobile Safari/Chrome, overflow:hidden alone doesn't
+  // reliably stop a scroll gesture already in momentum from continuing to carry the
+  // page regardless, which was the "sometimes it just scrolls straight through
+  // without locking" issue: the crossing-detection (and its IntersectionObserver
+  // backstop) really were engaging, but a fast fling's momentum kept overpowering
+  // the plain overflow:hidden that was supposed to hold it. Scroll position doesn't
+  // actually change for the whole engaged session either way (both approaches just
+  // freeze wherever it already was) — this only changes how forcefully that's held.
+  const scrollLockYRef = useRef(0);
   useEffect(() => {
     if (!engaged) return;
+    scrollLockYRef.current = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollLockYRef.current}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = "auto"; };
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "auto";
+      window.scrollTo(0, scrollLockYRef.current);
+    };
   }, [engaged]);
 
   // One wheel/swipe gesture = one card. Same throttle/gesture-lock pattern as the hero's

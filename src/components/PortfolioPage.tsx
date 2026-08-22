@@ -71,7 +71,7 @@ function normalizeTags(str: string): string {
 // ─── Animation constants ──────────────────────────────────────────────────────
 
 const T: Transition = { duration: 1.0, ease: [0.16, 1, 0.3, 1] };
-const CAROUSEL_TRANSITION: Transition = { type: "spring", stiffness: 110, damping: 24, mass: 0.9 };
+const CAROUSEL_TRANSITION: Transition = { duration: 1.4, ease: [0.16, 1, 0.3, 1] };
 
 // Carousel track sizing — accounts for the 24px track gap so two cards plus
 // the gap between them exactly fill the container (no overflow-clipped sliver).
@@ -81,17 +81,21 @@ const CAROUSEL_GAP = 24;
 // so page content lines up with the nav bar's left/right edges instead of using a fixed padding.
 const NAV_MARGIN = "max(20px, calc((100vw - min(1320px, calc(100vw - 56px))) / 2))";
 
-// Section 0: fades out in place
+// Section 0: fades out, drifting up slightly rather than dissolving perfectly in
+// place — a pure opacity-only crossfade (no motion at all) reads as flatter/less
+// fluid than one with even a small amount of accompanying movement.
 const s0Variants = {
-  initial: (dir: number) => ({ opacity: 0 }),
-  animate: { opacity: 1 },
-  exit:    (dir: number) => ({ opacity: 0 }),
+  initial: (dir: number) => ({ opacity: 0, y: "0%" }),
+  animate: { opacity: 1, y: "0%" },
+  exit:    (dir: number) => ({ opacity: 0, y: "-4%" }),
 };
 
-// Section 1: fades in from s0 in place; slides from s2
+// Section 1: fades in from s0 with the same slight upward drift (continuing the
+// motion s0 exits with, rather than s1 just appearing static while s0 moves around
+// it); slides fully from s2.
 const s1Variants = {
   initial: (dir: number) => dir >= 0
-    ? { opacity: 0, y: "0%" }
+    ? { opacity: 0, y: "4%" }
     : { opacity: 1, y: "100%" },
   animate: { opacity: 1, y: "0%" },
   exit:    (dir: number) => dir >= 0
@@ -124,7 +128,12 @@ export function PortfolioPage() {
   // something that needs measuring — so this is already correct on the very
   // first frame, with no dependency on exactly when a layout effect fires
   // relative to mount.
+  //
+  // Plain state + a declarative animate prop, driven at CAROUSEL_TRANSITION's
+  // 1.4s/ease-out pace — trackTransition is swapped to {duration:0} only for
+  // the very first (pre-measurement) jump so there's no slide-in on mount.
   const [trackX, setTrackX] = useState(0);
+  const [trackTransition, setTrackTransition] = useState<Transition>({ duration: 0 });
   const [cardPxWidth, setCardPxWidth] = useState(0);
 
   const carouselContainerRef = useRef<HTMLDivElement>(null);
@@ -181,21 +190,27 @@ export function PortfolioPage() {
   // cardPxWidth starts at 0 and is only measured from the container after
   // mount, so it falls back to "50%" until then (see minWidth below) — a
   // plain style value, so it just snaps to the real width once measured, no
-  // animation involved. trackX doesn't have that luxury (its animate prop
-  // does animate every change), which is why it's seeded correctly above
-  // instead. hasMeasuredRef still guards the transition itself, since a
+  // animation involved. trackX doesn't have that luxury (it's animated on
+  // every genuine navigation), which is why it's seeded correctly above
+  // instead. hasMeasuredRef still guards whether this animates at all, since a
   // ResizeObserver-driven correction (e.g. window resize) should also snap
   // instantly rather than replaying the slide.
   const hasMeasuredRef = useRef(false);
-  const [trackTransition, setTrackTransition] = useState<Transition>({ duration: 0 });
   const updateTrackX = useCallback(() => {
     const el = carouselContainerRef.current;
     if (!el) return;
     const w = (el.offsetWidth - CAROUSEL_GAP) / 2;
     setCardPxWidth(w);
-    setTrackX(-carouselStart * (w + CAROUSEL_GAP));
-    if (hasMeasuredRef.current) setTrackTransition(CAROUSEL_TRANSITION);
-    else hasMeasuredRef.current = true;
+    const target = -carouselStart * (w + CAROUSEL_GAP);
+    if (hasMeasuredRef.current) {
+      setTrackTransition(CAROUSEL_TRANSITION);
+    } else {
+      // No transition on the very first measurement — otherwise the track
+      // would visibly slide in from x:0 the instant it's first measured.
+      setTrackTransition({ duration: 0 });
+      hasMeasuredRef.current = true;
+    }
+    setTrackX(target);
   }, [carouselStart]);
 
   // The very first measurement runs synchronously before paint (useLayoutEffect,
@@ -454,11 +469,18 @@ export function PortfolioPage() {
                     {STRIP_CARDS.map((card, i) => (
                       // Fades out with the rest of section 0 on its own (no shared-layout
                       // link to section 1) so it never lingers mid-crossfade or overlaps
-                      // section 1's content while scrolling between sections.
+                      // section 1's content while scrolling between sections. Uses the same
+                      // duration/easing as the section transition itself (T) — it was
+                      // previously a much faster, independent 250ms, which made the strip
+                      // visibly snap out well before the rest of section 0 (and section 1's
+                      // fade-in) finished, reading as an abrupt, uneven transition.
                       <motion.div
                         key={i}
-                        animate={{ opacity: section === 0 ? 1 : 0 }}
-                        transition={{ duration: 0.25 }}
+                        // Same slight upward drift as s0Variants' own exit, so the strip
+                        // moves together with the rest of section 0 as one piece instead
+                        // of staying static while everything around it drifts.
+                        animate={{ opacity: section === 0 ? 1 : 0, y: section === 0 ? "0%" : "-4%" }}
+                        transition={T}
                         style={{
                           width: "20vw", flexShrink: 0, height: "100%",
                           overflow: "hidden", background: "#d0d0d0", position: "relative",
@@ -490,8 +512,6 @@ export function PortfolioPage() {
               {/* Carousel track */}
               <div ref={carouselContainerRef} style={{ height: "90%", flexShrink: 0, overflow: "hidden", position: "relative" }}>
                 <motion.div
-                  animate={{ x: trackX }}
-                  transition={trackTransition}
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
                   dragElastic={0.06}
@@ -499,6 +519,8 @@ export function PortfolioPage() {
                     if (info.offset.x < -50) nextCard();
                     else if (info.offset.x > 50) prevCard();
                   }}
+                  animate={{ x: trackX }}
+                  transition={trackTransition}
                   style={{ display: "flex", gap: "24px", height: "100%", cursor: "grab" }}
                 >
                   {METRIC_CARDS.map((card, i) => {
@@ -516,36 +538,21 @@ export function PortfolioPage() {
                           <img src={card.img} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
                         </div>
                       </div>
+                      {/* Every card gets the same plain, static text now — card index 2 used to
+                          get its own separate 1s y/opacity reveal, hardcoded to only trigger
+                          correctly at carouselStart === 1, while every other card's text just
+                          appeared flatly. That mismatch (one card animating in on top of the
+                          track's own pan, others not) was reading as inconsistent, uneven
+                          motion between cards no matter how the track's own transition was
+                          tuned. The track's pan is now the only source of visual movement,
+                          uniformly, for every card. */}
                       <div style={{ display: "flex", flexDirection: "column", gap: "14px", paddingLeft: "24px" }}>
-                        {i === 2 ? (
-                          <>
-                            <motion.h3
-                              initial={{ y: 130, opacity: 0 }}
-                              animate={carouselStart === 1 ? { y: 0, opacity: 1 } : { y: 130, opacity: 0 }}
-                              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                              style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(22px, 2.6vw, 38px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#414141", margin: 0 }}
-                            >
-                              {card.metric}
-                            </motion.h3>
-                            <motion.p
-                              initial={{ y: 130, opacity: 0 }}
-                              animate={carouselStart === 1 ? { y: 0, opacity: 1 } : { y: 130, opacity: 0 }}
-                              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                              style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.4vw, 19px)", lineHeight: "1.6", color: "#5F5F5F", margin: 0, maxWidth: "560px" }}
-                            >
-                              {card.description}
-                            </motion.p>
-                          </>
-                        ) : (
-                          <>
-                            <h3 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(22px, 2.6vw, 38px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#414141", margin: 0 }}>
-                              {card.metric}
-                            </h3>
-                            <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.4vw, 19px)", lineHeight: "1.6", color: "#5F5F5F", margin: 0, maxWidth: "560px" }}>
-                              {card.description}
-                            </p>
-                          </>
-                        )}
+                        <h3 style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "clamp(22px, 2.6vw, 38px)", lineHeight: "1.05", letterSpacing: "-0.02em", color: "#414141", margin: 0 }}>
+                          {card.metric}
+                        </h3>
+                        <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "clamp(15px, 1.4vw, 19px)", lineHeight: "1.6", color: "#5F5F5F", margin: 0, maxWidth: "560px" }}>
+                          {card.description}
+                        </p>
                       </div>
                     </div>
                   );
@@ -637,6 +644,22 @@ export function PortfolioPage() {
 
         </AnimatePresence>
       </div>
+      {/* Temporary dev-only debug readout — remove once the carousel pan issue
+          is confirmed fixed. */}
+      {import.meta.env.DEV && (
+        <div
+          style={{
+            position: "fixed", bottom: 8, right: 8, zIndex: 9999,
+            background: "rgba(0,0,0,0.85)", color: "#0f0",
+            fontFamily: "monospace", fontSize: 11, lineHeight: 1.6,
+            padding: "8px 10px", borderRadius: 6, pointerEvents: "none", whiteSpace: "pre",
+          }}
+        >
+          {`carouselStart: ${carouselStart}
+trackX: ${trackX.toFixed(1)}
+cardPxWidth: ${cardPxWidth.toFixed(1)}`}
+        </div>
+      )}
     </div>
   );
 }

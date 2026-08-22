@@ -416,8 +416,8 @@ export function ScrollContainer({ onNext, onPrev, hideText }: { onNext?: () => v
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute bottom-[40px] content-stretch flex items-center justify-between left-0 pr-[80px] z-20 pointer-events-auto"
-      style={{ width: "70vw", paddingLeft: "calc(max(20px, calc((70vw - min(1200px, calc(70vw - 40px))) / 2)) + 24px)" }}
+      className="absolute bottom-[40px] content-stretch flex items-center justify-between left-0 z-20 pointer-events-auto"
+      style={{ width: "70vw", paddingLeft: "calc(max(20px, calc((70vw - min(1200px, calc(70vw - 40px))) / 2)) + 24px)", paddingRight: "40px" }}
     >
       <ArrowContainer onPrev={onPrev} onNext={onNext} />
       <motion.p
@@ -510,17 +510,19 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
   // Locked sections (e.g. LetsMakeItHappen) sometimes need to nudge the real scroll
   // position by a few px to align themselves right as they engage — a genuine native
   // scroll event indistinguishable, above, from the user scrolling up, which would
-  // otherwise pop the nav bar open right as one of those sections locks in. Suppressed
-  // for the duration rather than trying to filter it out of onScroll above, since
-  // there's no reliable way to tell a small corrective scroll apart from a real one
-  // from here.
+  // otherwise pop the nav bar open right as one of those sections locks in. Also covers
+  // the contact form specifically staying open over one of these sections — the bar has
+  // no business floating on top of it either way. Checked first and unconditionally
+  // (not folded into the mobile-only OR-branch below) — desktop's own "always visible"
+  // default (`!isMobileNav`) would otherwise short-circuit straight past it before this
+  // ever got a say, which was silently limiting this suppression to mobile only.
   const [sectionLocked, setSectionLocked] = useState(false);
   useEffect(() => {
     const onLock = (e: Event) => setSectionLocked(Boolean((e as CustomEvent).detail?.locked));
     window.addEventListener("xg-section-lock", onLock);
     return () => window.removeEventListener("xg-section-lock", onLock);
   }, []);
-  const mobileNavVisible = !isMobileNav || mobileMenuOpen || (mobileNavScrollVisible && !sectionLocked);
+  const mobileNavVisible = mobileMenuOpen || (!sectionLocked && (!isMobileNav || mobileNavScrollVisible));
 
   return (
     <>

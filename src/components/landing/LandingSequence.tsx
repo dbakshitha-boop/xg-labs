@@ -255,32 +255,32 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
         return () => window.removeEventListener("scroll", onScroll);
     }, [showContent, scrollStep]);
 
+    // Locked sections further down the page (e.g. LetsMakeItHappen) nudge the real
+    // scroll position by a few px to align themselves right as they engage — a genuine
+    // native scroll event indistinguishable, elsewhere, from the user scrolling up,
+    // which would otherwise pop a nav bar open right as one of those sections locks in.
+    // Declared here (ahead of navDwellReveal and the mobile nav's own scroll listener
+    // further below) since both need it.
+    const [sectionLocked, setSectionLocked] = useState(false);
+    useEffect(() => {
+        const onLock = (e: Event) => setSectionLocked(Boolean((e as CustomEvent).detail?.locked));
+        window.addEventListener("xg-section-lock", onLock);
+        return () => window.removeEventListener("xg-section-lock", onLock);
+    }, []);
+
     // The nav bar is visible on the hero's "Strategy First" panel (scrollStep
     // 0) and its settled About/Contact panel (scrollStep 2) — hidden during
     // the transition between them (scrollStep 1) and once scrollStep reaches
-    // 3 (Contact fully settled, and the rest of the page beyond that). As a
-    // convenience, once hidden it fades back in if the user stops scrolling
-    // and stays on the same section for more than 10s; scrolling again hides
-    // it and restarts the wait.
-    const [navDwellReveal, setNavDwellReveal] = useState(false);
-    useEffect(() => {
-        if (!(showContent && scrollStep === 3)) {
-            setNavDwellReveal(false);
-            return;
-        }
-        let timer: ReturnType<typeof window.setTimeout> | null = null;
-        const arm = () => {
-            if (timer != null) window.clearTimeout(timer);
-            timer = window.setTimeout(() => setNavDwellReveal(true), 10000);
-        };
-        const onScroll = () => { setNavDwellReveal(false); arm(); };
-        arm();
-        window.addEventListener("scroll", onScroll, { passive: true });
-        return () => {
-            window.removeEventListener("scroll", onScroll);
-            if (timer != null) window.clearTimeout(timer);
-        };
-    }, [showContent, scrollStep]);
+    // 3 (Contact fully settled, and the rest of the page beyond that). It used
+    // to also fade back in on its own after 10s of no scrolling as a
+    // convenience — removed entirely: it kept reappearing over sections further
+    // down the page (like LetsMakeItHappen's contact form) whenever the user
+    // was reading or filling something in rather than actively scrolling, which
+    // reads as idle in exactly the same way. Gating that specifically off
+    // sectionLocked didn't resolve it, so the feature is gone rather than
+    // fighting it further — the nav simply stays hidden once scrollStep reaches
+    // 3, full stop.
+    const navDwellReveal = false;
 
     const getLogoState = () => {
         if (logoExiting) return "exit";
@@ -389,16 +389,6 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, [isMobile, showContent]);
-    // Locked sections further down the page (e.g. LetsMakeItHappen) nudge the real
-    // scroll position by a few px to align themselves right as they engage — a genuine
-    // native scroll event indistinguishable, above, from the user scrolling up, which
-    // would otherwise pop this nav bar open right as one of those sections locks in.
-    const [sectionLocked, setSectionLocked] = useState(false);
-    useEffect(() => {
-        const onLock = (e: Event) => setSectionLocked(Boolean((e as CustomEvent).detail?.locked));
-        window.addEventListener("xg-section-lock", onLock);
-        return () => window.removeEventListener("xg-section-lock", onLock);
-    }, []);
     const mobileNavVisible = mobileMenuOpen || (mobileNavScrollVisible && !sectionLocked);
 
     // ── Mobile layout — completely bypasses the JS horizontal scroll animation ──

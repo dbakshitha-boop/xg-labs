@@ -283,28 +283,24 @@ export function LetsMakeItHappen() {
   const [talkRevealed, setTalkRevealed] = useState(false);
   useEffect(() => progress.on("change", (v) => setTalkRevealed(v >= 0.985)), [progress]);
 
-  // True once the user has scrolled forward past the fully-revealed form (see
-  // releaseLock's forward branch) — from then on the form isn't a position:fixed
-  // overlay anymore, it settles into normal document flow as a static block
-  // sitting directly above the real page Footer, so it stays on screen and the
-  // footer arrives as a natural continuation below it instead of the form
-  // vanishing (its old exit-slide-away animation) to reveal the footer underneath.
-  const [pastRelease, setPastRelease] = useState(false);
+  // The form itself lives inside the locked section's own box (position: absolute,
+  // inset: 0 — see its own style below) rather than as a separate sibling element
+  // positioned after it. That's deliberate: a separate sibling has a different
+  // document position depending on whether it's shown as a fixed overlay or as a
+  // normal-flow block, which meant reconciling those two with a scroll jump every
+  // time the form settled — and that jump kept landing wrong or fighting the user's
+  // own scroll no matter how it was implemented (instant, native-smooth, manually
+  // eased). Living inside the section's own box sidesteps the whole problem: there's
+  // only ever one position, so there's nothing left to jump between. Once the lock
+  // releases, the form (and the section it's living inside) is simply the next
+  // ordinary block on the page — "Let's Talk" → form → footer, one continuous scroll.
 
-  // The moment Let's Talk finishes revealing, open the contact form
-  // automatically — no extra scroll tick needed. Scrolling back up out of
-  // that revealed state closes the form again just as automatically (see the
-  // release() effect below), so scrolling up from the fully-revealed end
-  // state takes you back toward the previous section instead of leaving the
-  // form stuck open with nothing responding. Skipped once pastRelease — talkRevealed
-  // can still drift back to false as rawProgress eases back toward 0 afterward (see
-  // releaseLock), but the form must stay open at that point, not auto-close right
-  // after it was deliberately kept on screen.
+  // The moment Let's Talk finishes revealing, open the contact form automatically —
+  // no extra scroll tick needed.
   const [formOpen, setFormOpen] = useState(false);
   useEffect(() => {
-    if (pastRelease) return;
     setFormOpen(talkRevealed);
-  }, [talkRevealed, pastRelease]);
+  }, [talkRevealed]);
 
   // The overlay itself takes 1.7s to slide fully into view. Scroll input that
   // arrives before that finishes must not act on it yet — otherwise a user who's
@@ -317,20 +313,6 @@ export function LetsMakeItHappen() {
   useEffect(() => {
     if (formOpen) setFormFullyRevealed(false);
   }, [formOpen]);
-  // Guards against releasing to the footer the instant the form becomes fully
-  // revealed — in either direction, forward to the footer or back to the image
-  // sequence. The "wait until scrolled to the edge of the form's own content"
-  // check on its own isn't enough on a short form that already fits in the
-  // viewport without needing to scroll at all — there, scrollTop is pinned at 0,
-  // so both "at the top" and "at the bottom" are trivially already true, and the
-  // very first scroll tick in either direction released immediately, before
-  // there was any real chance to even see the form. This adds a flat settle
-  // window on top of that, regardless of form length.
-  const formSettledAtRef = useRef(0);
-  useEffect(() => {
-    if (formFullyRevealed) formSettledAtRef.current = Date.now();
-  }, [formFullyRevealed]);
-  const FORM_RELEASE_GRACE_MS = 900;
 
   // The screen itself stays completely locked in place while this section is
   // engaged — every wheel tick or touch drag, up or down, is absorbed and
@@ -413,31 +395,33 @@ export function LetsMakeItHappen() {
     // setLocked(false) is async — the body-lock effect's cleanup won't actually run
     // until React re-renders after this function returns. Restoring the body's own
     // position/overflow right now, synchronously, matters more than usual here: with
-    // position:fixed (see engageNow), the document has no scroll offset of its own to
-    // scroll to — it has to be back in normal flow before scrollTo below does anything.
+    // position:fixed (see engageNow), window.scrollY reads as ~0 for as long as
+    // that's applied — it has to be back in normal flow before the scrollTo below
+    // does anything, or before the browser's own scroll position is trustworthy again.
     document.body.style.position = "";
     document.body.style.top = "";
     document.body.style.left = "";
     document.body.style.right = "";
     document.body.style.overflow = "auto";
     releaseCooldownUntilRef.current = Date.now() + (forward ? 1200 : 500);
+    // Needed in BOTH directions, and not for "jumping" anywhere — position:fixed is
+    // what was holding the page at this exact spot the whole time (see engageNow),
+    // so removing it above, on its own, leaves the browser's scroll position wherever
+    // it happens to fall back to (effectively the top of the page), not where the
+    // user visually still was. This is purely restoring that, undoing position:fixed's
+    // own side effect — the form lives inside this section's own box (position:
+    // absolute, inset: 0), not as a separate sibling after it, so unlike an earlier
+    // version of this there's no *additional* offset to add on top for the forward
+    // case either; both directions land on the exact same spot.
+    window.scrollTo(0, savedScrollYRef.current);
     if (forward) {
       hasCompletedRef.current = true;
-      setPastRelease(true);
-      // rawProgress is deliberately left alone here (unlike the backward branch
-      // below) — resetting it to 0 would spring smoothProgress back down, which
-      // drops progress below the 0.985 talkRevealed threshold a moment later and,
-      // through the formOpen-follows-talkRevealed effect above, auto-closes the
-      // form right after this function just went out of its way to keep it open.
-      // Safe to leave pinned at the max: hasCompletedRef already stops tryEngage
-      // from ever re-locking this section again, which is the only thing that
-      // reset was ever protecting against in the first place.
-      //
-      // The form stays open and mounted (see pastRelease's own comment) — settling
-      // into flow right after the locked section's own 100vh block, so it takes the
-      // exact next viewport's worth of scroll to bring fully into view, matching
-      // where it visually already was as a fixed, inset:0 overlay a moment ago.
-      window.scrollTo(0, savedScrollYRef.current + window.innerHeight);
+      // rawProgress is deliberately left alone (unlike the backward branch below) —
+      // resetting it to 0 would spring smoothProgress back down, dropping progress
+      // below the 0.985 talkRevealed threshold and auto-closing the form moments
+      // after it just opened. Safe to leave pinned at the max: hasCompletedRef
+      // already stops tryEngage from ever re-locking this section again, which is
+      // the only thing that reset was ever protecting against in the first place.
     } else {
       // Otherwise rawProgress just sits at SCROLL_DISTANCE forever — nothing else ever
       // touches it once released. Re-entering the section later (scrolling down again
@@ -449,61 +433,74 @@ export function LetsMakeItHappen() {
       // means re-entering always starts from a clean slate, requiring an actual swipe
       // through again.
       rawProgress.set(0);
-      window.scrollTo(0, savedScrollYRef.current);
       setFormOpen(false);
     }
   }
 
-  // Mirrors the overlay's own onWheel handler above (same reasoning: can't rely on the
-  // window-level listener further down, since events need to be intercepted here first)
-  // — but for touch specifically. The overlay is itself scrollable (overflowY: auto) to
-  // fit its own form content, so a swipe starting on it is a strong candidate for the
-  // browser's native scroll machinery to claim before a *window*-level touchmove listener
-  // ever gets a clean shot at it — attaching directly to the overlay element itself doesn't
-  // have that problem. This also has to be a real DOM listener via addEventListener, not
-  // React's onTouchMove prop — React attaches touch listeners as passive by default, which
+  // Releases the lock the instant the form finishes its own 1.7s reveal — not
+  // triggered by any further scroll from the user at all. From this point on,
+  // scrolling in either direction is entirely ordinary — down continues into the
+  // footer, up continues back into whatever precedes this section — no interception, no
+  // further release logic needed.
+  useEffect(() => {
+    if (!formFullyRevealed) return;
+    releaseLock(true);
+  }, [formFullyRevealed]);
+
+  // The X button specifically — deliberately NOT releaseLock(false). That resets
+  // rawProgress to 0 and jumps back to the very top of the section (start of the
+  // image sequence), which is right for scrolling backward out of the form, but
+  // reads as far too much for someone who just wants to dismiss the form: they land
+  // back at "Let's Talk" still fully docked, exactly where closing it should leave
+  // them, ready to tap the bar again and reopen it. Still has to release the actual
+  // scroll lock itself (position:fixed etc.) the same way releaseLock does, or the
+  // page would be stuck unable to scroll at all — just without touching progress or
+  // scroll position to get there.
+  function closeFormOnly() {
+    lockedRef.current = false;
+    setLocked(false);
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.overflow = "auto";
+    releaseCooldownUntilRef.current = Date.now() + 500;
+    setFormOpen(false);
+  }
+
+  // The overlay is itself scrollable (overflowY: auto) to fit its own form content, so
+  // a swipe starting on it is a strong candidate for the browser's native scroll
+  // machinery to claim before a *window*-level touchmove listener ever gets a clean
+  // shot at it — attaching directly to the overlay element itself doesn't have that
+  // problem. This also has to be a real DOM listener via addEventListener, not React's
+  // onTouchMove prop — React attaches touch listeners as passive by default, which
   // silently makes preventDefault() inside them a no-op.
+  //
+  // Only job left here is absorbing touches until the 1.7s reveal finishes — release
+  // itself is automatic now (see the formFullyRevealed effect above), not triggered by
+  // scrolling the form at all anymore, so there's nothing left for a touchmove/dy check
+  // to decide. lockedRef flips false essentially immediately once that reveal completes,
+  // which the very first line below already accounts for.
   useEffect(() => {
     if (!formOpen) return;
     const el = overlayRef.current;
     if (!el) return;
 
-    let lastY: number | null = null;
     function onTouchStart(e: TouchEvent) {
       // Also stopped here (not just touchmove below) — the window-level touch
-      // handlers further down have their own, older, unguarded release-forward
-      // path with no settle window and no "at the bottom of the form" check.
+      // handlers further down have their own, older, unguarded release path.
       // stopPropagation only blocks the specific event it's called on, so
       // touchstart and touchend both need it too, or that path stays reachable
-      // in parallel and can release the instant the form finishes revealing,
-      // regardless of anything decided here.
+      // in parallel.
       if (lockedRef.current) e.stopPropagation();
-      lastY = e.touches[0]?.clientY ?? null;
     }
     function onTouchMove(e: TouchEvent) {
       if (!lockedRef.current) return;
       e.stopPropagation();
-      if (!formFullyRevealedRef.current) { e.preventDefault(); return; }
-      if (lastY == null) return;
-      const currentY = e.touches[0]?.clientY ?? lastY;
-      const dy = lastY - currentY; // finger up → dy > 0 → same sense as wheel deltaY > 0
-      lastY = currentY;
-      // rawProgress is already pinned at SCROLL_DISTANCE by the time the form is even
-      // open — there's nothing left for a swipe here to nudge. The form's own content
-      // (overflowY: auto) is very likely taller than one screen, so a swipe down is
-      // presumed to mean "let me read the rest of it", not "take me to the footer" —
-      // only actually release once already scrolled to that edge of the form's own
-      // content and still pushing further past it.
-      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 1;
-      const atTop = el.scrollTop <= 0;
-      const settled = Date.now() - formSettledAtRef.current >= FORM_RELEASE_GRACE_MS;
-      if (dy > 0 && atBottom && settled) { e.preventDefault(); releaseLock(true); return; }
-      if (dy < 0 && atTop && settled) { e.preventDefault(); releaseLock(false); return; }
-      // Otherwise: don't preventDefault — let the browser scroll the form normally.
+      if (!formFullyRevealedRef.current) e.preventDefault();
     }
     function onTouchEnd(e: TouchEvent) {
       if (lockedRef.current) e.stopPropagation();
-      lastY = null;
     }
 
     el.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -775,15 +772,12 @@ export function LetsMakeItHappen() {
             gap: isMobile ? "24px" : 0,
             cursor: "pointer",
             overflow: "hidden",
-            // Once pastRelease, the form itself has already moved on to being a normal,
-            // separate block further down the page (with its own "Let's Talk" heading) —
-            // this bar's only job was getting the user there. It's still docked/visible
-            // the whole way through (progress is deliberately left alone on release, see
-            // releaseLock), but now that it's no longer clipped behind a fixed overlay,
-            // scrolling back up even slightly would otherwise surface it again, reading
-            // as a confusing duplicate of the form that's already open below it.
-            opacity: pastRelease ? 0 : 1,
-            pointerEvents: pastRelease ? "none" : talkRevealed ? "auto" : "none",
+            // No need to hide this once the form opens — the form itself sits inside
+            // this same section (position: absolute, inset: 0, above this bar in
+            // z-index — see its own style below), so it's already naturally covered
+            // for as long as the form is open, without needing any separate state to
+            // track that.
+            pointerEvents: talkRevealed ? "auto" : "none",
             y: talkY,
           }}
         >
@@ -815,80 +809,53 @@ export function LetsMakeItHappen() {
             </div>
           </div>
         </motion.div>
-      </div>
 
-      {/* ── Contact form overlay — uses shared ContactFormContent ── */}
-      <AnimatePresence>
-        {formOpen && (
-          <motion.div
-            ref={overlayRef}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ duration: 1.7, ease: [0.16, 1, 0.3, 1] }}
-            onAnimationComplete={() => setFormFullyRevealed(true)}
-            // While still locked, stops wheel events from bubbling to window — otherwise
-            // the home page's hero carousel (which listens on window regardless of
-            // scroll position) still reacts to them underneath this fixed overlay. That
-            // means this can't just let events through to the lock effect's own window
-            // listener above to reverse progress — it has to replicate that same
-            // decrement/release logic itself, directly, so scrolling up from here closes
-            // the form and reverses the images back toward the previous section, and
-            // scrolling down releases forward the same way it would anywhere else in the
-            // sequence. Once actually released, this stops intercepting entirely and lets
-            // events bubble normally — AnimatePresence keeps this overlay mounted (and
-            // this handler attached) for its whole 1.7s exit slide-away, and continuing
-            // to swallow every event for that entire stretch would make real scrolling
-            // (and the footer coming into view) feel stuck for nearly two seconds after
-            // release, rather than resuming immediately on the very next tick.
-            //
-            // Everything above only applies once formFullyRevealed — until the 1.7s
-            // slide-in finishes, scroll input is fully absorbed and ignored. Without that,
-            // continuing to scroll down (the same scroll that just triggered the form to
-            // open) would immediately hit the "already at the end" release branch and
-            // start closing it again before it ever fully arrived.
-            onWheel={(e) => {
-              if (!lockedRef.current) return;
-              e.stopPropagation();
-              if (!formFullyRevealed) { e.preventDefault(); return; }
-              // rawProgress is already pinned at SCROLL_DISTANCE by the time the form is
-              // even open, so there's nothing left for a wheel tick here to nudge. The
-              // form's own content (overflowY: auto) is very likely taller than one
-              // screen, so a tick down is presumed to mean "let me read the rest of it",
-              // not "take me to the footer" — only actually release once already
-              // scrolled to that edge of the form's own content and still pushing past it.
-              const el = overlayRef.current;
-              const atBottom = el ? el.scrollHeight - el.scrollTop - el.clientHeight < 1 : true;
-              const atTop = el ? el.scrollTop <= 0 : true;
-              const settled = Date.now() - formSettledAtRef.current >= FORM_RELEASE_GRACE_MS;
-              if (e.deltaY > 0 && atBottom && settled) { e.preventDefault(); releaseLock(true); return; }
-              if (e.deltaY < 0 && atTop && settled) { e.preventDefault(); releaseLock(false); return; }
-              // Otherwise: don't preventDefault — let the browser scroll the form normally.
-            }}
-            style={pastRelease ? {
-              // In normal document flow now — a static block the exact height of one
-              // viewport, sitting right above the real page Footer that follows it.
-              position: "relative", height: "100vh",
-              zIndex: 300, background: "#0e0e0e",
-              overflowY: "auto", overflowX: "hidden",
-              display: "flex", flexDirection: "column",
-            } : {
-              position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-              zIndex: 300, background: "#0e0e0e",
-              overflowY: "auto", overflowX: "hidden",
-              display: "flex", flexDirection: "column",
-            }}
-          >
-            {/* releaseLock(false), not a plain setFormOpen(false) — this section's scroll
-                lock (lockedRef, document.body.style.overflow) only ever gets released by
-                that function. Just closing the form's own state would leave the page stuck
-                unable to scroll, since nothing else would reset the lock. Stays visible and
-                functional even once pastRelease — closing from there just collapses the
-                form back to the top of this section, same as closing it any other time. */}
-            <ContactFormContent onClose={() => releaseLock(false)} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* ── Contact form — uses shared ContactFormContent — lives inside this same
+            section's own box (position: absolute, inset: 0) rather than as a separate
+            element positioned after it, so there's only ever one document position for
+            it to be in: no scroll jump is needed when the lock releases, since nothing
+            about where the form sits actually changes at that moment. ── */}
+        <AnimatePresence>
+          {formOpen && (
+            <motion.div
+              ref={overlayRef}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ duration: 1.7, ease: [0.16, 1, 0.3, 1] }}
+              onAnimationComplete={() => setFormFullyRevealed(true)}
+              // While still locked, stops wheel events from bubbling to window — otherwise
+              // the home page's hero carousel (which listens on window regardless of
+              // scroll position) still reacts to them underneath this overlay.
+              // Absorbed entirely until the 1.7s reveal finishes — release itself is
+              // automatic (see the formFullyRevealed effect above), not triggered by
+              // scrolling the form at all, so once lockedRef flips false (which happens
+              // essentially immediately once that reveal completes) this stops
+              // intercepting entirely and lets events bubble normally.
+              onWheel={(e) => {
+                if (!lockedRef.current) return;
+                e.stopPropagation();
+                if (!formFullyRevealed) e.preventDefault();
+              }}
+              style={{
+                position: "absolute", inset: 0,
+                zIndex: 300, background: "#0e0e0e",
+                overflowY: "auto", overflowX: "hidden",
+                display: "flex", flexDirection: "column",
+              }}
+            >
+              {/* closeFormOnly, not releaseLock(false) or a plain setFormOpen(false) — the
+                  scroll lock itself (lockedRef, document.body.style.position/overflow) still
+                  has to be released the same way releaseLock does, or the page would be stuck
+                  unable to scroll at all, but *without* releaseLock's own reset-to-the-start
+                  behavior: that's meant for scrolling backward out of the form, and reads as
+                  too much for someone who just wants to dismiss it — closeFormOnly leaves
+                  "Let's Talk" sitting fully docked, ready to tap again. */}
+              <ContactFormContent onClose={closeFormOnly} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
