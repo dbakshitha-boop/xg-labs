@@ -389,7 +389,17 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
         window.addEventListener("scroll", onScroll, { passive: true });
         return () => window.removeEventListener("scroll", onScroll);
     }, [isMobile, showContent]);
-    const mobileNavVisible = mobileMenuOpen || mobileNavScrollVisible;
+    // Locked sections further down the page (e.g. LetsMakeItHappen) nudge the real
+    // scroll position by a few px to align themselves right as they engage — a genuine
+    // native scroll event indistinguishable, above, from the user scrolling up, which
+    // would otherwise pop this nav bar open right as one of those sections locks in.
+    const [sectionLocked, setSectionLocked] = useState(false);
+    useEffect(() => {
+        const onLock = (e: Event) => setSectionLocked(Boolean((e as CustomEvent).detail?.locked));
+        window.addEventListener("xg-section-lock", onLock);
+        return () => window.removeEventListener("xg-section-lock", onLock);
+    }, []);
+    const mobileNavVisible = mobileMenuOpen || (mobileNavScrollVisible && !sectionLocked);
 
     // ── Mobile layout — completely bypasses the JS horizontal scroll animation ──
     if (isMobile) {

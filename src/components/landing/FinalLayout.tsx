@@ -507,7 +507,20 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [isMobileNav]);
-  const mobileNavVisible = !isMobileNav || mobileMenuOpen || mobileNavScrollVisible;
+  // Locked sections (e.g. LetsMakeItHappen) sometimes need to nudge the real scroll
+  // position by a few px to align themselves right as they engage — a genuine native
+  // scroll event indistinguishable, above, from the user scrolling up, which would
+  // otherwise pop the nav bar open right as one of those sections locks in. Suppressed
+  // for the duration rather than trying to filter it out of onScroll above, since
+  // there's no reliable way to tell a small corrective scroll apart from a real one
+  // from here.
+  const [sectionLocked, setSectionLocked] = useState(false);
+  useEffect(() => {
+    const onLock = (e: Event) => setSectionLocked(Boolean((e as CustomEvent).detail?.locked));
+    window.addEventListener("xg-section-lock", onLock);
+    return () => window.removeEventListener("xg-section-lock", onLock);
+  }, []);
+  const mobileNavVisible = !isMobileNav || mobileMenuOpen || (mobileNavScrollVisible && !sectionLocked);
 
   return (
     <>

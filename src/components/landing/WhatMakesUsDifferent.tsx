@@ -245,24 +245,37 @@ function SubheaderContainer({ title, id }: { title: string, id: string }) {
   );
 }
 
-function ContentContainer({ description, title, id, isInView }: { description: string[], title: string, id: string, isInView: boolean }) {
+function ContentContainer({ description, title, id, isInView, isMobile }: { description: string[], title: string, id: string, isInView: boolean, isMobile: boolean }) {
   return (
     <div className="content-stretch flex flex-col gap-[10px] items-start relative shrink-0 w-full" data-name="Content Container">
       <SubheaderContainer title={title} id={id} />
       <div className="flex flex-col w-full">
-        {description.map((line, idx) => (
+        {isMobile ? (
+          // Each array entry is a line break authored for desktop's much wider column —
+          // rendering them as separate hard-broken lines here (mobile's narrower column,
+          // larger relative font) produced oddly short lines with a lot of trailing empty
+          // space (e.g. "and" alone on its own line). Joining into one paragraph lets it
+          // wrap naturally at whatever width is actually available.
+          <div className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(26px, 3.2vw, 32px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
+            <RevealText isActive={isInView}>
+              {description.join(" ")}
+            </RevealText>
+          </div>
+        ) : (
+          description.map((line, idx) => (
              <div key={idx} className="relative font-['Cal Sans',sans-serif] leading-[1.15] tracking-normal text-[#5f5f5f] w-full whitespace-normal" style={{ fontSize: "clamp(32px, 3.2vw, 38px)", fontWeight: 600, letterSpacing: "-0.02em" }}>
                 <RevealText delay={idx * 0.1} isActive={isInView}>
                   {line}
                 </RevealText>
              </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
 }
 
-function RealContent({ activeIndex, isInView, revealGen }: { activeIndex: number; isInView: boolean; revealGen: number }) {
+function RealContent({ activeIndex, isInView, revealGen, isMobile }: { activeIndex: number; isInView: boolean; revealGen: number; isMobile: boolean }) {
   const content = CONTENT_DATA[activeIndex] || CONTENT_DATA[CONTENT_DATA.length - 1];
 
   return (
@@ -279,18 +292,19 @@ function RealContent({ activeIndex, isInView, revealGen }: { activeIndex: number
             description={content.description}
             id={content.id}
             isInView={isInView}
+            isMobile={isMobile}
         />
       </motion.div>
     </div>
   );
 }
 
-function TextContainer({ activeIndex, isInView, revealGen }: { activeIndex: number; isInView: boolean; revealGen: number }) {
+function TextContainer({ activeIndex, isInView, revealGen, isMobile }: { activeIndex: number; isInView: boolean; revealGen: number; isMobile: boolean }) {
   return (
     <div className="content-stretch flex flex-col relative shrink-0 w-full h-full" style={{ padding: "clamp(24px, 4vw, 64px)", paddingTop: "clamp(32px, 4vw, 56px)", justifyContent: "flex-start", gap: "clamp(40px, 9vw, 150px)" }} data-name="Text Container">
       <HeaderContainer />
       <div>
-        <RealContent activeIndex={activeIndex} isInView={isInView} revealGen={revealGen} />
+        <RealContent activeIndex={activeIndex} isInView={isInView} revealGen={revealGen} isMobile={isMobile} />
       </div>
     </div>
   );
@@ -541,7 +555,7 @@ export function WhatMakesUsDifferent() {
                 landed. See revealVisible's own comment for why it isn't just `engaged`
                 directly, though — releasing at a boundary needs the text to stay up a
                 little longer than that. */}
-            <TextContainer activeIndex={activeIndex} isInView={revealVisible} revealGen={revealGen} />
+            <TextContainer activeIndex={activeIndex} isInView={revealVisible} revealGen={revealGen} isMobile={isMobile} />
           </div>
         </div>
       </div>

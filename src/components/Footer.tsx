@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import xgLogo from "../assets/2.png";
 
 const MENU_LINKS = [
@@ -93,6 +93,20 @@ function IconWhatsApp() {
 
 export function Footer() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // "Contact" always means this footer, not the home page in general — App.tsx's
+  // HomePage already knows how to land on it via location.state.scrollToFooter when
+  // arriving from elsewhere (see ScrollToTop/HomePage), but that effect only runs on
+  // mount, so it wouldn't fire again if we're already sitting on "/" (Footer renders on
+  // every page, including this one). Scroll directly in that case instead of navigating.
+  function goToFooter() {
+    if (location.pathname === "/") {
+      document.getElementById("footer")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/", { state: { scrollToFooter: true } });
+    }
+  }
 
   return (
     <footer id="footer" style={{ background: "#0a0a0a", overflow: "hidden" }}>
@@ -205,7 +219,7 @@ export function Footer() {
             {MENU_LINKS.map((item) => (
               <span
                 key={item.label}
-                onClick={() => navigate(item.path)}
+                onClick={() => (item.label === "Contact" ? goToFooter() : navigate(item.path))}
                 style={linkStyle}
                 onMouseEnter={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "#ECEFF1")}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLSpanElement).style.color = "rgba(255,255,255,0.55)")}
