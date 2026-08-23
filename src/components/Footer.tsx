@@ -101,6 +101,11 @@ export function Footer() {
   // mount, so it wouldn't fire again if we're already sitting on "/" (Footer renders on
   // every page, including this one). Scroll directly in that case instead of navigating.
   function goToFooter() {
+    // See LetsMakeItHappen's own "xg-goto-footer" listener — without this, its
+    // scroll-lock can catch a sliver of itself still on screen (the footer's
+    // shorter than a full viewport) and snap straight back into locking,
+    // making "Contact" look like it just redirects back to that section.
+    window.dispatchEvent(new CustomEvent("xg-goto-footer"));
     if (location.pathname === "/") {
       document.getElementById("footer")?.scrollIntoView({ behavior: "smooth" });
     } else {

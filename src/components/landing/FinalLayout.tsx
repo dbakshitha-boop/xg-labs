@@ -564,6 +564,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                       if (el) { document.body.style.overflow = "auto"; el.scrollIntoView({ behavior: "smooth" }); }
                       else navigate("/", { state: { skipLoading: true, scrollToSection: "selected-work" } });
                     } else if (item === "Contact") {
+                      window.dispatchEvent(new CustomEvent("xg-goto-footer"));
                       const footerEl = document.getElementById("footer");
                       if (footerEl) { document.body.style.overflow = "auto"; footerEl.scrollIntoView({ behavior: "auto" }); }
                       else navigate("/", { state: { skipLoading: true, scrollToFooter: true } });
@@ -756,6 +757,7 @@ export function TopBar({ dark = false, containerWidth, logoSrc, refinedLetsTalk 
                 onClick={() => {
                   setServiceOpen(false);
                   if (item === "Contact") {
+                    window.dispatchEvent(new CustomEvent("xg-goto-footer"));
                     const footerEl = document.getElementById("footer");
                     if (footerEl) {
                       document.body.style.overflow = "auto";

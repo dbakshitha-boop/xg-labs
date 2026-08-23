@@ -183,6 +183,11 @@ function HomePage() {
   useEffect(() => {
     const targetId = location.state?.scrollToFooter ? "footer" : location.state?.scrollToSection;
     if (!targetId) return;
+    // See LetsMakeItHappen's own "xg-goto-footer" listener — landing on a
+    // footer shorter than a full viewport can leave a sliver of that section
+    // still on screen, which its scroll-lock would otherwise read as "user
+    // scrolled into this section" and snap straight back into it.
+    if (location.state?.scrollToFooter) window.dispatchEvent(new CustomEvent("xg-goto-footer"));
     const tryScroll = () => {
       const el = document.getElementById(targetId);
       if (el) {

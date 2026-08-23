@@ -769,22 +769,38 @@ function CardSlide({
 }
 
 // ─── Grid card (final overview, accordion-enabled) ────────────────────────────
-function GridServiceCard({ service }: { service: ServiceData }) {
+function GridServiceCard({ service, compact = false }: { service: ServiceData; compact?: boolean }) {
   const navigate = useNavigate();
   const { open: openContactForm } = useContactForm();
   const [openIdx, setOpenIdx] = useState<number | null>(null);
 
+  // Trimmed a notch for short (non-maximized) desktop windows — see the
+  // `isShortWindow` comment at the call site for why.
+  const cardPad = compact ? "10px" : "16px";
+  const cardGap = compact ? "6px" : "10px";
+  const titleWidth = compact ? "72px" : "90px";
+  const titleSize = compact ? "9px" : "10px";
+  const descSize = compact ? "8px" : "9px";
+  const btnHeight = compact ? 18 : 22;
+  const btnTextHeight = compact ? 7 : 8;
+  const btnFontSize = compact ? 7 : 8;
+  const imgWidth = compact ? "64px" : "90px";
+  const rowPad = compact ? "4px 0" : "6px 0";
+  const itemLabelSize = compact ? "7px" : "8px";
+  const itemToggleSize = compact ? "9px" : "11px";
+  const itemDescSize = compact ? "6px" : "7px";
+
   return (
-    <div style={{ background: "#F7F8FA", borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "10px", boxSizing: "border-box", height: "100%", overflow: "hidden" }}>
+    <div style={{ background: "#F7F8FA", borderRadius: "12px", padding: cardPad, display: "flex", flexDirection: "column", gap: cardGap, boxSizing: "border-box", height: "100%", overflow: "hidden" }}>
       {/* Title + description + buttons */}
       <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-        <div style={{ width: "90px", flexShrink: 0 }}>
-          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "10px", letterSpacing: "-0.02em", textTransform: "uppercase", color: "#414141", margin: 0, lineHeight: "1.3" }}>
+        <div style={{ width: titleWidth, flexShrink: 0 }}>
+          <p style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: titleSize, letterSpacing: "-0.02em", textTransform: "uppercase", color: "#414141", margin: 0, lineHeight: "1.3" }}>
             {service.title}
           </p>
         </div>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
-          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: "9px", color: "#6E6E6E", letterSpacing: "-0.04em", lineHeight: "1.5", margin: 0 }}>
+          <p style={{ fontFamily: "'Sora', sans-serif", fontWeight: 400, fontSize: descSize, color: "#6E6E6E", letterSpacing: "-0.04em", lineHeight: "1.5", margin: 0 }}>
             {service.description}
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -794,11 +810,11 @@ function GridServiceCard({ service }: { service: ServiceData }) {
               whileHover="hover"
               animate="rest"
               onClick={() => navigate("/blog/case-study/0")}
-              style={{ position: "relative", height: 22, display: "inline-flex", cursor: "pointer" }}
+              style={{ position: "relative", height: btnHeight, display: "inline-flex", cursor: "pointer" }}
             >
               <button
                 style={{
-                  height: 22,
+                  height: btnHeight,
                   paddingLeft: 8,
                   paddingRight: 18,
                   display: "inline-flex",
@@ -814,9 +830,9 @@ function GridServiceCard({ service }: { service: ServiceData }) {
               >
                 <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
                 <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#0a0a0a", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
-                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 8 }}>
-                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 8, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}>View Cases</motion.span>
-                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 8, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}>View Cases</motion.span>
+                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: btnTextHeight }}>
+                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: btnFontSize, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#1a1a1a" }}>View Cases</motion.span>
+                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: btnFontSize, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}>View Cases</motion.span>
                 </div>
               </button>
               <motion.div variants={{ rest: { background: "#0a0a0a" }, hover: { background: "#02A884" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -5, width: 20, height: 20, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
@@ -832,11 +848,11 @@ function GridServiceCard({ service }: { service: ServiceData }) {
               whileHover="hover"
               animate="rest"
               onClick={() => openContactForm()}
-              style={{ position: "relative", height: 22, display: "inline-flex", cursor: "pointer" }}
+              style={{ position: "relative", height: btnHeight, display: "inline-flex", cursor: "pointer" }}
             >
               <button
                 style={{
-                  height: 22,
+                  height: btnHeight,
                   paddingLeft: 8,
                   paddingRight: 18,
                   display: "inline-flex",
@@ -852,9 +868,9 @@ function GridServiceCard({ service }: { service: ServiceData }) {
               >
                 <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }} style={{ position: "absolute", inset: 0, background: "#02A884", transformOrigin: "left center", zIndex: 1, pointerEvents: "none" }} />
                 <motion.span aria-hidden variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }} transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1], delay: 0.05 }} style={{ position: "absolute", inset: 0, background: "#ffffff", transformOrigin: "left center", zIndex: 2, pointerEvents: "none" }} />
-                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: 8 }}>
-                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 8, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}>{"Let’s Talk"}</motion.span>
-                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: 8, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}>{"Let’s Talk"}</motion.span>
+                <div style={{ position: "relative", zIndex: 3, overflow: "hidden", lineHeight: 1, height: btnTextHeight }}>
+                  <motion.span variants={{ rest: { y: 0, transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: "-100%", transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: btnFontSize, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#ffffff" }}>{"Let’s Talk"}</motion.span>
+                  <motion.span aria-hidden variants={{ rest: { y: "100%", transition: { duration: 0.15, ease: [0.16, 1, 0.3, 1] } }, hover: { y: 0, transition: { duration: 0.26, ease: [0.16, 1, 0.3, 1], delay: 0.19 } } }} style={{ position: "absolute", top: 0, left: 0, display: "block", fontFamily: "'Cal Sans', sans-serif", fontSize: btnFontSize, fontWeight: 400, letterSpacing: "0.03em", textTransform: "uppercase", whiteSpace: "nowrap", color: "#5f5f5f" }}>{"Let’s Talk"}</motion.span>
                 </div>
               </button>
               <motion.div variants={{ rest: { background: "#02A884" }, hover: { background: "#0a0a0a" } }} transition={{ duration: 0.18 }} style={{ position: "absolute", top: 0, right: -5, width: 20, height: 20, borderRadius: 32, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4 }}>
@@ -870,7 +886,7 @@ function GridServiceCard({ service }: { service: ServiceData }) {
 
       {/* Image + accordion */}
       <div style={{ display: "flex", gap: "12px", flex: 1 }}>
-        <div style={{ width: "90px", flexShrink: 0, borderRadius: "6px", overflow: "hidden" }}>
+        <div style={{ width: imgWidth, flexShrink: 0, borderRadius: "6px", overflow: "hidden" }}>
           <img src={service.images[0]} alt={service.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         </div>
         <div style={{ flex: 1 }}>
@@ -878,12 +894,12 @@ function GridServiceCard({ service }: { service: ServiceData }) {
             <div key={i} style={{ borderBottom: i < service.items.length - 1 ? "1px solid rgba(0,0,0,0.08)" : "none" }}>
               <button
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0", gap: "4px" }}
+                style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", padding: rowPad, gap: "4px" }}
               >
-                <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: "8px", letterSpacing: "0", textTransform: "uppercase", color: "#5F5F5F", textAlign: "left" }}>
+                <span style={{ fontFamily: "'Cal Sans', sans-serif", fontWeight: 400, fontSize: itemLabelSize, letterSpacing: "0", textTransform: "uppercase", color: "#5F5F5F", textAlign: "left" }}>
                   {item.label}
                 </span>
-                <span style={{ fontSize: "11px", color: "#9A9A9A", lineHeight: 1, flexShrink: 0 }}>{openIdx === i ? "−" : "+"}</span>
+                <span style={{ fontSize: itemToggleSize, color: "#9A9A9A", lineHeight: 1, flexShrink: 0 }}>{openIdx === i ? "−" : "+"}</span>
               </button>
               <AnimatePresence initial={false}>
                 {openIdx === i && (
@@ -895,7 +911,7 @@ function GridServiceCard({ service }: { service: ServiceData }) {
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     style={{ overflow: "hidden" }}
                   >
-                    <p style={{ fontFamily: "'Sora', sans-serif", fontSize: "7px", color: "#6E6E6E", letterSpacing: "-0.04em", lineHeight: "1.5", margin: "0 0 5px" }}>
+                    <p style={{ fontFamily: "'Sora', sans-serif", fontSize: itemDescSize, color: "#6E6E6E", letterSpacing: "-0.04em", lineHeight: "1.5", margin: "0 0 5px" }}>
                       {item.description}
                     </p>
                   </motion.div>
@@ -984,6 +1000,16 @@ export function ServicesPage() {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 1024 : false
   );
+  // The grid finale's cards live inside a fixed calc(100vh - 96px) deck (see
+  // below) split into 3 equal rows — a shrunk (non-maximized) desktop window
+  // gives each row less height, but the card's title/description block and
+  // its 5 fixed-size accordion rows don't shrink with it, so the accordion's
+  // last rows (and sometimes the image) get clipped by the card's own
+  // overflow:hidden. Below a short-window threshold, GridServiceCard dials
+  // its own padding/gaps/font-sizes down a notch so everything fits again.
+  const [isShortWindow, setIsShortWindow] = useState(() =>
+    typeof window !== "undefined" ? window.innerHeight < 760 : false
+  );
 
   // slideIndex ranges 0..total on desktop (total = the finale grid) and
   // 0..total-1 on mobile (no grid finale there). One scroll/swipe tick = one step.
@@ -1028,7 +1054,10 @@ export function ServicesPage() {
   useEffect(() => { slideIndexRef.current = slideIndex; }, [slideIndex]);
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < 1024);
+    const onResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      setIsShortWindow(window.innerHeight < 760);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -1336,7 +1365,7 @@ export function ServicesPage() {
               >
                 {SERVICES.map((svc) => (
                   <motion.div key={svc.title} variants={GRID_ITEM_VARIANTS} style={{ height: "100%" }}>
-                    <GridServiceCard service={svc} />
+                    <GridServiceCard service={svc} compact={isShortWindow} />
                   </motion.div>
                 ))}
 

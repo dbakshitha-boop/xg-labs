@@ -404,6 +404,7 @@ export function LandingSequence({ startSequence, skipIntro = false, jumpPastHero
                 if (el) { document.body.style.overflow = "auto"; el.scrollIntoView({ behavior: "smooth" }); }
                 else navigate("/", { state: { skipLoading: true, scrollToSection: "selected-work" } });
             } else if (item === "Contact") {
+                window.dispatchEvent(new CustomEvent("xg-goto-footer"));
                 const el = document.getElementById("footer");
                 if (el) { document.body.style.overflow = "auto"; el.scrollIntoView({ behavior: "auto" }); }
                 else navigate("/", { state: { skipLoading: true, scrollToFooter: true } });

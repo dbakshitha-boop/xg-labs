@@ -275,11 +275,11 @@ function ContentContainer({ description, title, id, isInView, isMobile }: { desc
   );
 }
 
-function RealContent({ activeIndex, isInView, revealGen, isMobile }: { activeIndex: number; isInView: boolean; revealGen: number; isMobile: boolean }) {
+function RealContent({ activeIndex, isInView, revealGen, isMobile, compactSpacing }: { activeIndex: number; isInView: boolean; revealGen: number; isMobile: boolean; compactSpacing: boolean }) {
   const content = CONTENT_DATA[activeIndex] || CONTENT_DATA[CONTENT_DATA.length - 1];
 
   return (
-    <div className="content-stretch flex flex-col gap-[60px] items-start relative shrink-0 w-full" data-name="Real content">
+    <div className={`content-stretch flex flex-col ${compactSpacing ? "gap-[28px]" : "gap-[60px]"} items-start relative shrink-0 w-full`} data-name="Real content">
       <motion.div
         key={`${content.id}-${isInView}-${revealGen}`}
         initial={{ opacity: 0, y: 20 }}
@@ -299,12 +299,12 @@ function RealContent({ activeIndex, isInView, revealGen, isMobile }: { activeInd
   );
 }
 
-function TextContainer({ activeIndex, isInView, revealGen, isMobile }: { activeIndex: number; isInView: boolean; revealGen: number; isMobile: boolean }) {
+function TextContainer({ activeIndex, isInView, revealGen, isMobile, compactSpacing }: { activeIndex: number; isInView: boolean; revealGen: number; isMobile: boolean; compactSpacing: boolean }) {
   return (
-    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full" style={{ padding: "clamp(24px, 4vw, 64px)", paddingTop: isMobile ? "clamp(32px, 4vw, 56px)" : "clamp(56px, 8vw, 110px)", justifyContent: "flex-start", gap: "clamp(40px, 9vw, 150px)" }} data-name="Text Container">
+    <div className="content-stretch flex flex-col relative shrink-0 w-full h-full" style={{ padding: "clamp(24px, 4vw, 64px)", paddingTop: isMobile ? "clamp(32px, 4vw, 56px)" : compactSpacing ? "clamp(24px, 4vw, 56px)" : "clamp(56px, 8vw, 110px)", justifyContent: "flex-start", gap: compactSpacing ? "clamp(24px, 4vw, 48px)" : "clamp(40px, 9vw, 150px)" }} data-name="Text Container">
       <HeaderContainer />
       <div>
-        <RealContent activeIndex={activeIndex} isInView={isInView} revealGen={revealGen} isMobile={isMobile} />
+        <RealContent activeIndex={activeIndex} isInView={isInView} revealGen={revealGen} isMobile={isMobile} compactSpacing={compactSpacing} />
       </div>
     </div>
   );
@@ -313,10 +313,36 @@ function TextContainer({ activeIndex, isInView, revealGen, isMobile }: { activeI
 export function WhatMakesUsDifferent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" ? window.innerWidth < 1024 : false);
+  // Tablet / "minimised browser window" band — same single-column layout as phone
+  // (isMobile covers both), but phone's spacing was tuned for a narrow viewport;
+  // at this wider-but-still-sub-1024 width the same clamp()s grow enough (they're
+  // vw-based) to push the description past the fixed-height text panel's bottom
+  // edge, which clips it since that panel is overflow-hidden. Only this band's
+  // spacing is dialed back — phone and desktop (>=1024) are untouched.
+  const [isTablet, setIsTablet] = useState(() => typeof window !== "undefined" ? window.innerWidth >= 640 && window.innerWidth < 1024 : false);
+  // A shrunken (non-maximized) desktop browser window keeps the wide, two-column
+  // (>=1024px) layout — isTablet never fires — but this section's height still
+  // just fills whatever's available (h-screen/100%), and the desktop column's
+  // padding/gap were sized assuming a full-height window. Below a short-window
+  // threshold there just isn't enough room for them plus the description, so it
+  // clips against the panel's overflow-hidden edge. Compact spacing kicks in
+  // here too, independent of width, without touching genuine full-height desktop.
+  const [isShort, setIsShort] = useState(() => typeof window !== "undefined" ? window.innerHeight < 760 : false);
+  const compactSpacing = isTablet || (!isMobile && isShort);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [subProgress, setSubProgress] = useState(0);
   const [engaged, setEngaged] = useState(false);
+  // Tells TopBar (see its own listener, and LetsMakeItHappen's matching dispatch)
+  // to suppress its scroll-direction-based show/hide while this section is
+  // engaged. Without this, engaging pins document.body to position:fixed (see
+  // the scroll-lock effect below), which makes window.scrollY read as ~0 for as
+  // long as that's applied — TopBar's own "near the very top" check then reads
+  // that as reason enough to show itself, even though the user scrolled well
+  // past the top to get here.
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("xg-section-lock", { detail: { locked: engaged } }));
+  }, [engaged]);
   // Bumped every time the section (re-)engages, from either edge. Forces the active card's
   // title/description to remount and replay its reveal animation right at that moment,
   // rather than relying on viewport-crossing timing alone — which can toggle true a little
@@ -384,7 +410,12 @@ export function WhatMakesUsDifferent() {
   const prevRectRef = useRef<{ top: number; bottom: number } | null>(null);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
+    const check = () => {
+      const w = window.innerWidth;
+      setIsMobile(w < 1024);
+      setIsTablet(w >= 640 && w < 1024);
+      setIsShort(window.innerHeight < 760);
+    };
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
@@ -639,7 +670,7 @@ export function WhatMakesUsDifferent() {
                 landed. See revealVisible's own comment for why it isn't just `engaged`
                 directly, though — releasing at a boundary needs the text to stay up a
                 little longer than that. */}
-            <TextContainer activeIndex={activeIndex} isInView={revealVisible} revealGen={revealGen} isMobile={isMobile} />
+            <TextContainer activeIndex={activeIndex} isInView={revealVisible} revealGen={revealGen} isMobile={isMobile} compactSpacing={compactSpacing} />
           </div>
         </div>
       </div>

@@ -4,13 +4,16 @@ import type { MotionValue } from "motion/react";
 import { ContactFormContent } from "./ContactFormOverlay";
 
 // Eases the glide into and back out of each mobile image's mid-journey pause
-// (see ColumnImageEl) — gentle quint power curves so it reads as slowing down
-// and gliding through that point rather than braking to a stop. Plain math
-// rather than motion's own cubicBezier helper — that lives in "motion-utils",
-// a package this project only ever gets transitively (via "motion") and never
-// declares itself, not worth relying on here.
-const HOLD_EASE_IN = (t: number) => 1 - Math.pow(1 - t, 5); // easeOutQuint
-const HOLD_EASE_OUT = (t: number) => Math.pow(t, 5); // easeInQuint
+// (see ColumnImageEl) — cubic power curves so it reads as slowing down and
+// gliding through that point rather than braking to a stop. Quint (power 5)
+// was tried first but its tail is so steep it read as a hard snap into and
+// out of the hold rather than a glide; cubic keeps the same shape with a much
+// gentler taper. Plain math rather than motion's own cubicBezier helper —
+// that lives in "motion-utils", a package this project only ever gets
+// transitively (via "motion") and never declares itself, not worth relying
+// on here.
+const HOLD_EASE_IN = (t: number) => 1 - Math.pow(1 - t, 3); // easeOutCubic
+const HOLD_EASE_OUT = (t: number) => Math.pow(t, 3); // easeInCubic
 
 import img1 from "../assets/letsmakeithappenscroll/1st row.png";
 import img2 from "../assets/letsmakeithappenscroll/2nd row.png";
@@ -69,19 +72,24 @@ const DESKTOP_LATE_WINDOWS: Array<[number, number]> = [
   [0.46, 0.66], [0.50, 0.84], [0.56, 0.80], [0.45, 0.87],
 ];
 
-// Mobile shows just 4 images total, one per column — but two of them travel
-// at once: columns 0 & 2 (the first pair, non-adjacent so they don't sit side
-// by side) both fall in the first half of progress, columns 1 & 3 (the second
-// pair) both fall in the second half. Within a pair the two windows differ
-// slightly in width/offset so they move at their own pace rather than in
-// lockstep. Each image's own journey also gets a brief hold partway through
-// (see ColumnImageEl) instead of sliding straight through, so it's actually
+// Mobile shows all 8 images — two travelling through each of the 4 columns,
+// one after the other. Rather than running columns in pairs (0 & 2 together,
+// then 1 & 3 together — which read as two clumps, not an alternation), each
+// column gets a single turn in strict left-to-right order — 0, 1, 2, 3 — across
+// the first half of progress, then the same order again across the second
+// half, so only one column is ever moving at a time and the motion visibly
+// relays across the row. Each turn is a touch wider than the relay's own
+// stride between turns, so consecutive turns overlap — the previous image is
+// still gliding out as the next column's glides in — rather than pausing
+// dead between them or feeling rushed through a too-narrow window. Each
+// image's own journey also gets a brief hold partway through (see
+// ColumnImageEl) instead of sliding straight through, so it's actually
 // paused and clearly visible for a beat before continuing on and out.
-const MOBILE_WINDOWS: Array<[number, number]> = [
-  [0.02, 0.48], // col 0 — first half, slow/full
-  [0.54, 0.98], // col 1 — second half, slow/full
-  [0.08, 0.42], // col 2 — first half, fast/narrow
-  [0.58, 0.92], // col 3 — second half, fast/narrow
+const MOBILE_WINDOWS: Array<[[number, number], [number, number]]> = [
+  [[0.02, 0.22], [0.46, 0.66]], // col 0 — 1st and 5th turn
+  [[0.13, 0.33], [0.57, 0.77]], // col 1 — 2nd and 6th turn
+  [[0.24, 0.44], [0.68, 0.88]], // col 2 — 3rd and 7th turn
+  [[0.35, 0.55], [0.78, 0.98]], // col 3 — 4th and 8th turn
 ];
 
 // One image per column (desktop's layout) — column i gets one early- or one
@@ -107,25 +115,33 @@ function buildAlternatingColumns(
   return slots as ColumnConfig[];
 }
 
-// One image per column, one column per swipe — picks just `windows.length` of
-// the given images (randomly, for variety across loads) and pins each to its
-// own column and its own quarter, unshuffled, so column 0 always travels
-// during swipe 1, column 1 during swipe 2, and so on. Each also gets its own
-// random resting height for its mid-journey hold (see ColumnImageEl) — kept
-// inside the section's visible band (roughly 15vh–65vh, clear of the top/
-// bottom mask fade) but otherwise different every column, every load, so they
-// don't all pause at the same spot.
-function buildOnePerColumn(
+// Two images per column, travelling one after the other — picks 2×
+// `windows.length` of the given images (randomly, for variety across loads)
+// and pins a pair to each column, unshuffled otherwise, so column 0 always
+// gets the first pair, column 1 the second, and so on. Each image also gets
+// its own random resting height for its mid-journey hold (see ColumnImageEl)
+// — kept inside the section's visible band (roughly 15vh–65vh, clear of the
+// top/bottom mask fade) but otherwise different every image, every load, so
+// they don't all pause at the same spot.
+function buildTwoPerColumn(
   images: string[],
-  windows: Array<[number, number]>
+  windows: Array<[[number, number], [number, number]]>
 ): ColumnConfig[] {
-  const shuffledImages = shuffle(images).slice(0, windows.length);
-  return windows.map((w, col) => [{
-    src: shuffledImages[col],
-    start: w[0],
-    end: w[1],
-    holdY: `${Math.round(15 + Math.random() * 50)}vh`,
-  }]);
+  const shuffledImages = shuffle(images).slice(0, windows.length * 2);
+  return windows.map(([first, second], col) => [
+    {
+      src: shuffledImages[col * 2],
+      start: first[0],
+      end: first[1],
+      holdY: `${Math.round(15 + Math.random() * 50)}vh`,
+    },
+    {
+      src: shuffledImages[col * 2 + 1],
+      start: second[0],
+      end: second[1],
+      holdY: `${Math.round(15 + Math.random() * 50)}vh`,
+    },
+  ]);
 }
 
 const DESKTOP_COLUMNS: ColumnConfig[] = buildAlternatingColumns(
@@ -136,7 +152,7 @@ const DESKTOP_COLUMNS: ColumnConfig[] = buildAlternatingColumns(
   DESKTOP_LATE_WINDOWS
 );
 
-const MOBILE_COLUMNS: ColumnConfig[] = buildOnePerColumn(
+const MOBILE_COLUMNS: ColumnConfig[] = buildTwoPerColumn(
   [img1, img2, img3, img4, img5, img6, img7, img8],
   MOBILE_WINDOWS
 );
@@ -349,6 +365,20 @@ export function LetsMakeItHappen() {
   // once you're past it, this section just scrolls by normally like any other,
   // rather than replaying itself in reverse.
   const hasCompletedRef = useRef(false);
+  // "Contact" nav links (TopBar, mobile menu) jump straight to the real footer
+  // beneath this section — but the footer is shorter than one viewport, so the
+  // page can't actually scroll far enough to fully clear this section out of
+  // view first. That left a sliver of it still intersecting at the top of the
+  // viewport, which tryEngage's IntersectionObserver backstop read as "user
+  // scrolled into this section" and snapped straight back into locking it —
+  // "Contact" appeared to just redirect back to this section instead of the
+  // footer. Reusing hasCompletedRef (see above) to opt out, exactly like
+  // actually finishing the section normally already does.
+  useEffect(() => {
+    function onSkip() { hasCompletedRef.current = true; }
+    window.addEventListener("xg-goto-footer", onSkip);
+    return () => window.removeEventListener("xg-goto-footer", onSkip);
+  }, []);
   // Blocks the page from scrolling at all while engaged, instead of only reactively
   // snapping it back after the fact (see onScroll's own correction further down). That
   // reactive-only approach is what every OTHER locked-scroll section in this codebase
